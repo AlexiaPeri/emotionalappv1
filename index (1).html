@@ -1,9 +1,339 @@
+Alexia
+alexiaperi
+Online
+Création de l'app d'expression émotionnelle
+
+CL
+APP
+ — 5:11 PM
+C'est peut-être déjà sauvegardé automatiquement ! GitHub fait parfois ça maintenant. Essaie :
+
+Rafraîchis la page (F5)
+Regarde si un message vert/bleu apparaît en haut disant "GitHub Pages is live" ou "Your site is ready to be published"
+
+Sinon, c'est quoi ton pseudo GitHub ? Je vais vérifier directement si le site est déjà en ligne à https://tonpseudo.github.io/app-emotions/
+Alexia — 5:12 PM
+AlexiaPeri
+CL
+APP
+ — 5:12 PM
+Le repo app-emotions n'existe pas encore sur ton GitHub — il semble que le fichier n'a pas été sauvegardé. Et ton alexiaperi.github.io redirige vers un service de domaine (Porkbun), donc GitHub Pages n'est pas encore configuré.
+
+On va reprendre proprement :
+
+Va sur https://github.com/new
+Repository name : app-emotions
+Coche Public
+✅ Coche "Add a README file" ← ça c'est important, ça crée le repo directement
+Clique "Create repository"
+Une fois sur la page du repo, clique le bouton vert "Add file" → "Upload files"
+Glisse-dépose le fichier index.html
+Clique "Commit changes"
+
+L'astuce c'est le README à l'étape 4 — sans ça le repo est vide et GitHub ne montre pas les bons boutons. Essaie et dis-moi ! 🙂
+Alexia — 5:14 PM
+j'ai mis un autre nom voici le lien
+https://github.com/AlexiaPeri/emotionalappv1
+GitHub
+GitHub - AlexiaPeri/emotionalappv1
+Contribute to AlexiaPeri/emotionalappv1 development by creating an account on GitHub.
+CL
+APP
+ — 5:14 PM
+Envoie-moi le lien ! 🙂
+Parfait, le repo existe ! 👍 Maintenant :
+
+Va sur https://github.com/AlexiaPeri/emotionalappv1
+Clique sur "Add file" → "Upload files"
+Glisse le fichier index.html que je t'ai envoyé sur Discord (ou clique "choose your files")
+En bas clique "Commit changes"
+
+Ensuite pour activer GitHub Pages :
+Va dans Settings (onglet en haut) → Pages (menu à gauche)
+Branch : main → Folder : / (root) → Save
+Attends 1-2 min puis ton app sera sur : https://alexiaperi.github.io/emotionalappv1/
+
+Tu en es où ?
+Alexia — 5:35 PM
+je peux toujours pas cliker sur save
+CL
+APP
+ — 5:36 PM
+C'est possible que le bouton Save soit grisé parce que c'est déjà sur main et que GitHub l'a déjà enregistré automatiquement. Le nouveau GitHub fait souvent ça.
+
+Essaie plutôt de vérifier directement si ça marche :
+
+👉 Va sur ce lien : https://alexiaperi.github.io/emotionalappv1/
+
+Si tu vois la page avec le micro, c'est que c'est déjà actif ! 🎉
+
+Si ça donne une erreur 404, envoie-moi une capture d'écran de ta page Settings → Pages, je te dirai exactement quoi faire.
+Alexia — 5:38 PM
+c trop chelou, ca complete automatiquement lorsque je click enter ca dit alexiaperineau au lieu de alexiaperi et ca ca sur porkbun domain ca dit a brand new domain. c vrai que j'ai achete alexiaperineau.com mais bon c chelou non ?
+CL
+APP
+ — 5:39 PM
+Ah oui ça s'explique ! Tu as configuré un domaine custom sur ton GitHub Pages à un moment donné — alexiaperineau.com via Porkbun. Du coup GitHub redirige automatiquement alexiaperi.github.io vers alexiaperineau.com, et comme le domaine n'a pas de site dessus, tu vois la page Porkbun par défaut.
+
+C'est pas un bug, c'est juste un ancien réglage. Deux options :
+
+Option rapide — Désactiver le domaine custom :
+Va sur https://github.com/AlexiaPeri/emotionalappv1 → Settings → Pages
+Dans "Custom domain", supprime alexiaperineau.com (vide le champ) et Save
+Là ton app sera dispo sur alexiaperi.github.io/emotionalappv1/
+
+Option cool — Utiliser ton vrai domaine :
+Si tu veux, ton app pourrait être sur alexiaperineau.com/emotionalappv1/ — mais faut d'abord configurer le DNS sur Porkbun. C'est un peu plus de boulot.
+
+Je te conseille l'option rapide pour l'instant ! Essaie de vider le champ "Custom domain" dans les settings Pages.
+Alexia — 5:46 PM
+il ny a rien dans custom domains
+CL
+APP
+ — 5:46 PM
+OK le problème vient pas de ce repo — la redirection est au niveau de ton compte GitHub entier. Tu as probablement un autre repo qui s'appelle AlexiaPeri.github.io ou alexiaperi.github.io avec le domaine custom configuré dessus.
+
+Cherche dans tes repos : https://github.com/AlexiaPeri?tab=repositories
+
+Tu vois un repo qui s'appelle quelque chose comme alexiaperi.github.io ? Si oui, c'est là-dedans que le custom domain est configuré (Settings → Pages).
+
+En attendant, solution immédiate — on contourne le problème ! Utilise Netlify Drop, c'est instantané :
+
+Va sur https://app.netlify.com/drop
+Pas besoin de compte
+Glisse le fichier index.html dessus
+Tu auras un lien HTTPS qui marche direct ✨
+
+Essaie ça, c'est plus rapide que de debug le DNS GitHub !
+Alexia — 5:48 PM
+attend j'ai enleve le custom domain sur l'autre repos.. ca suffit ou faut il que je fasse le netlify drop ?
+CL
+APP
+ — 5:49 PM
+Ça redirige encore vers Porkbun — les changements DNS peuvent prendre un peu de temps à se propager (quelques minutes à quelques heures).
+
+Mais il faut aussi vérifier que GitHub Pages est bien activé sur le repo emotionalappv1. Est-ce que dans Settings → Pages de ce repo tu vois bien :
+Source : Deploy from a branch
+Branch : main
+
+Si c'est le cas, attends 10-15 min et réessaie le lien. Sinon, fais le Netlify Drop en parallèle pour tester l'app tout de suite — ça prend 10 secondes et tu perds rien 🙂
+Alexia — 5:49 PM
+non c pas main c master
+CL
+APP
+ — 5:49 PM
+Ah voilà le problème ! Change la branch de master à... en fait non, garde master si c'est ta seule branche — mais assure-toi de bien sélectionner master dans le dropdown de GitHub Pages (pas "none").
+
+Donc dans Settings → Pages :
+Source : Deploy from a branch
+Branch : master → / (root)
+Et là le bouton Save devrait être cliquable
+
+C'est pour ça que Save était grisé — il était probablement déjà sur "none" et tu essayais de mettre "main" qui n'existe pas ! Mets master et Save 👍
+Alexia — 5:51 PM
+toujours gris.. mais la je suis sur l'autre repos, pas celui emotions
+CL
+APP
+ — 5:51 PM
+Laisse l'autre repo tranquille pour l'instant, c'est pas important. Reviens sur le bon :
+
+👉 https://github.com/AlexiaPeri/emotionalappv1/settings/pages
+
+C'est celui-ci qu'il faut configurer. Est-ce que tu as bien uploadé le fichier index.html dedans ? Vérifie d'abord sur https://github.com/AlexiaPeri/emotionalappv1 — tu devrais voir index.html dans la liste des fichiers. Si tu vois seulement README.md, il faut d'abord ajouter le fichier HTML !
+Alexia — 5:51 PM
+ok la on a main, tjrs pas possible de cliker sur save
+CL
+APP
+ — 5:51 PM
+C'est peut-être déjà activé ! Si c'est déjà sur "main" et "/ (root)", il n'y a rien à sauvegarder — Save est grisé parce que c'est déjà le réglage actuel.
+
+Essaie directement le lien :
+
+👉 https://alexiaperi.github.io/emotionalappv1/
+
+Dis-moi ce que tu vois !
+Alexia — 5:54 PM
+yesss ca marche, franchement c vraiment pas mal mais je n'aime pas l'intonation de la voix, elle est pas assez naturel, peut-on travailler sur ca ? et aussi peut on faire une version en anglais ?
+CL
+APP
+ — 5:56 PM
+V4 ici 👆 — grosse mise à jour :
+
+🗣️ Voix naturelle avec ElevenLabs :
+Clique sur ⚙️ en haut à droite
+Colle ta clé API ElevenLabs (gratuit sur https://elevenlabs.io/, tu as ~10 000 caractères/mois)
+Choisis une voix (Adam, Josh, Charlotte...)
+La clé est sauvegardée localement, pas besoin de la remettre à chaque fois
+Sans clé → ça utilise la voix du navigateur en fallback
+
+🇫🇷🇬🇧 Bilingue FR / EN :
+Boutons de langue en haut
+Pronoms anglais gérés : I↔you, my↔your, I'm↔you're, I can't↔you can't, etc.
+
+🐛 Bug corrigé : "j'en ai marre" → "tu en as marre" ✅
+
+Pour mettre à jour sur GitHub : va sur ton repo → clique sur index.html → icône crayon (Edit) → remplace tout par le nouveau code → Commit. Attends 1-2 min et le site sera à jour !
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expression Émotionnelle — Répétitions</title>
+
+index.html
+27 KB
+Alexia — 9:07 PM
+ok donc en premier je sign up sur elevenlabs right ? Je prend l'option elevencreative ? c le seul avec voice changer.. mais il y a aussi API et Agents
+CL
+APP
+ — 9:07 PM
+Non non, tu n'as pas besoin du plan payant ! Prends juste le plan gratuit (Free) :
+
+Va sur https://elevenlabs.io/sign-up
+Crée ton compte (email ou Google)
+Le plan Free suffit — il te donne ~10 000 caractères/mois
+
+Ensuite pour récupérer ta clé API :
+Clique sur ton avatar en bas à gauche → Profile + API key
+Copie la clé (elle commence par sk_...)
+Colle-la dans le ⚙️ de l'app
+
+On n'a pas besoin du voice changer ni des agents — juste l'API de text-to-speech basique, et c'est inclus dans le plan gratuit 👍
+Alexia — 9:13 PM
+je ne trouve pas, ma photo est en haut a droite et il n'y a pas profile ni api key
+CL
+APP
+ — 9:13 PM
+Ils ont dû changer l'interface ! Essaie ça :
+
+Clique sur ta photo en haut à droite
+Cherche "API Keys" ou "Settings" dans le menu déroulant
+Sinon va directement ici : https://elevenlabs.io/app/settings/api-keys
+
+Ça devrait t'amener directement à la page où tu peux générer ta clé API. Tu la vois ?
+Alexia — 9:15 PM
+ok ca med it de creer une key, mais il y a bcp d'options, je coche lesquelles ?
+CL
+APP
+ — 9:15 PM
+Donne juste un nom à la clé (ex: "app-emotions") et laisse toutes les options par défaut — pas besoin de cocher ou décocher quoi que ce soit. Clique simplement sur Create / Generate et copie la clé qui apparaît 🙂
+
+⚠️ Copie-la tout de suite car elle ne sera plus visible après !
+Alexia — 9:16 PM
+meme si il ny a no permission ? il me redemande
+CL
+APP
+ — 9:16 PM
+Ah si il te demande les permissions, coche "Text to Speech" — c'est la seule dont on a besoin. Les autres tu peux les ignorer.
+
+Ensuite crée la clé et copie-la !
+Alexia — 9:16 PM
+ok j'ai mis aussi speech to speech et speech to text c'est bien ?
+CL
+APP
+ — 9:16 PM
+Oui c'est parfait, ça peut pas faire de mal d'avoir plus de permissions ! Maintenant copie la clé et colle-la dans l'app (⚙️ en haut à droite). Teste et dis-moi comment tu trouves la voix 🎙️
+Alexia — 9:17 PM
+sk_bc183656b82166a4647b7131085ad11fb9a85c92005d591e
+CL
+APP
+ — 9:17 PM
+⚠️ Attention ! Tu viens de partager ta clé API en public sur Discord ! N'importe qui peut la voir et l'utiliser.
+
+Fais ça tout de suite :
+Retourne sur https://elevenlabs.io/app/settings/api-keys
+Supprime cette clé
+Crée-en une nouvelle
+Cette fois, colle-la uniquement dans l'app (le champ ⚙️), pas ici !
+
+La clé c'est comme un mot de passe — ne la partage jamais dans un chat. L'app la sauvegarde localement sur ton navigateur, personne d'autre ne peut la voir là-bas 🔒
+Alexia — 9:18 PM
+ok j'en ai cree une nouvelle ms je comprend pas exactement ou la copier, dans github ?
+CL
+APP
+ — 9:19 PM
+Non pas dans GitHub ! Dans l'app elle-même quand tu l'utilises :
+
+Ouvre ton app → https://alexiaperi.github.io/emotionalappv1/
+En haut à droite tu vois un petit ⚙️
+Clique dessus → un panneau s'ouvre
+Colle ta clé dans le champ "Clé API ElevenLabs"
+Choisis une voix en dessous
+Ferme le panneau et teste ! 🎙️
+
+La clé reste sauvegardée dans ton navigateur — tu n'auras pas besoin de la remettre la prochaine fois.
+Alexia — 9:19 PM
+j'ai ouvert l'app mais pas de symbole de settings
+CL
+APP
+ — 9:19 PM
+C'est que tu as encore l'ancienne version du code sur GitHub ! Il faut mettre à jour le fichier index.html avec la V4 que je t'ai envoyée.
+
+Va sur https://github.com/AlexiaPeri/emotionalappv1
+Clique sur index.html dans la liste des fichiers
+Clique sur l'icône crayon ✏️ (Edit this file) en haut à droite du code
+Sélectionne tout (Ctrl+A) et supprime
+Colle le contenu du dernier fichier que je t'ai envoyé (la V4 avec ElevenLabs)
+En haut à droite, clique "Commit changes" → confirme
+
+Attends 1-2 min, rafraîchis l'app, et tu verras le ⚙️ ! Tu as encore le fichier V4 que je t'ai envoyé sur Discord ou je te le renvoie ?
+Alexia — 9:24 PM
+y a-t-il une maniere rapide de tout selectionner ?
+CL
+APP
+ — 9:24 PM
+Oui ! Clique une fois dans la zone de code sur GitHub, puis :
+
+Mac : Cmd + A (tout sélectionner) → Cmd + V (coller)
+Windows : Ctrl + A (tout sélectionner) → Ctrl + V (coller)
+
+Ça remplace tout d'un coup 👍
+Alexia — 9:27 PM
+en fait je sais pas si tu as vu mais j'ai deux fichiers, j'ai html et html(1) je change lequel ?
+CL
+APP
+ — 9:27 PM
+Tu parles sur GitHub ou dans tes téléchargements ?
+
+Sur GitHub : modifie celui qui s'appelle index.html (c'est celui que GitHub Pages utilise)
+Dans tes téléchargements : le fichier index(1).html c'est la dernière version que je t'ai envoyée (V4) — c'est celui-là qu'il faut copier-coller dans GitHub
+
+Donc : ouvre index(1).html avec un éditeur de texte (clic droit → Ouvrir avec → Bloc-notes ou TextEdit), copie tout le contenu, et colle-le dans index.html sur GitHub 👍
+Alexia — 9:33 PM
+je viens d'essayer, avec la voix de Antoni, ca marche super bien mais la voix de Adam c'etwait horrible.
+tu penses que j'essaie les autres voix ? je sais pas a quel point c'est viable d'utiliser elevenlabs, enfin je pense surtout par rapport au prix. bref 
+
+il y a tout de meme un gros probleme sur l'app !! en haut de l'app il y a un texte super long avec toute notre conversation, peut tu l'enlever stp ? et deuxiemement les phrase dites et repetes sont ecrite hors il ne faut pas du tout qu'elles soient ecrites
+CL
+APP
+ — 9:35 PM
+V5 👆 — version épurée :
+
+✅ Plus aucun texte affiché — pas de bulles, pas de transcription. C'est 100% audio : tu parles, la voix répète, point.
+
+✅ Interface minimaliste — juste le micro, le statut, et les réglages
+
+✅ Antoni en voix par défaut puisque c'est celle que tu as préférée
+
+Pour le prix ElevenLabs : le plan gratuit donne ~10 000 caractères/mois, ça fait environ 50-100 phrases courtes. Pour un prototype c'est suffisant. Si l'app se développe on pourra regarder des alternatives gratuites ou un plan payant ($5/mois = 30 000 caractères).
+
+Même manip : édite index.html sur GitHub, Ctrl+A, colle le nouveau, Commit !
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expression Émotionnelle</title>
+
+index.html
+21 KB
+﻿
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expression Émotionnelle</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -19,69 +349,114 @@
       padding: 2rem;
     }
 
-    h1 {
-      font-size: 1.4rem;
-      font-weight: 300;
-      margin-bottom: 2rem;
-      color: #8888cc;
-      text-align: center;
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10;
     }
+
+    .lang-btn {
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      border: 2px solid #444;
+      background: transparent;
+      color: #aaa;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      border-color: #7777cc;
+      color: #fff;
+      background: rgba(119, 119, 204, 0.15);
+    }
+
+    .settings-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      font-size: 1.2rem;
+      z-index: 11;
+      transition: color 0.2s;
+    }
+
+    .settings-btn:hover { color: #aaa; }
+    .settings-btn.has-key { color: #4ade80; }
+
+    .settings-panel {
+      display: none;
+      position: fixed;
+      top: 3.5rem;
+      right: 1rem;
+      background: #2a2a4a;
+      border-radius: 1rem;
+      padding: 1.2rem;
+      z-index: 20;
+      width: 300px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .settings-panel.open { display: block; }
+
+    .settings-panel label {
+      font-size: 0.8rem;
+      color: #888;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .settings-panel input, .settings-panel select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #444;
+      background: #1a1a2e;
+      color: #eee;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .settings-panel .hint-text {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: -0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .tts-status {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      display: inline-block;
+    }
+
+    .tts-status.ok { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+    .tts-status.fallback { background: rgba(255, 170, 0, 0.15); color: #ffaa00; }
 
     #status {
       font-size: 1.1rem;
       color: #aaa;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       text-align: center;
       min-height: 1.5em;
     }
 
-    #transcript-area {
-      width: 100%;
-      max-width: 500px;
-      margin-bottom: 2rem;
-      max-height: 50vh;
-      overflow-y: auto;
-    }
-
-    .bubble {
-      padding: 1rem 1.2rem;
-      border-radius: 1rem;
-      margin-bottom: 0.8rem;
-      max-width: 85%;
-      line-height: 1.5;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .user-bubble {
-      background: #2a2a4a;
-      color: #ccc;
-      margin-right: auto;
-      border-bottom-left-radius: 0.3rem;
-    }
-
-    .voice-bubble {
-      background: #3a2a5a;
-      color: #d4b0ff;
-      margin-left: auto;
-      border-bottom-right-radius: 0.3rem;
-    }
-
-    .label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.3rem;
-      opacity: 0.6;
-    }
-
     #mic-btn {
-      width: 90px;
-      height: 90px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       border: 3px solid #5555aa;
       background: transparent;
@@ -111,12 +486,12 @@
 
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.25); }
-      50% { box-shadow: 0 0 0 15px rgba(74, 222, 128, 0); }
+      50% { box-shadow: 0 0 0 20px rgba(74, 222, 128, 0); }
     }
 
     #mic-btn svg {
-      width: 36px;
-      height: 36px;
+      width: 48px;
+      height: 48px;
       fill: #8888cc;
       transition: fill 0.3s;
     }
@@ -125,208 +500,250 @@
     #mic-btn.speaking svg { fill: #a855f7; }
 
     .hint {
-      margin-top: 1.5rem;
+      margin-top: 2rem;
       font-size: 0.85rem;
-      color: #666;
+      color: #555;
       text-align: center;
     }
-
-    #stop-hint {
-      display: none;
-      margin-top: 0.8rem;
-      font-size: 0.8rem;
-      color: #555;
-    }
-
-    #mic-btn.active ~ #stop-hint { display: block; }
   </style>
 </head>
 <body>
 
-  <h1>Exprime-toi librement</h1>
-  <div id="status">Appuie sur le micro pour commencer</div>
+  <div class="top-bar">
+    <button class="lang-btn active" data-lang="fr">🇫🇷 Français</button>
+    <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+  </div>
 
-  <div id="transcript-area"></div>
+  <button class="settings-btn" id="settings-toggle" title="Réglages voix">⚙️</button>
+
+  <div class="settings-panel" id="settings-panel">
+    <label>Clé API ElevenLabs</label>
+    <input type="password" id="api-key" placeholder="sk_..." autocomplete="off">
+    <div class="hint-text">Gratuit sur <a href="https://elevenlabs.io" target="_blank" style="color:#7777cc">elevenlabs.io</a></div>
+
+    <label>Voix ElevenLabs</label>
+    <select id="voice-select">
+      <option value="ErXwobaYiN019PkySvjV">Antoni (homme, chaleureux)</option>
+      <option value="pNInz6obpgDQGcFmaJgB">Adam (homme, calme)</option>
+      <option value="VR6AewLTigWG4xSOukaG">Arnold (homme, grave)</option>
+      <option value="EXAVITQu4vr4xnSDxMaL">Bella (femme, douce)</option>
+      <option value="MF3mGyEYCl7XYWbV9V6O">Elli (femme, jeune)</option>
+      <option value="TxGEqnHWrfWFTfGW9XjX">Josh (homme, profond)</option>
+      <option value="onwK4e9ZLuTAKqWW03F9">Daniel (homme, britannique)</option>
+      <option value="XB0fDUnXU5powFXDhCwa">Charlotte (femme, douce)</option>
+    </select>
+
+    <div id="tts-mode"></div>
+  </div>
+
+  <div id="status">Appuie sur le micro pour commencer</div>
 
   <button id="mic-btn" aria-label="Micro">
     <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
   </button>
-  <div id="stop-hint">Appuie à nouveau pour arrêter</div>
 
-  <div class="hint">Dis ce que tu ressens. La voix te le répétera.</div>
+  <div class="hint" id="hint-text">Dis ce que tu ressens. La voix te le répétera.</div>
 
 <script>
-// ─── Pronoun SWAP (bidirectional: je↔tu, me↔te, etc.) ───
-// Two-phase: all matches → placeholders, then placeholders → swapped values
+// ═══════════════════════════════════════════
+// LANGUAGE
+// ═══════════════════════════════════════════
 
-function convertPronouns(text) {
-  let result = text.toLowerCase();
+let currentLang = 'fr';
 
-  // Phase 1: Replace all pronouns/forms with unique placeholders
-  // ORDER MATTERS: longer/compound patterns first!
-  const phaseOne = [
-    // -même
-    [/\bmoi-même\b/g, '⟦MOIMEME⟧'],
-    [/\btoi-même\b/g, '⟦TOIMEME⟧'],
-
-    // Compound: je + reflexive
-    [/\bje me\b/g,    '⟦JEME⟧'],
-    [/\btu te\b/g,    '⟦TUTE⟧'],
-    [/\bje m['']/g,   '⟦JEM⟧'],
-    [/\btu t['']/g,   '⟦TUT⟧'],
-
-    // Compound: j'/je + avoir (handles "j'en ai", "j'y ai", "j'ai")
-    [/\bj['']\s*en\s+ai\b/g,   '⟦JENAI⟧'],
-    [/\btu\s+en\s+as\b/g,      '⟦TUENAS⟧'],
-    [/\bj['']\s*y\s+ai\b/g,    '⟦JYAI⟧'],
-    [/\btu\s+y\s+as\b/g,       '⟦TUYAS⟧'],
-    [/\bj['']\s*en\s+avais\b/g, '⟦JENAVAIS⟧'],
-    [/\btu\s+en\s+avais\b/g,    '⟦TUENAVAIS⟧'],
-    [/\bj['']\s*ai\b/g,         '⟦JAI⟧'],
-    [/\btu\s+as\b/g,            '⟦TUAS⟧'],
-    [/\bj['']\s*avais\b/g,      '⟦JAVAIS⟧'],
-    [/\btu\s+avais\b/g,         '⟦TUAVAIS⟧'],
-    [/\bj['']\s*aurais\b/g,     '⟦JAURAIS⟧'],
-    [/\btu\s+aurais\b/g,        '⟦TUAURAIS⟧'],
-    [/\bj['']\s*aurai\b/g,      '⟦JAURAI⟧'],
-    [/\btu\s+auras\b/g,         '⟦TUAURAS⟧'],
-
-    // Compound: j'/je + être
-    [/\bj['']\s*étais\b/g,  '⟦JETAIS⟧'],
-    [/\btu\s+étais\b/g,     '⟦TUETAIS⟧'],
-    [/\bje\s+suis\b/g,      '⟦JESUIS⟧'],
-    [/\btu\s+es\b/g,        '⟦TUES⟧'],
-    [/\bje\s+serai\b/g,     '⟦JESERAI⟧'],
-    [/\btu\s+seras\b/g,     '⟦TUSERAS⟧'],
-    [/\bje\s+serais\b/g,    '⟦JESERAIS⟧'],
-    [/\btu\s+serais\b/g,    '⟦TUSERAIS⟧'],
-
-    // Compound: je + aller
-    [/\bje\s+vais\b/g,  '⟦JEVAIS⟧'],
-    [/\btu\s+vas\b/g,   '⟦TUVAS⟧'],
-
-    // Compound: je + faire
-    [/\bje\s+fais\b/g,  '⟦JEFAIS⟧'],
-    [/\btu\s+fais\b/g,  '⟦TUFAIS⟧'],
-
-    // Compound: je + pouvoir
-    [/\bje\s+peux\b/g,  '⟦JEPEUX⟧'],
-    [/\btu\s+peux\b/g,  '⟦TUPEUX⟧'],
-
-    // Compound: je + vouloir
-    [/\bje\s+veux\b/g,  '⟦JEVEUX⟧'],
-    [/\btu\s+veux\b/g,  '⟦TUVEUX⟧'],
-
-    // Compound: je + devoir
-    [/\bje\s+dois\b/g,  '⟦JEDOIS⟧'],
-    [/\btu\s+dois\b/g,  '⟦TUDOIS⟧'],
-
-    // Compound: je + savoir
-    [/\bje\s+sais\b/g,  '⟦JESAIS⟧'],
-    [/\btu\s+sais\b/g,  '⟦TUSAIS⟧'],
-
-    // Compound: je + ne (negation)
-    [/\bje\s+ne\b/g,    '⟦JENE⟧'],
-    [/\btu\s+ne\b/g,    '⟦TUNE⟧'],
-    [/\bje\s+n['']/g,   '⟦JEN⟧'],
-    [/\btu\s+n['']/g,   '⟦TUN⟧'],
-
-    // Compound: j'en / tu en (general, after specific "j'en ai" etc.)
-    [/\bj['']\s*en\b/g, '⟦JEN2⟧'],
-    [/\btu\s+en\b/g,    '⟦TUEN2⟧'],
-
-    // Catch-all: j' + any vowel-starting verb
-    [/\bj['']/g,      '⟦J⟧'],
-
-    // Simple pronouns (must be AFTER all compounds)
-    [/\bje\b/g,       '⟦JE⟧'],
-    [/\btu\b/g,       '⟦TU⟧'],
-
-    // Object pronouns
-    [/\bme\b/g,       '⟦ME⟧'],
-    [/\bte\b/g,       '⟦TE⟧'],
-    [/\bm['']/g,      '⟦MP⟧'],
-    [/\bt['']/g,      '⟦TP⟧'],
-
-    // Possessives
-    [/\bmon\b/g,      '⟦MON⟧'],
-    [/\bton\b/g,      '⟦TON⟧'],
-    [/\bma\b/g,       '⟦MA⟧'],
-    [/\bta\b/g,       '⟦TA⟧'],
-    [/\bmes\b/g,      '⟦MES⟧'],
-    [/\btes\b/g,      '⟦TES⟧'],
-
-    // Tonic pronouns
-    [/\bmoi\b/g,      '⟦MOI⟧'],
-    [/\btoi\b/g,      '⟦TOI⟧'],
-  ];
-
-  for (const [pat, placeholder] of phaseOne) {
-    result = result.replace(pat, placeholder);
+const i18n = {
+  fr: {
+    hint: 'Dis ce que tu ressens. La voix te le répétera.',
+    press: 'Appuie sur le micro pour commencer',
+    listening: "🎙️ Je t'écoute...",
+    speaking: '🔊 ...',
+    stopped: 'Session terminée. Appuie pour recommencer.',
+    noMic: "⚠️ Autorise l'accès au micro.",
+  },
+  en: {
+    hint: 'Say what you feel. The voice will repeat it back.',
+    press: 'Press the mic to start',
+    listening: '🎙️ Listening...',
+    speaking: '🔊 ...',
+    stopped: 'Session ended. Press to restart.',
+    noMic: '⚠️ Allow microphone access.',
   }
+};
 
-  // Phase 2: Resolve placeholders → swapped values
-  const resolve = {
-    '⟦MOIMEME⟧': 'toi-même',   '⟦TOIMEME⟧': 'moi-même',
-    '⟦JEME⟧': 'tu te',         '⟦TUTE⟧': 'je me',
-    '⟦JEM⟧':  "tu t'",         '⟦TUT⟧':  "je m'",
+function t(key) { return i18n[currentLang][key] || key; }
 
-    '⟦JENAI⟧': 'tu en as',     '⟦TUENAS⟧': "j'en ai",
-    '⟦JYAI⟧':  'tu y as',      '⟦TUYAS⟧':  "j'y ai",
-    '⟦JENAVAIS⟧': 'tu en avais', '⟦TUENAVAIS⟧': "j'en avais",
-    '⟦JAI⟧':  'tu as',         '⟦TUAS⟧': "j'ai",
-    '⟦JAVAIS⟧': 'tu avais',    '⟦TUAVAIS⟧': "j'avais",
-    '⟦JAURAIS⟧': 'tu aurais',  '⟦TUAURAIS⟧': "j'aurais",
-    '⟦JAURAI⟧': 'tu auras',    '⟦TUAURAS⟧': "j'aurai",
-
-    '⟦JETAIS⟧': 'tu étais',    '⟦TUETAIS⟧': "j'étais",
-    '⟦JESUIS⟧': 'tu es',       '⟦TUES⟧':   'je suis',
-    '⟦JESERAI⟧': 'tu seras',   '⟦TUSERAS⟧': 'je serai',
-    '⟦JESERAIS⟧': 'tu serais',  '⟦TUSERAIS⟧': 'je serais',
-
-    '⟦JEVAIS⟧': 'tu vas',      '⟦TUVAS⟧':  'je vais',
-    '⟦JEFAIS⟧': 'tu fais',     '⟦TUFAIS⟧': 'je fais',
-    '⟦JEPEUX⟧': 'tu peux',     '⟦TUPEUX⟧': 'je peux',
-    '⟦JEVEUX⟧': 'tu veux',     '⟦TUVEUX⟧': 'je veux',
-    '⟦JEDOIS⟧': 'tu dois',     '⟦TUDOIS⟧': 'je dois',
-    '⟦JESAIS⟧': 'tu sais',     '⟦TUSAIS⟧': 'je sais',
-
-    '⟦JENE⟧':   'tu ne',       '⟦TUNE⟧':   'je ne',
-    '⟦JEN⟧':    "tu n'",       '⟦TUN⟧':    "je n'",
-    '⟦JEN2⟧':   'tu en',       '⟦TUEN2⟧':  "j'en",
-
-    '⟦J⟧':  'tu ',
-    '⟦JE⟧': 'tu',              '⟦TU⟧': 'je',
-    '⟦ME⟧': 'te',              '⟦TE⟧': 'me',
-    '⟦MP⟧': "t'",              '⟦TP⟧': "m'",
-    '⟦MON⟧': 'ton',            '⟦TON⟧': 'mon',
-    '⟦MA⟧':  'ta',             '⟦TA⟧':  'ma',
-    '⟦MES⟧': 'tes',            '⟦TES⟧': 'mes',
-    '⟦MOI⟧': 'toi',            '⟦TOI⟧': 'moi',
-  };
-
-  for (const [placeholder, value] of Object.entries(resolve)) {
-    result = result.split(placeholder).join(value);
-  }
-
-  // Capitalize first letter
-  result = result.charAt(0).toUpperCase() + result.slice(1);
-
-  return result;
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.getElementById('hint-text').textContent = t('hint');
+  if (!isActive) setStatus(t('press'));
+  if (recognition) recognition.lang = lang === 'fr' ? 'fr-FR' : 'en-US';
 }
 
-// ─── Speech Recognition (continuous) ───
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang));
+});
+
+// ═══════════════════════════════════════════
+// PRONOUN SWAP — FRENCH
+// ═══════════════════════════════════════════
+
+function convertPronounsFR(text) {
+  let r = text.toLowerCase();
+
+  const ph1 = [
+    [/\bmoi-même\b/g,'⟦A⟧'], [/\btoi-même\b/g,'⟦B⟧'],
+    [/\bje me\b/g,'⟦C⟧'], [/\btu te\b/g,'⟦D⟧'],
+    [/\bje m['']/g,'⟦E⟧'], [/\btu t['']/g,'⟦F⟧'],
+    [/\bj['']\s*en\s+ai\s+marre\b/g,'⟦G1⟧'], [/\btu\s+en\s+as\s+marre\b/g,'⟦G2⟧'],
+    [/\bj['']\s*en\s+ai\b/g,'⟦H1⟧'], [/\btu\s+en\s+as\b/g,'⟦H2⟧'],
+    [/\bj['']\s*y\s+ai\b/g,'⟦I1⟧'], [/\btu\s+y\s+as\b/g,'⟦I2⟧'],
+    [/\bj['']\s*en\s+avais\b/g,'⟦J1⟧'], [/\btu\s+en\s+avais\b/g,'⟦J2⟧'],
+    [/\bj['']\s*ai\b/g,'⟦K1⟧'], [/\btu\s+as\b/g,'⟦K2⟧'],
+    [/\bj['']\s*avais\b/g,'⟦L1⟧'], [/\btu\s+avais\b/g,'⟦L2⟧'],
+    [/\bj['']\s*aurais\b/g,'⟦M1⟧'], [/\btu\s+aurais\b/g,'⟦M2⟧'],
+    [/\bj['']\s*aurai\b/g,'⟦N1⟧'], [/\btu\s+auras\b/g,'⟦N2⟧'],
+    [/\bj['']\s*étais\b/g,'⟦O1⟧'], [/\btu\s+étais\b/g,'⟦O2⟧'],
+    [/\bje\s+suis\b/g,'⟦P1⟧'], [/\btu\s+es\b/g,'⟦P2⟧'],
+    [/\bje\s+serai\b/g,'⟦Q1⟧'], [/\btu\s+seras\b/g,'⟦Q2⟧'],
+    [/\bje\s+serais\b/g,'⟦R1⟧'], [/\btu\s+serais\b/g,'⟦R2⟧'],
+    [/\bje\s+vais\b/g,'⟦S1⟧'], [/\btu\s+vas\b/g,'⟦S2⟧'],
+    [/\bje\s+fais\b/g,'⟦T1⟧'], [/\btu\s+fais\b/g,'⟦T2⟧'],
+    [/\bje\s+peux\b/g,'⟦U1⟧'], [/\btu\s+peux\b/g,'⟦U2⟧'],
+    [/\bje\s+veux\b/g,'⟦V1⟧'], [/\btu\s+veux\b/g,'⟦V2⟧'],
+    [/\bje\s+dois\b/g,'⟦W1⟧'], [/\btu\s+dois\b/g,'⟦W2⟧'],
+    [/\bje\s+sais\b/g,'⟦X1⟧'], [/\btu\s+sais\b/g,'⟦X2⟧'],
+    [/\bje\s+ne\b/g,'⟦Y1⟧'], [/\btu\s+ne\b/g,'⟦Y2⟧'],
+    [/\bje\s+n['']/g,'⟦Z1⟧'], [/\btu\s+n['']/g,'⟦Z2⟧'],
+    [/\bj['']\s*en\b/g,'⟦AA⟧'], [/\btu\s+en\b/g,'⟦BB⟧'],
+    [/\bj['']/g,'⟦CC⟧'],
+    [/\bje\b/g,'⟦DD⟧'], [/\btu\b/g,'⟦EE⟧'],
+    [/\bme\b/g,'⟦FF⟧'], [/\bte\b/g,'⟦GG⟧'],
+    [/\bm['']/g,'⟦HH⟧'], [/\bt['']/g,'⟦II⟧'],
+    [/\bmon\b/g,'⟦JJ⟧'], [/\bton\b/g,'⟦KK⟧'],
+    [/\bma\b/g,'⟦LL⟧'], [/\bta\b/g,'⟦MM⟧'],
+    [/\bmes\b/g,'⟦NN⟧'], [/\btes\b/g,'⟦OO⟧'],
+    [/\bmoi\b/g,'⟦PP⟧'], [/\btoi\b/g,'⟦QQ⟧'],
+  ];
+
+  for (const [p, ph] of ph1) r = r.replace(p, ph);
+
+  const res = {
+    '⟦A⟧':'toi-même','⟦B⟧':'moi-même',
+    '⟦C⟧':'tu te','⟦D⟧':'je me',
+    '⟦E⟧':"tu t'",'⟦F⟧':"je m'",
+    '⟦G1⟧':'tu en as marre','⟦G2⟧':"j'en ai marre",
+    '⟦H1⟧':'tu en as','⟦H2⟧':"j'en ai",
+    '⟦I1⟧':'tu y as','⟦I2⟧':"j'y ai",
+    '⟦J1⟧':'tu en avais','⟦J2⟧':"j'en avais",
+    '⟦K1⟧':'tu as','⟦K2⟧':"j'ai",
+    '⟦L1⟧':'tu avais','⟦L2⟧':"j'avais",
+    '⟦M1⟧':'tu aurais','⟦M2⟧':"j'aurais",
+    '⟦N1⟧':'tu auras','⟦N2⟧':"j'aurai",
+    '⟦O1⟧':'tu étais','⟦O2⟧':"j'étais",
+    '⟦P1⟧':'tu es','⟦P2⟧':'je suis',
+    '⟦Q1⟧':'tu seras','⟦Q2⟧':'je serai',
+    '⟦R1⟧':'tu serais','⟦R2⟧':'je serais',
+    '⟦S1⟧':'tu vas','⟦S2⟧':'je vais',
+    '⟦T1⟧':'tu fais','⟦T2⟧':'je fais',
+    '⟦U1⟧':'tu peux','⟦U2⟧':'je peux',
+    '⟦V1⟧':'tu veux','⟦V2⟧':'je veux',
+    '⟦W1⟧':'tu dois','⟦W2⟧':'je dois',
+    '⟦X1⟧':'tu sais','⟦X2⟧':'je sais',
+    '⟦Y1⟧':'tu ne','⟦Y2⟧':'je ne',
+    '⟦Z1⟧':"tu n'",'⟦Z2⟧':"je n'",
+    '⟦AA⟧':'tu en','⟦BB⟧':"j'en",
+    '⟦CC⟧':'tu ',
+    '⟦DD⟧':'tu','⟦EE⟧':'je',
+    '⟦FF⟧':'te','⟦GG⟧':'me',
+    '⟦HH⟧':"t'",'⟦II⟧':"m'",
+    '⟦JJ⟧':'ton','⟦KK⟧':'mon',
+    '⟦LL⟧':'ta','⟦MM⟧':'ma',
+    '⟦NN⟧':'tes','⟦OO⟧':'mes',
+    '⟦PP⟧':'toi','⟦QQ⟧':'moi',
+  };
+
+  for (const [ph, val] of Object.entries(res)) r = r.split(ph).join(val);
+  return r.charAt(0).toUpperCase() + r.slice(1);
+}
+
+// ═══════════════════════════════════════════
+// PRONOUN SWAP — ENGLISH
+// ═══════════════════════════════════════════
+
+function convertPronounsEN(text) {
+  let r = text.toLowerCase();
+
+  const ph1 = [
+    [/\bi am\b/g,'⟦1⟧'], [/\byou are\b/g,'⟦2⟧'],
+    [/\bi was\b/g,'⟦3⟧'], [/\byou were\b/g,'⟦4⟧'],
+    [/\bi have\b/g,'⟦5⟧'], [/\byou have\b/g,'⟦6⟧'],
+    [/\bi had\b/g,'⟦7⟧'], [/\byou had\b/g,'⟦8⟧'],
+    [/\bi will\b/g,'⟦9⟧'], [/\byou will\b/g,'⟦10⟧'],
+    [/\bi would\b/g,'⟦11⟧'], [/\byou would\b/g,'⟦12⟧'],
+    [/\bi can\b/g,'⟦13⟧'], [/\byou can\b/g,'⟦14⟧'],
+    [/\bi could\b/g,'⟦15⟧'], [/\byou could\b/g,'⟦16⟧'],
+    [/\bi don[''']t\b/g,'⟦17⟧'], [/\byou don[''']t\b/g,'⟦18⟧'],
+    [/\bi didn[''']t\b/g,'⟦19⟧'], [/\byou didn[''']t\b/g,'⟦20⟧'],
+    [/\bi can[''']t\b/g,'⟦21⟧'], [/\byou can[''']t\b/g,'⟦22⟧'],
+    [/\bi won[''']t\b/g,'⟦23⟧'], [/\byou won[''']t\b/g,'⟦24⟧'],
+    [/\bi[''']m\b/g,'⟦25⟧'], [/\byou[''']re\b/g,'⟦26⟧'],
+    [/\bi[''']ve\b/g,'⟦27⟧'], [/\byou[''']ve\b/g,'⟦28⟧'],
+    [/\bi[''']ll\b/g,'⟦29⟧'], [/\byou[''']ll\b/g,'⟦30⟧'],
+    [/\bi[''']d\b/g,'⟦31⟧'], [/\byou[''']d\b/g,'⟦32⟧'],
+    [/\bmyself\b/g,'⟦33⟧'], [/\byourself\b/g,'⟦34⟧'],
+    [/\bmy\b/g,'⟦35⟧'], [/\byour\b/g,'⟦36⟧'],
+    [/\bmine\b/g,'⟦37⟧'], [/\byours\b/g,'⟦38⟧'],
+    [/\bi\b/g,'⟦39⟧'], [/\byou\b/g,'⟦40⟧'],
+    [/\bme\b/g,'⟦41⟧'],
+  ];
+
+  for (const [p, ph] of ph1) r = r.replace(p, ph);
+
+  const res = {
+    '⟦1⟧':'you are','⟦2⟧':'I am',
+    '⟦3⟧':'you were','⟦4⟧':'I was',
+    '⟦5⟧':'you have','⟦6⟧':'I have',
+    '⟦7⟧':'you had','⟦8⟧':'I had',
+    '⟦9⟧':'you will','⟦10⟧':'I will',
+    '⟦11⟧':'you would','⟦12⟧':'I would',
+    '⟦13⟧':'you can','⟦14⟧':'I can',
+    '⟦15⟧':'you could','⟦16⟧':'I could',
+    '⟦17⟧':"you don't",'⟦18⟧':"I don't",
+    '⟦19⟧':"you didn't",'⟦20⟧':"I didn't",
+    '⟦21⟧':"you can't",'⟦22⟧':"I can't",
+    '⟦23⟧':"you won't",'⟦24⟧':"I won't",
+    '⟦25⟧':"you're",'⟦26⟧':"I'm",
+    '⟦27⟧':"you've",'⟦28⟧':"I've",
+    '⟦29⟧':"you'll",'⟦30⟧':"I'll",
+    '⟦31⟧':"you'd",'⟦32⟧':"I'd",
+    '⟦33⟧':'yourself','⟦34⟧':'myself',
+    '⟦35⟧':'your','⟦36⟧':'my',
+    '⟦37⟧':'yours','⟦38⟧':'mine',
+    '⟦39⟧':'you','⟦40⟧':'I',
+    '⟦41⟧':'you',
+  };
+
+  for (const [ph, val] of Object.entries(res)) r = r.split(ph).join(val);
+  return r.charAt(0).toUpperCase() + r.slice(1);
+}
+
+function convertPronouns(text) {
+  return currentLang === 'fr' ? convertPronounsFR(text) : convertPronounsEN(text);
+}
+
+// ═══════════════════════════════════════════
+// SPEECH RECOGNITION
+// ═══════════════════════════════════════════
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!SpeechRecognition) {
-  document.getElementById('status').textContent = "⚠️ Ton navigateur ne supporte pas la reconnaissance vocale. Utilise Chrome.";
+  document.getElementById('status').textContent = "⚠️ Utilise Chrome.";
   document.getElementById('mic-btn').disabled = true;
 }
 
-let recognition;
-let isActive = false;
-let isSpeaking = false;
+let recognition, isActive = false, isSpeaking = false;
 
 if (SpeechRecognition) {
   recognition = new SpeechRecognition();
@@ -336,27 +753,18 @@ if (SpeechRecognition) {
   recognition.maxAlternatives = 1;
 
   recognition.onresult = (event) => {
-    const lastIdx = event.results.length - 1;
-    const result = event.results[lastIdx];
-    if (!result.isFinal) return;
-
-    const userText = result[0].transcript.trim();
+    const idx = event.results.length - 1;
+    if (!event.results[idx].isFinal) return;
+    const userText = event.results[idx][0].transcript.trim();
     if (!userText) return;
-
-    addBubble('user', userText);
-
     const converted = convertPronouns(userText);
-    addBubble('voice', converted);
-
-    // Pause recognition while speaking to avoid feedback loop
     try { recognition.stop(); } catch(e) {}
     speakText(converted);
   };
 
   recognition.onerror = (event) => {
-    console.error('Recognition error:', event.error);
     if (event.error === 'not-allowed') {
-      setStatus("⚠️ Autorise l'accès au micro dans ton navigateur.");
+      setStatus(t('noMic'));
       isActive = false;
       updateButton();
     } else if (isActive && event.error !== 'aborted') {
@@ -365,9 +773,7 @@ if (SpeechRecognition) {
   };
 
   recognition.onend = () => {
-    if (isActive && !isSpeaking) {
-      restartRecognition();
-    }
+    if (isActive && !isSpeaking) restartRecognition();
   };
 }
 
@@ -375,113 +781,119 @@ function restartRecognition() {
   if (!isActive) return;
   setTimeout(() => {
     if (!isActive || isSpeaking) return;
-    try {
-      recognition.start();
-      setStatus("🎙️ Je t'écoute...");
-    } catch(e) {}
+    try { recognition.start(); setStatus(t('listening')); } catch(e) {}
   }, 200);
 }
 
-// ─── TTS (natural male voice) ───
+// ═══════════════════════════════════════════
+// TTS
+// ═══════════════════════════════════════════
 
-let bestVoice = null;
+function getApiKey() { return document.getElementById('api-key').value.trim(); }
+function getVoiceId() { return document.getElementById('voice-select').value; }
 
-function findBestVoice() {
-  const voices = speechSynthesis.getVoices();
-  console.log('Available voices:', voices.map(v => `${v.name} [${v.lang}]`).join(', '));
-
-  // Priority: male French voices
-  const prefs = [
-    // Google male FR
-    v => v.lang.startsWith('fr') && v.name.includes('Google') && /male|homme/i.test(v.name),
-    // Microsoft male FR (Thomas, Henri, Paul)
-    v => v.lang.startsWith('fr') && /Thomas|Henri|Paul|Claude/i.test(v.name),
-    // Any cloud/remote voice FR (tends to be better quality)
-    v => v.lang.startsWith('fr') && !v.localService,
-    // Google FR (any)
-    v => v.lang.startsWith('fr') && v.name.includes('Google'),
-    // Microsoft FR (any)
-    v => v.lang.startsWith('fr') && v.name.includes('Microsoft'),
-    // Any French voice
-    v => v.lang.startsWith('fr'),
-  ];
-
-  for (const test of prefs) {
-    const found = voices.find(test);
-    if (found) {
-      bestVoice = found;
-      console.log('Selected voice:', found.name, found.lang);
-      return;
-    }
-  }
+async function speakElevenLabs(text) {
+  const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${getVoiceId()}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'xi-api-key': getApiKey() },
+    body: JSON.stringify({
+      text, model_id: 'eleven_multilingual_v2',
+      voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.3, use_speaker_boost: true }
+    })
+  });
+  if (!resp.ok) throw new Error(resp.status);
+  const blob = await resp.blob();
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  return new Promise((res, rej) => {
+    audio.onended = () => { URL.revokeObjectURL(url); res(); };
+    audio.onerror = () => { URL.revokeObjectURL(url); rej(); };
+    audio.play();
+  });
 }
 
-function speakText(text) {
+function speakBrowser(text) {
+  return new Promise((res) => {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = currentLang === 'fr' ? 'fr-FR' : 'en-US';
+    u.rate = 0.93; u.pitch = 0.95;
+    const voices = speechSynthesis.getVoices();
+    const lp = currentLang === 'fr' ? 'fr' : 'en';
+    const v = voices.find(v => v.lang.startsWith(lp) && !v.localService) || voices.find(v => v.lang.startsWith(lp));
+    if (v) u.voice = v;
+    u.onend = res; u.onerror = res;
+    speechSynthesis.speak(u);
+  });
+}
+
+async function speakText(text) {
   isSpeaking = true;
   updateButton();
-  setStatus("🔊 ...");
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'fr-FR';
-  utterance.rate = 0.93;
-  utterance.pitch = 0.95;  // Slightly lower for male voice feel
-  utterance.volume = 1.0;
-
-  if (bestVoice) utterance.voice = bestVoice;
-
-  utterance.onend = () => {
-    isSpeaking = false;
-    updateButton();
-    if (isActive) {
-      setStatus("🎙️ Je t'écoute...");
-      restartRecognition();
-    }
-  };
-
-  utterance.onerror = () => {
-    isSpeaking = false;
-    updateButton();
-    if (isActive) restartRecognition();
-  };
-
-  speechSynthesis.speak(utterance);
+  setStatus(t('speaking'));
+  try {
+    if (getApiKey()) await speakElevenLabs(text);
+    else await speakBrowser(text);
+  } catch(e) {
+    console.error('TTS error:', e);
+    try { await speakBrowser(text); } catch(e2) {}
+  }
+  isSpeaking = false;
+  updateButton();
+  if (isActive) { setStatus(t('listening')); restartRecognition(); }
 }
 
-// ─── UI ───
+// ═══════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════
 
-function setStatus(msg) {
-  document.getElementById('status').textContent = msg;
+document.getElementById('settings-toggle').addEventListener('click', () => {
+  document.getElementById('settings-panel').classList.toggle('open');
+});
+
+const savedKey = localStorage.getItem('elevenlabs_key');
+if (savedKey) document.getElementById('api-key').value = savedKey;
+const savedVoice = localStorage.getItem('elevenlabs_voice');
+if (savedVoice) document.getElementById('voice-select').value = savedVoice;
+
+document.getElementById('api-key').addEventListener('change', (e) => {
+  localStorage.setItem('elevenlabs_key', e.target.value.trim());
+  updateTtsStatus();
+});
+document.getElementById('voice-select').addEventListener('change', (e) => {
+  localStorage.setItem('elevenlabs_voice', e.target.value);
+});
+
+function updateTtsStatus() {
+  const el = document.getElementById('tts-mode');
+  const btn = document.getElementById('settings-toggle');
+  if (getApiKey()) {
+    el.innerHTML = '<span class="tts-status ok">✓ ElevenLabs actif</span>';
+    btn.classList.add('has-key');
+  } else {
+    el.innerHTML = '<span class="tts-status fallback">Voix navigateur (basique)</span>';
+    btn.classList.remove('has-key');
+  }
 }
+updateTtsStatus();
+
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('settings-panel');
+  const toggle = document.getElementById('settings-toggle');
+  if (!panel.contains(e.target) && e.target !== toggle) panel.classList.remove('open');
+});
+
+// ═══════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════
+
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
 
 function updateButton() {
   const btn = document.getElementById('mic-btn');
   btn.classList.remove('active', 'speaking');
   if (isSpeaking) btn.classList.add('speaking');
   else if (isActive) btn.classList.add('active');
-}
-
-function addBubble(type, text) {
-  const area = document.getElementById('transcript-area');
-  const div = document.createElement('div');
-  div.className = `bubble ${type === 'user' ? 'user-bubble' : 'voice-bubble'}`;
-
-  const label = document.createElement('div');
-  label.className = 'label';
-  label.textContent = type === 'user' ? 'Toi' : 'Voix';
-
-  const content = document.createElement('div');
-  content.textContent = text;
-
-  div.appendChild(label);
-  div.appendChild(content);
-  area.appendChild(div);
-
-  while (area.children.length > 20) {
-    area.removeChild(area.firstChild);
-  }
-  area.scrollTop = area.scrollHeight;
 }
 
 function toggleSession() {
@@ -491,21 +903,21 @@ function toggleSession() {
     speechSynthesis.cancel();
     isSpeaking = false;
     updateButton();
-    setStatus("Session terminée. Appuie pour recommencer.");
+    setStatus(t('stopped'));
   } else {
     isActive = true;
     updateButton();
-    setStatus("🎙️ Je t'écoute...");
+    setStatus(t('listening'));
     try { recognition.start(); } catch(e) {}
   }
 }
 
 document.getElementById('mic-btn').addEventListener('click', toggleSession);
-
-// Load voices (some browsers load them async)
-speechSynthesis.onvoiceschanged = () => findBestVoice();
-findBestVoice();
+speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+speechSynthesis.getVoices();
 </script>
 
 </body>
 </html>
+index.html
+21 KB
