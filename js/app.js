@@ -264,39 +264,106 @@ function convertPronouns(text) {
 }
 
 async function speakElevenLabs(text) {
-  const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${getVoiceId()}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "xi-api-key": getApiKey(),
-    },
-    body: JSON.stringify({
-      text,
-      model_id: "eleven_turbo_v2_5",
-      voice_settings: {
-        stability: 0.5,
-        similarity_boost: 0.75,
-        style: 0.3,
-        use_speaker_boost: true,
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${getVoiceId()}/stream`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": getApiKey(),
       },
-    }),
-  });
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_turbo_v2_5",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+          style: 0.3,
+          use_speaker_boost: true,
+        },
+      }),
+    }
+  );
 
   if (!response.ok) throw new Error(`ElevenLabs error: ${response.status}`);
 
+  // Streaming playback via MediaSource — starts playing on first chunk
+  if (
+    window.MediaSource &&
+    MediaSource.isTypeSupported("audio/mpeg") &&
+    response.body
+  ) {
+    return new Promise((resolve, reject) => {
+      const mediaSource = new MediaSource();
+      const audio = new Audio();
+      audio.src = URL.createObjectURL(mediaSource);
+
+      mediaSource.addEventListener("sourceopen", async () => {
+        let sourceBuffer;
+        try {
+          sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
+        } catch (e) {
+          // Fallback if codec unsupported
+          mediaSource.endOfStream();
+          reject(e);
+          return;
+        }
+
+        const reader = response.body.getReader();
+        let started = false;
+
+        const pump = async () => {
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) {
+                // Wait for last append before ending stream
+                await new Promise((r) => {
+                  if (!sourceBuffer.updating) { r(); return; }
+                  sourceBuffer.addEventListener("updateend", r, { once: true });
+                });
+                mediaSource.endOfStream();
+                break;
+              }
+              // Wait if buffer is busy
+              await new Promise((r) => {
+                if (!sourceBuffer.updating) { r(); return; }
+                sourceBuffer.addEventListener("updateend", r, { once: true });
+              });
+              sourceBuffer.appendBuffer(value);
+
+              // Start playing on first chunk received
+              if (!started) {
+                started = true;
+                audio.play().catch(() => {});
+              }
+            }
+          } catch (err) {
+            reject(err);
+          }
+        };
+
+        pump();
+      });
+
+      audio.onended = () => {
+        URL.revokeObjectURL(audio.src);
+        resolve();
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(audio.src);
+        reject();
+      };
+    });
+  }
+
+  // Fallback: download full blob then play (older browsers)
   const audioBlob = await response.blob();
   const audioUrl = URL.createObjectURL(audioBlob);
   const audio = new Audio(audioUrl);
-
   return new Promise((resolve, reject) => {
-    audio.onended = () => {
-      URL.revokeObjectURL(audioUrl);
-      resolve();
-    };
-    audio.onerror = () => {
-      URL.revokeObjectURL(audioUrl);
-      reject();
-    };
+    audio.onended = () => { URL.revokeObjectURL(audioUrl); resolve(); };
+    audio.onerror = () => { URL.revokeObjectURL(audioUrl); reject(); };
     audio.play();
   });
 }
