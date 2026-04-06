@@ -2,8 +2,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #1a1a2e;
-  color: #eee;
+  background: #1a100a;
+  color: #f5ede5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@ body {
   justify-content: center;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(26, 26, 46, 0.95);
+  background: rgba(26, 16, 10, 0.95);
   backdrop-filter: blur(10px);
   z-index: 10;
 }
@@ -29,18 +29,18 @@ body {
 .lang-btn {
   padding: 0.4rem 1rem;
   border-radius: 2rem;
-  border: 2px solid #444;
+  border: 1.5px solid #3a2218;
   background: transparent;
-  color: #aaa;
+  color: #8a6050;
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
 }
 
 .lang-btn.active {
-  border-color: #7777cc;
-  color: #fff;
-  background: rgba(119, 119, 204, 0.15);
+  border-color: #e07a5f;
+  color: #f5ede5;
+  background: rgba(224, 122, 95, 0.12);
 }
 
 .settings-btn {
@@ -49,34 +49,35 @@ body {
   right: 1rem;
   background: none;
   border: none;
-  color: #666;
+  color: #5a3828;
   cursor: pointer;
   font-size: 1.2rem;
   z-index: 11;
   transition: color 0.2s;
 }
 
-.settings-btn:hover { color: #aaa; }
-.settings-btn.has-key { color: #4ade80; }
+.settings-btn:hover { color: #a06050; }
+.settings-btn.has-key { color: #e07a5f; }
 
 .settings-panel {
   display: none;
   position: fixed;
   top: 3.5rem;
   right: 1rem;
-  background: #2a2a4a;
+  background: #241208;
+  border: 1px solid #3a2218;
   border-radius: 1rem;
   padding: 1.2rem;
   z-index: 20;
   width: 300px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .settings-panel.open { display: block; }
 
 .settings-panel label {
   font-size: 0.8rem;
-  color: #888;
+  color: #8a6050;
   display: block;
   margin-bottom: 0.3rem;
 }
@@ -86,16 +87,16 @@ body {
   width: 100%;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  border: 1px solid #444;
-  background: #1a1a2e;
-  color: #eee;
+  border: 1px solid #3a2218;
+  background: #1a100a;
+  color: #f5ede5;
   font-size: 0.85rem;
   margin-bottom: 0.8rem;
 }
 
 .settings-panel .hint-text {
   font-size: 0.7rem;
-  color: #666;
+  color: #5a3828;
   margin-top: -0.5rem;
   margin-bottom: 0.8rem;
 }
@@ -107,21 +108,22 @@ body {
   display: inline-block;
 }
 
-.tts-status.ok { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
-.tts-status.fallback { background: rgba(255, 170, 0, 0.15); color: #ffaa00; }
+.tts-status.ok { background: rgba(224, 122, 95, 0.15); color: #e07a5f; }
+.tts-status.fallback { background: rgba(242, 204, 143, 0.15); color: #f2cc8f; }
 
 h1 {
   font-size: 1.4rem;
   font-weight: 300;
   margin-bottom: 2rem;
   margin-top: 2rem;
-  color: #8888cc;
+  color: #c07060;
   text-align: center;
+  letter-spacing: 0.05em;
 }
 
 #status {
   font-size: 1.1rem;
-  color: #aaa;
+  color: #8a6050;
   margin-bottom: 1.5rem;
   text-align: center;
   min-height: 1.5em;
@@ -151,15 +153,15 @@ h1 {
 }
 
 .user-bubble {
-  background: #2a2a4a;
-  color: #ccc;
+  background: #241208;
+  color: #c09080;
   margin-right: auto;
   border-bottom-left-radius: 0.3rem;
 }
 
 .voice-bubble {
-  background: #3a2a5a;
-  color: #d4b0ff;
+  background: #2e1810;
+  color: #f2cc8f;
   margin-left: auto;
   border-bottom-right-radius: 0.3rem;
 }
@@ -176,7 +178,7 @@ h1 {
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  border: 3px solid #5555aa;
+  border: 2px solid #4a2818;
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -186,41 +188,41 @@ h1 {
 }
 
 #mic-btn:hover {
-  border-color: #7777cc;
-  background: rgba(85, 85, 170, 0.1);
+  border-color: #e07a5f;
+  background: rgba(224, 122, 95, 0.08);
 }
 
 #mic-btn.active {
-  border-color: #4ade80;
-  background: rgba(74, 222, 128, 0.08);
+  border-color: #e07a5f;
+  background: rgba(224, 122, 95, 0.1);
   animation: pulse 2s infinite;
 }
 
 #mic-btn.speaking {
-  border-color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
+  border-color: #f2cc8f;
+  background: rgba(242, 204, 143, 0.08);
   animation: none;
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.25); }
-  50% { box-shadow: 0 0 0 15px rgba(74, 222, 128, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.3); }
+  50% { box-shadow: 0 0 0 16px rgba(224, 122, 95, 0); }
 }
 
 #mic-btn svg {
   width: 36px;
   height: 36px;
-  fill: #8888cc;
+  fill: #5a3828;
   transition: fill 0.3s;
 }
 
-#mic-btn.active svg { fill: #4ade80; }
-#mic-btn.speaking svg { fill: #a855f7; }
+#mic-btn.active svg { fill: #e07a5f; }
+#mic-btn.speaking svg { fill: #f2cc8f; }
 
 .hint {
   margin-top: 1.5rem;
   font-size: 0.85rem;
-  color: #666;
+  color: #5a3828;
   text-align: center;
 }
 
@@ -228,7 +230,7 @@ h1 {
   display: none;
   margin-top: 0.8rem;
   font-size: 0.8rem;
-  color: #555;
+  color: #5a3828;
 }
 
 #mic-btn.active ~ #stop-hint { display: block; }

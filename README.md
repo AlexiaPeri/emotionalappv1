@@ -1,96 +1,159 @@
-# Emotional App v1
+# Emerge: Let it out
 
-Application web locale qui:
-- capture la voix utilisateur (SpeechRecognition),
-- reformule le texte (inversion des pronoms FR/EN),
-- rejoue la phrase avec TTS (ElevenLabs si cle API, sinon voix navigateur).
+**App web de libération émotionnelle par la voix**
+
+Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emerge, tu parles, et l'app te répète ce que tu ressens. C'est tout. Ça marche.
+
+---
+
+## Ce que c'est
+
+Emerge est une app voice-only basée sur la technique de répétition de Meisner. L'utilisateur parle librement de ce qu'il ressent. L'app capte sa voix, transforme les pronoms (je → tu, I → you), et le répète vocalement via ElevenLabs TTS.
+
+Pas de journaling. Pas de conseils. Juste tes mots, retournés vers toi par une voix calme.
+
+### Pourquoi ça marche
+
+La répétition émotionnelle force à rester dans le ressenti au lieu de l'analyser. S'entendre dire "tu te sens dépassé" par une voix extérieure active une distanciation naturelle — le même mécanisme que dans la thérapie Meisner ou la gestalt.
+
+### Positionnement
+
+**L'alternative au scrolling.** Quand une émotion forte arrive, le réflexe c'est d'ouvrir Instagram. Emerge est là pour être l'autre option — accessible en 1 tap, immédiat, sans effort cognitif.
+
+---
+
+## Fonctionnement
+
+```
+Utilisateur parle
+       ↓
+Speech Recognition (Web Speech API, Chrome)
+       ↓
+Swap de pronoms (FR: je→tu / EN: I→you)
+       ↓
+ElevenLabs TTS (voix naturelle)
+       ↓
+L'app répète vocalement
+```
+
+**Pas de texte affiché pendant la session.** Expérience 100% vocale.
+
+---
+
+## Stack technique
+
+- **Frontend** : HTML / CSS / JS vanilla (zéro dépendance)
+- **Reconnaissance vocale** : Web Speech API (Chrome uniquement)
+- **TTS** : ElevenLabs API (`eleven_turbo_v2_5`) + fallback voix navigateur
+- **Hébergement** : GitHub Pages
+- **Clé API** : stockée en localStorage côté client, jamais en dur dans le code
+
+---
 
 ## Structure
 
-```text
+```
 .
-├── index.html
+├── index.html          ← Point d'entrée
 ├── css/
-│   └── styles.css
+│   └── styles.css      ← Thème terracotta
 ├── js/
-│   └── app.js
-└── package.json
+│   └── app.js          ← Logique complète
+└── README.md
 ```
 
-## Lancer le projet
+---
 
-### Option recommandee (npm + Vite)
+## Lancer en local
 
-```bash
-npm install
-npm run dev
-```
+### Option Live Server (recommandé)
 
-Puis ouvrir l'URL affichee (par defaut `http://localhost:5173`).
+1. Ouvre le dossier dans VS Code
+2. Clic droit sur `index.html` → **Open with Live Server**
+3. Chrome s'ouvre sur `http://127.0.0.1:5500`
+4. Entre ta clé ElevenLabs dans ⚙️ (une seule fois, sauvegardée)
 
-### Option sans npm
+### Option terminal
 
 ```bash
 python3 -m http.server 8000
+# puis ouvrir http://localhost:8000
 ```
 
-Puis ouvrir `http://localhost:8000`.
+> ⚠️ Ne pas ouvrir `index.html` directement en `file://` — les modules JS sont bloqués par le navigateur.
 
-## Limite actuelle (la plus importante)
+---
 
-La voix reste souvent "robotique" pour 2 raisons principales:
-- fallback navigateur (Web Speech API) peu expressif,
-- reglages ElevenLabs statiques et non relies a l'emotion detectee.
+## Configuration ElevenLabs
 
-## Pistes d'amelioration priorisees (focus voix emotionnelle)
+- Clé gratuite sur [elevenlabs.io](https://elevenlabs.io) — 10 000 caractères/mois
+- Plan gratuit : voix pré-définies uniquement (Adam, Antoni, Daniel, Josh…)
+- Plan Starter (5€/mois) : accès aux voix de la Voice Library (Frederick Surrey, etc.)
+- La clé est entrée une fois dans ⚙️ et reste en localStorage
 
-### P0 - Impact maximal / court terme
+---
 
-1. **Forcer ElevenLabs quand la cle est disponible**
-   - Eviter le fallback navigateur sauf erreur reseau.
-   - Afficher un warning visible quand on est en mode fallback.
+## Swap de pronoms
 
-2. **Expose les reglages de prosodie dans l'UI**
-   - `stability`, `style`, `similarity_boost`, `rate`, `pitch`.
-   - Ajouter des presets: `calme`, `empathique`, `energique`, `rassurant`.
+### Français
+| Entrée | Sortie |
+|--------|--------|
+| je | tu |
+| j'ai | tu as |
+| j'en ai | tu en as |
+| je suis | tu es |
+| je me sens | tu te sens |
+| mon / ma / mes | ton / ta / tes |
+| me / moi | te / toi |
 
-3. **Post-traitement de texte pour mieux piloter la voix**
-   - Segmenter les phrases longues.
-   - Inserer ponctuation/pause (`...`, `,`) pour casser le rendu monotone.
+### Anglais
+| Entrée | Sortie |
+|--------|--------|
+| I am / I'm | you are / you're |
+| I feel | you feel |
+| I have / I've | you have / you've |
+| my | your |
+| myself | yourself |
+| me | you |
 
-### P1 - Fort potentiel qualite emotionnelle
+---
 
-4. **Classifier l'emotion du texte avant synthese**
-   - Exemple d'etiquettes: `triste`, `stresse`, `colere`, `joie`, `neutre`.
-   - Mapper emotion -> preset voix.
+## Roadmap
 
-5. **Ajouter plusieurs fournisseurs TTS**
-   - Azure Neural Voice / Google Cloud TTS / OpenAI TTS.
-   - A/B test automatique pour comparer naturel et latence.
+### v1 — Actuel ✅
+- [x] Reconnaissance vocale continue (sans bouton par phrase)
+- [x] Swap de pronoms FR ↔ EN
+- [x] ElevenLabs TTS + fallback navigateur
+- [x] Sélection de langue et de voix
+- [x] Expérience voice-only (pas de texte affiché)
+- [x] Code refactorisé (HTML / CSS / JS séparés)
 
-6. **Memoire contextuelle courte**
-   - Conserver les 3-5 derniers tours pour adapter l'intonation.
-   - Exemple: ton plus doux si plusieurs messages consecutifs "tristes".
+### v2 — En cours
+- [ ] Redesign visuel terracotta (Emerge: Let it out)
+- [ ] Flow d'accueil : premier écran → bouton unique → session
+- [ ] Intro vocale (15s pour first-timer, rien pour les suivants)
+- [ ] Outro vocale (atterrissage doux en fin de session)
+- [ ] Bouton grounding discret (pause d'urgence)
 
-### P2 - Version produit
+### v3 — Futur
+- [ ] Mode Rewire : choisir une énergie → posture guidée → affirmations × 3
+- [ ] PWA (manifest.json + icônes, installable sur téléphone)
+- [ ] App Store (Capacitor)
+- [ ] Prompts vocaux subtils pendant la session (×1-2 max)
 
-7. **Mesure de qualite voix**
-   - Formulaire de rating "naturel / chaleur / clarte".
-   - Dashboard simple pour suivre l'amelioration.
+---
 
-8. **Streaming audio**
-   - Jouer la voix plus tot (latence percue plus faible).
-   - Important pour l'effet "conversation vivante".
+## Identité visuelle
 
-## Plan d'action concret (prochaine iteration)
+- **Nom** : Emerge: Let it out
+- **Palette** : `#1a100a` fond · `#e07a5f` terracotta · `#f2cc8f` doré · `#f5ede5` texte
+- **Cible** : personnes stylées, intellectuelles, qui cherchent une alternative sérieuse au scrolling
+- **Ton** : sobre, scientifique, chaleureux — pas wellness-hippy
 
-1. Ajouter presets emotionnels + sliders dans `js/app.js`.
-2. Implementer un mapping `emotion -> voice settings`.
-3. Ajouter un bandeau "Mode fallback robotique" quand ElevenLabs est inactif.
-4. Tester 20 phrases FR/EN et noter la qualite.
+---
 
-## Notes techniques
+## Notes de développement
 
-- L'app fonctionne mieux sur Chrome (support SpeechRecognition).
-- La cle ElevenLabs est stockee localement dans `localStorage`.
-- Le projet est volontairement simple (front seul, pas de backend).
+- Chrome est requis pour la Web Speech API (pas de support Firefox/Safari)
+- Le token GitHub ne doit jamais transiter par Discord (révocation automatique)
+- Deploy : `git push` sur `main` → GitHub Pages se met à jour automatiquement
