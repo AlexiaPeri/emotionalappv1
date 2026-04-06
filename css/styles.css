@@ -111,6 +111,17 @@ body {
 .tts-status.ok { background: rgba(224, 122, 95, 0.15); color: #e07a5f; }
 .tts-status.fallback { background: rgba(242, 204, 143, 0.15); color: #f2cc8f; }
 
+.app-name {
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 0.4em;
+  color: #5a3828;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  margin-top: 2rem;
+  text-transform: lowercase;
+}
+
 h1 {
   font-size: 1.4rem;
   font-weight: 300;
@@ -175,10 +186,10 @@ h1 {
 }
 
 #mic-btn {
-  width: 90px;
-  height: 90px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
-  border: 2px solid #4a2818;
+  border: 1.5px solid #4a2818;
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -189,35 +200,59 @@ h1 {
 
 #mic-btn:hover {
   border-color: #e07a5f;
-  background: rgba(224, 122, 95, 0.08);
+  background: rgba(224, 122, 95, 0.06);
 }
 
 #mic-btn.active {
   border-color: #e07a5f;
-  background: rgba(224, 122, 95, 0.1);
+  background: rgba(224, 122, 95, 0.08);
   animation: pulse 2s infinite;
 }
 
 #mic-btn.speaking {
   border-color: #f2cc8f;
-  background: rgba(242, 204, 143, 0.08);
+  background: rgba(242, 204, 143, 0.06);
   animation: none;
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.3); }
-  50% { box-shadow: 0 0 0 16px rgba(224, 122, 95, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.25); }
+  50% { box-shadow: 0 0 0 18px rgba(224, 122, 95, 0); }
 }
 
-#mic-btn svg {
-  width: 36px;
-  height: 36px;
-  fill: #5a3828;
-  transition: fill 0.3s;
+.btn-label {
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: #5a3828;
+  text-transform: lowercase;
+  transition: color 0.3s;
 }
 
-#mic-btn.active svg { fill: #e07a5f; }
-#mic-btn.speaking svg { fill: #f2cc8f; }
+#mic-btn:hover .btn-label { color: #e07a5f; }
+#mic-btn.active .btn-label { color: #e07a5f; }
+#mic-btn.speaking .btn-label { color: #f2cc8f; }
+
+/* Section "comment ça marche" dans le menu */
+.how-it-works {
+  margin-top: 0.5rem;
+  border-top: 1px solid #3a2218;
+  padding-top: 0.8rem;
+}
+
+.how-title {
+  font-size: 0.75rem;
+  color: #8a6050;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.how-text {
+  font-size: 0.78rem;
+  color: #6a4838;
+  line-height: 1.6;
+}
 
 .hint {
   margin-top: 1.5rem;

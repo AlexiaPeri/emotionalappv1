@@ -66,8 +66,16 @@ function setStatus(message) {
 
 function updateButton() {
   dom.micButton.classList.remove("active", "speaking");
-  if (state.isSpeaking) dom.micButton.classList.add("speaking");
-  else if (state.isActive) dom.micButton.classList.add("active");
+  const label = document.getElementById("btn-label");
+  if (state.isSpeaking) {
+    dom.micButton.classList.add("speaking");
+    if (label) label.textContent = "…";
+  } else if (state.isActive) {
+    dom.micButton.classList.add("active");
+    if (label) label.textContent = state.lang === "fr" ? "écoute" : "listening";
+  } else {
+    if (label) label.textContent = "start";
+  }
 }
 
 function setLang(lang) {
@@ -80,6 +88,14 @@ function setLang(lang) {
   dom.hint.textContent = t("hint");
   dom.stopHint.textContent = t("stopHint");
   if (!state.isActive) setStatus(t("press"));
+
+  // Mettre à jour "comment ça marche" selon la langue
+  const howTitle = document.getElementById("how-title");
+  const howText = document.getElementById("how-text");
+  if (howTitle) howTitle.textContent = lang === "fr" ? "Comment ça marche" : "How it works";
+  if (howText) howText.innerHTML = lang === "fr"
+    ? "Dis ce que tu ressens. L'app te le répète, à la deuxième personne.<br><br>Répète la même chose, encore et encore, jusqu'à ce que quelque chose change en toi. Ne cherche pas à varier — reste dans le ressenti. La transformation vient de la répétition."
+    : "Say what you feel. The app repeats it back to you, in the second person.<br><br>Repeat the same thing, over and over, until something shifts inside. Don't try to vary — stay in the feeling. Transformation comes from repetition.";
 
   if (state.recognition) {
     state.recognition.lang = lang === "fr" ? "fr-FR" : "en-US";
