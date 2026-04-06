@@ -457,7 +457,7 @@ function initSettings() {
   const savedKey = localStorage.getItem(storageKeys.apiKey);
   if (savedKey) dom.apiKey.value = savedKey;
 
-  const savedVoice = localStorage.getItem(storageKeys.voice) || "j9jfwdrw7BRfcR43Qohk";
+  const savedVoice = localStorage.getItem(storageKeys.voice) || "pNInz6obpgDQGcFmaJgB";
   dom.voiceSelect.value = savedVoice;
 
   dom.settingsToggle.addEventListener("click", (event) => {
