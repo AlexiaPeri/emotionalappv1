@@ -94,8 +94,8 @@ function setLang(lang) {
   const howText = document.getElementById("how-text");
   if (howTitle) howTitle.textContent = lang === "fr" ? "Comment ça marche" : "How it works";
   if (howText) howText.innerHTML = lang === "fr"
-    ? "Dis ce que tu ressens. L'app te le répète, à la deuxième personne.<br><br>Répète la même chose, encore et encore, jusqu'à ce que quelque chose change en toi. Ne cherche pas à varier — reste dans le ressenti. La transformation vient de la répétition."
-    : "Say what you feel. The app repeats it back to you, in the second person.<br><br>Repeat the same thing, over and over, until something shifts inside. Don't try to vary — stay in the feeling. Transformation comes from repetition.";
+    ? "Dis ce que tu ressens. L'app te le répète.<br><br>Répète la même chose, encore et encore, jusqu'à ce que quelque chose change en toi. Ne cherche pas à varier — reste dans le ressenti. La transformation vient de la répétition."
+    : "Say what you feel. The app repeats it back to you.<br><br>Repeat the same thing, over and over, until something shifts inside. Don't try to vary — stay in the feeling. Transformation comes from repetition.";
 
   if (state.recognition) {
     state.recognition.lang = lang === "fr" ? "fr-FR" : "en-US";

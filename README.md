@@ -147,7 +147,7 @@ python3 -m http.server 8000
 
 - **Nom** : Emerge: Let it out
 - **Palette** : `#1a100a` fond · `#e07a5f` terracotta · `#f2cc8f` doré · `#f5ede5` texte
-- **Cible** : personnes stylées, intellectuelles, qui cherchent une alternative sérieuse au scrolling
+- **Cible** : personnes stylées, intellectuelles, qui cherchent à gérer leurs émotions de manière profonde et efficace
 - **Ton** : sobre, scientifique, chaleureux — pas wellness-hippy
 
 ---
