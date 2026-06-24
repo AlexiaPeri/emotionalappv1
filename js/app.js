@@ -14,12 +14,7 @@ const dom = {
   homeStartBtn: document.getElementById("home-start-btn"),
   introTitle: document.getElementById("intro-title"),
   introLead: document.getElementById("intro-lead"),
-  introModeButtons: document.querySelectorAll(".intro-mode-btn"),
-  introModeRead: document.getElementById("intro-mode-read"),
-  introModeListen: document.getElementById("intro-mode-listen"),
-  introModeBoth: document.getElementById("intro-mode-both"),
   introWritten: document.getElementById("intro-written"),
-  introListenButton: document.getElementById("intro-listen-btn"),
   introContinueButton: document.getElementById("intro-continue-btn"),
   introNote: document.getElementById("intro-note"),
   practiceSetup: document.getElementById("practice-setup"),
@@ -52,12 +47,9 @@ const dom = {
   practiceBody: document.getElementById("practice-body"),
   practiceKickoff: document.getElementById("practice-kicker"),
   groundButton: document.getElementById("ground-btn"),
-  faqIntro: document.getElementById("faq-intro"),
   faqList: document.getElementById("faq-list"),
   contactTitle: document.getElementById("contact-title"),
-  contactLead: document.getElementById("contact-lead"),
   contactCta: document.getElementById("contact-cta"),
-  creatorNote: document.getElementById("creator-note"),
   howTitle: document.getElementById("how-title"),
   howText: document.getElementById("how-text"),
   apiKey: document.getElementById("api-key"),
@@ -80,10 +72,7 @@ const state = {
   recognitionCycleId: 0,
   recognitionHandledCycleId: -1,
   currentAudio: null,
-  introMode: "read",
   introReadComplete: false,
-  introAudioComplete: false,
-  introAudioCancelled: false,
   durationMode: "recommended",
   selectedDurationMinutes: 15,
   sessionPhase: "setup",
@@ -176,14 +165,9 @@ function renderIntro() {
     node.textContent = paragraph;
     dom.introWritten.appendChild(node);
   });
-  dom.introWritten.hidden = state.introMode === "listen";
-  if (dom.introListenButton) {
-    dom.introListenButton.hidden = state.introMode === "read";
-  }
   requestAnimationFrame(() => {
     if (
       state.view === "intro" &&
-      state.introMode !== "listen" &&
       dom.introWritten.clientHeight > 0 &&
       dom.introWritten.scrollHeight <= dom.introWritten.clientHeight + 8
     ) {
@@ -193,27 +177,15 @@ function renderIntro() {
   });
 }
 
-function setIntroMode(mode) {
-  state.introMode = mode;
-  dom.introModeButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.introMode === mode);
-  });
-  renderIntro();
-}
-
 function canContinueIntro() {
   if (hasSeenIntro()) return true;
-  if (state.introMode === "read") return state.introReadComplete;
-  if (state.introMode === "listen") return state.introAudioComplete;
-  return state.introReadComplete && state.introAudioComplete;
+  return state.introReadComplete;
 }
 
 function getIntroProgressText() {
   if (hasSeenIntro()) return t("introReviewReady");
   if (canContinueIntro()) return t("introReady");
-  if (state.introMode === "read") return t("introRequirementRead");
-  if (state.introMode === "listen") return t("introRequirementListen");
-  return t("introRequirementBoth");
+  return t("introRequirementRead");
 }
 
 function updateIntroCompletion() {
@@ -245,10 +217,6 @@ function updatePageCopy() {
   if (dom.homeStartBtn) dom.homeStartBtn.textContent = t("homeCta");
   if (dom.introTitle) dom.introTitle.textContent = t("introTitle");
   if (dom.introLead) dom.introLead.textContent = t("introLead");
-  if (dom.introModeRead) dom.introModeRead.textContent = t("introModeRead");
-  if (dom.introModeListen) dom.introModeListen.textContent = t("introModeListen");
-  if (dom.introModeBoth) dom.introModeBoth.textContent = t("introModeBoth");
-  if (dom.introListenButton) dom.introListenButton.textContent = state.isSpeaking ? t("introStopCta") : t("introListenCta");
   if (dom.introContinueButton) dom.introContinueButton.textContent = hasSeenIntro() ? t("practiceStart") : t("introContinueCta");
   if (dom.introNote) dom.introNote.textContent = t("introNote");
   if (dom.durationPrompt) dom.durationPrompt.textContent = t("durationPrompt");
@@ -270,11 +238,8 @@ function updatePageCopy() {
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
   if (dom.groundReturnButton) dom.groundReturnButton.textContent = t("groundReturnCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
-  if (dom.faqIntro) dom.faqIntro.textContent = t("faqIntro");
   if (dom.contactTitle) dom.contactTitle.textContent = t("contactTitle");
-  if (dom.contactLead) dom.contactLead.textContent = t("contactLead");
   if (dom.contactCta) dom.contactCta.textContent = t("contactCta");
-  if (dom.creatorNote) dom.creatorNote.textContent = t("creatorAnswer");
   if (dom.howTitle) dom.howTitle.textContent = t("howTitle");
   if (dom.howText) dom.howText.innerHTML = t("howText");
   updateDurationControls();
@@ -917,24 +882,6 @@ function returnFromGround() {
   state.wasActiveBeforeGround = false;
 }
 
-async function toggleIntroAudio() {
-  if (state.isSpeaking) {
-    state.introAudioCancelled = true;
-    stopSpeechPlayback();
-    state.isSpeaking = false;
-    updateButton();
-    updatePageCopy();
-    setStatus(t("press"));
-    return;
-  }
-  state.introAudioCancelled = false;
-  await speakText(t("introAudioText"), t("introListening"));
-  if (!state.introAudioCancelled) {
-    state.introAudioComplete = true;
-  }
-  updateIntroCompletion();
-}
-
 function continueFromIntro() {
   if (!canContinueIntro()) {
     updateIntroCompletion();
@@ -947,7 +894,7 @@ function continueFromIntro() {
 }
 
 function handleIntroScroll() {
-  if (!dom.introWritten || state.introMode === "listen") return;
+  if (!dom.introWritten) return;
   const atEnd = dom.introWritten.scrollTop + dom.introWritten.clientHeight >= dom.introWritten.scrollHeight - 8;
   if (atEnd) {
     state.introReadComplete = true;
@@ -1113,12 +1060,6 @@ function initUi() {
   });
   if (dom.homeStartBtn) {
     dom.homeStartBtn.addEventListener("click", enterFromHome);
-  }
-  dom.introModeButtons.forEach((button) => {
-    button.addEventListener("click", () => setIntroMode(button.dataset.introMode));
-  });
-  if (dom.introListenButton) {
-    dom.introListenButton.addEventListener("click", toggleIntroAudio);
   }
   if (dom.introContinueButton) {
     dom.introContinueButton.addEventListener("click", continueFromIntro);

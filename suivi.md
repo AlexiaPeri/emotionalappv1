@@ -27,6 +27,7 @@
 - Page pratique : phrase centrale `Tout ce que tu ressens est bienvenu` / `Everything you feel is welcome`.
 - Pages Guide/FAQ : éviter les titres répétitifs en haut des cartes ; la FAQ n'a pas besoin d'un titre `FAQ` en plus de l'onglet.
 - Gestion Git : Codex doit gérer les commits/push régulièrement après les blocs de travail stables. Les instructions persistantes sont dans `AGENTS.md`.
+- Textes Guide/FAQ : modifier directement `js/app-config.js`, dans `introReadText` et `faqItems` pour chaque langue.
 
 ## À faire ensuite
 1. Revenir à une base UI stable.
