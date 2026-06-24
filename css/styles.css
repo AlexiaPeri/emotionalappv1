@@ -1006,11 +1006,20 @@ body[data-view="home"] .page-home {
 
 .end-screen {
   display: grid;
-  min-height: 100vh;
+  width: min(calc(100vw - 1.45rem), 390px);
+  height: min(804px, calc(100vh - 1.45rem));
+  min-height: min(804px, calc(100vh - 1.45rem));
   place-items: center;
+  border: 2px solid rgba(245, 245, 245, 0.22);
+  border-radius: 3.55rem;
   background-image: url("../assets/end-bg-thank-you-filaments.png");
   background-position: center;
   background-size: cover;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.06),
+    0 0 0 6px rgba(0, 0, 0, 0.94),
+    0 28px 86px rgba(0, 0, 0, 0.72),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .end-message {
@@ -1039,7 +1048,8 @@ body[data-view="end"] .pages {
   padding: 0;
 }
 
-body[data-view="ground"] .pages {
+body[data-view="ground"] .pages,
+body[data-view="end"] .pages {
   display: flex;
   min-height: 100vh;
   align-items: center;
@@ -1047,7 +1057,8 @@ body[data-view="ground"] .pages {
   padding: clamp(0.55rem, 2vh, 1.15rem) 0.7rem;
 }
 
-body[data-view="ground"] .page-ground {
+body[data-view="ground"] .page-ground,
+body[data-view="end"] .page-end {
   display: flex;
   width: 100%;
   justify-content: center;
