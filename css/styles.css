@@ -1008,20 +1008,19 @@ body[data-view="home"] .page-home {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  background-image:
-    linear-gradient(180deg, rgba(32, 20, 26, 0.18), rgba(20, 12, 16, 0.2)),
-    url("../assets/end-bg.png");
-  background-position: center bottom;
-  background-size: auto 220%;
+  background-image: url("../assets/end-bg-thank-you-filaments.png");
+  background-position: center;
+  background-size: cover;
 }
 
 .end-message {
-  color: rgba(255, 207, 184, 0.88);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.05rem, 5vw, 1.55rem);
-  font-weight: 300;
-  letter-spacing: 0.02em;
-  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 body[data-view="ground"] .top-bar,
