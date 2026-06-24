@@ -43,6 +43,8 @@ L'app répète vocalement
 ## Stack technique
 
 - **Frontend** : HTML / CSS / JS vanilla (zéro dépendance)
+- **Core portable** : copy, presets de voix, transformation de texte
+- **Pages** : accueil, pratique, FAQ, contact
 - **Reconnaissance vocale** : Web Speech API (Chrome uniquement)
 - **TTS** : ElevenLabs API (`eleven_turbo_v2_5`) + fallback voix navigateur
 - **Hébergement** : GitHub Pages
@@ -58,7 +60,9 @@ L'app répète vocalement
 ├── css/
 │   └── styles.css      ← Thème terracotta
 ├── js/
-│   └── app.js          ← Logique complète
+│   ├── app-config.js   ← Copy, presets de voix, clés
+│   ├── pronouns.js     ← Conversion FR / EN portable
+│   └── app.js          ← Shell web + voix navigateur
 └── README.md
 ```
 
@@ -128,14 +132,21 @@ python3 -m http.server 8000
 - [x] Expérience voice-only (pas de texte affiché)
 - [x] Code refactorisé (HTML / CSS / JS séparés)
 
-### v2 — En cours
+### v2 — Base portable en cours
+- [x] Copy, voix et conversion de texte séparées du shell web
+- [ ] Stabiliser la reco / voix pour les tests de 15 min
 - [ ] Redesign visuel terracotta (Emerge: Let it out)
 - [ ] Flow d'accueil : premier écran → bouton unique → session
 - [ ] Intro vocale (15s pour first-timer, rien pour les suivants)
 - [ ] Outro vocale (atterrissage doux en fin de session)
 - [ ] Bouton grounding discret (pause d'urgence)
 
-### v3 — Futur
+### v3 — iPhone natif
+- [ ] Reprendre le core portable dans une app iPhone
+- [ ] Remplacer la couche voix web par une couche iOS native
+- [ ] Valider le ressenti vocal sur iPhone
+
+### v4 — Futur
 - [ ] Mode Rewire : choisir une énergie → posture guidée → affirmations × 3
 - [ ] PWA (manifest.json + icônes, installable sur téléphone)
 - [ ] App Store (Capacitor)

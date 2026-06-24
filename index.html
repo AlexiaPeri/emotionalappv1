@@ -4,60 +4,196 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emerge — Let it out</title>
+  <link rel="preconnect" href="https://api.elevenlabs.io">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
+  <div class="app-shell">
+    <div class="top-bar">
+      <button class="lang-btn active" data-lang="fr">FR</button>
+      <button class="lang-btn" data-lang="en">EN</button>
+    </div>
 
-  <!-- Barre langue -->
-  <div class="top-bar">
-    <button class="lang-btn active" data-lang="fr">FR</button>
-    <button class="lang-btn" data-lang="en">EN</button>
-  </div>
+    <nav class="page-nav" aria-label="Sections">
+      <button class="page-btn active" data-view="practice">Emerge</button>
+      <button class="page-btn" data-view="intro">Guide</button>
+      <button class="page-btn" data-view="faq">FAQ</button>
+    </nav>
 
-  <!-- Réglages -->
-  <button class="settings-btn" id="settings-toggle" title="Réglages">⚙️</button>
+    <button class="settings-btn" id="settings-toggle" title="Réglages">⚙️</button>
 
-  <div class="settings-panel" id="settings-panel">
-    <label>Clé API ElevenLabs (optionnel)</label>
-    <input type="password" id="api-key" placeholder="sk_..." autocomplete="off">
-    <div class="hint-text">Gratuit sur <a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">elevenlabs.io</a> — pour une voix naturelle</div>
+    <div class="settings-panel" id="settings-panel">
+      <label>Clé API ElevenLabs (optionnel)</label>
+      <input type="password" id="api-key" placeholder="sk_..." autocomplete="off">
+      <div class="hint-text">Gratuit sur <a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">elevenlabs.io</a> — pour une voix naturelle</div>
 
-    <label>Voix</label>
-    <select id="voice-select">
-      <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
-      <option value="ErXwobaYiN019PkySvjV">Antoni</option>
-      <option value="onwK4e9ZLuTAKqWW03F9">Daniel</option>
-      <option value="TxGEqnHWrfWFTfGW9XjX">Josh</option>
-      <option value="VR6AewLTigWG4xSOukaG">Arnold</option>
-      <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
-      <option value="XB0fDUnXU5powFXDhCwa">Charlotte</option>
-      <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
-    </select>
+      <label>Voix FR</label>
+      <select id="voice-select-fr">
+        <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
+        <option value="XB0fDUnXU5powFXDhCwa">Charlotte</option>
+        <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
+        <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
+        <option value="ErXwobaYiN019PkySvjV">Antoni</option>
+        <option value="onwK4e9ZLuTAKqWW03F9">Daniel</option>
+      </select>
 
-    <div id="tts-mode"></div>
+      <label>Voix EN</label>
+      <select id="voice-select-en">
+        <option value="ErXwobaYiN019PkySvjV">Antoni</option>
+        <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
+        <option value="onwK4e9ZLuTAKqWW03F9">Daniel</option>
+        <option value="TxGEqnHWrfWFTfGW9XjX">Josh</option>
+        <option value="VR6AewLTigWG4xSOukaG">Arnold</option>
+        <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
+        <option value="XB0fDUnXU5powFXDhCwa">Charlotte</option>
+        <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
+      </select>
 
-    <!-- Comment ça marche -->
-    <div class="how-it-works">
-      <div class="how-title" id="how-title">Comment ça marche</div>
-      <div class="how-text" id="how-text">
-        Dis ce que tu ressens. L'app te le répète, à la deuxième personne.<br><br>
-        Répète la même chose, encore et encore, jusqu'à ce que quelque chose change en toi. Ne cherche pas à varier — reste dans le ressenti. La transformation vient de la répétition.
+      <div id="tts-mode"></div>
+
+      <div class="how-it-works">
+        <div class="how-title" id="how-title">Le geste</div>
+        <div class="how-text" id="how-text">
+          Parle à voix haute. L'app te renvoie tes mots.<br><br>
+          Répète-les, respire, laisse ton corps répondre. Change seulement quand une phrase plus juste vient d'elle-même.
+        </div>
       </div>
     </div>
+
+    <main class="pages">
+      <section class="page page-home is-active" data-view="home">
+        <div class="home-screen">
+          <div class="home-status">
+            <span>9:41</span>
+            <span class="home-status-icons" aria-hidden="true">
+              <span class="status-signal"></span>
+              <span class="status-wifi"></span>
+              <span class="status-battery"></span>
+            </span>
+          </div>
+          <div class="brand-mark" aria-hidden="true">
+            <img class="brand-logo" src="./assets/logo.png" alt="">
+          </div>
+
+          <div class="poster-title" id="title">EMERGE</div>
+          <div class="poster-subtitle">LET IT OUT</div>
+          <div class="poster-rule" aria-hidden="true"></div>
+
+          <div class="welcome-copy" id="welcome-copy">
+            This is your space<br>
+            to release.
+          </div>
+
+          <button class="page-cta" data-view="practice" id="home-start-btn">ENTER</button>
+
+        </div>
+      </section>
+
+      <section class="page page-intro" data-view="intro" hidden>
+        <div class="page-card intro-card">
+          <h2 class="page-title" id="intro-title">Avant de commencer</h2>
+          <p class="page-copy intro-lead" id="intro-lead">Avant ta première session, choisis comment recevoir l'explication.</p>
+
+          <div class="intro-mode-row" role="group" aria-label="Format de l'explication">
+            <button class="intro-mode-btn active" type="button" data-intro-mode="read" id="intro-mode-read">Lire</button>
+            <button class="intro-mode-btn" type="button" data-intro-mode="listen" id="intro-mode-listen">Écouter</button>
+            <button class="intro-mode-btn" type="button" data-intro-mode="both" id="intro-mode-both">Les deux</button>
+          </div>
+
+          <div class="intro-written" id="intro-written"></div>
+
+          <div class="intro-actions">
+            <button class="text-link intro-listen-btn" id="intro-listen-btn" type="button">Écouter l'explication</button>
+            <button class="page-cta intro-continue-btn" id="intro-continue-btn" type="button">Commencer</button>
+          </div>
+
+          <p class="intro-note" id="intro-note">Tu pourras revenir à cette explication à tout moment.</p>
+        </div>
+      </section>
+
+      <section class="page page-practice" data-view="practice" hidden>
+        <div class="page-card practice-card practice-chamber">
+          <div class="practice-setup" id="practice-setup">
+            <p class="duration-prompt" id="duration-prompt">Commençons</p>
+
+            <div class="duration-options" role="group" aria-label="Durée de session">
+              <button class="duration-choice is-selected" id="duration-recommended-btn" type="button">
+                <span class="duration-value" id="duration-recommended-value">15 min</span>
+                <span class="duration-label" id="duration-recommended-label">Recommended</span>
+              </button>
+
+              <label class="duration-choice duration-custom" for="duration-custom-input">
+                <span class="duration-value" id="duration-custom-label">Custom</span>
+                <span class="duration-input-wrap">
+                  <input id="duration-custom-input" type="number" min="12" max="60" step="1" inputmode="numeric" placeholder="12-60">
+                  <span>min</span>
+                </span>
+              </label>
+            </div>
+
+            <p class="duration-error" id="duration-error"></p>
+          </div>
+
+          <div class="practice-live" id="practice-live" hidden>
+            <div class="practice-focus" id="practice-focus">
+              <img class="practice-focus-logo" src="./assets/logo.png" alt="">
+              <p id="practice-live-copy">Tout ce que tu ressens est bienvenu</p>
+            </div>
+
+            <div id="status" class="sr-only" aria-live="polite">Choisis une durée pour commencer.</div>
+            <div id="transcript-area" aria-live="polite"></div>
+
+            <div class="closing-panel" id="closing-panel" hidden>
+              <p id="closing-copy">Closing guidance.</p>
+              <button class="text-link session-continue-btn" id="session-continue-btn" type="button">continuer la pratique</button>
+            </div>
+
+            <button class="text-link session-close-inline" id="session-close-inline" type="button" hidden>terminer la pratique</button>
+
+            <div class="post-closing-actions" id="post-closing-actions" hidden>
+              <button class="text-link session-write-btn" id="session-write-btn" type="button">Write</button>
+              <button class="page-cta session-end-btn" id="session-end-btn" type="button">End</button>
+            </div>
+
+            <button class="ground-btn" id="ground-btn" type="button">Ground</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page page-ground" data-view="ground" hidden>
+        <div class="visual-screen ground-screen">
+          <div class="visual-overlay">
+            <div class="visual-copy">
+              <div class="section-kicker" id="ground-kicker">Ground</div>
+              <h2 id="ground-title">You are here</h2>
+            </div>
+            <button class="text-link visual-return-btn" id="ground-return-btn" type="button">Return to practice</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page page-end" data-view="end" hidden>
+        <div class="visual-screen end-screen">
+          <div class="end-message" id="end-message">Thank you ♥</div>
+        </div>
+      </section>
+
+      <section class="page page-faq" data-view="faq" hidden>
+        <div class="page-card">
+          <p class="page-copy subtle" id="faq-intro">Les points essentiels, pour pratiquer sans trop réfléchir.</p>
+          <div class="faq-list" id="faq-list"></div>
+
+          <div class="faq-contact">
+            <div class="section-kicker" id="contact-kicker">Contact</div>
+            <h3 class="faq-contact-title" id="contact-title">Contact</h3>
+            <p class="page-copy" id="contact-lead">Une question, un retour, ou une intuition pour Emerge ? Tu peux écrire directement à Alexia.</p>
+            <a class="contact-button" id="contact-cta" href="mailto:your-email@example.com?subject=Question%20about%20Emerge">Écrire à Alexia</a>
+            <div class="creator-note" id="creator-note"></div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
-
-  <!-- Contenu principal -->
-  <div class="app-name" id="title">emerge</div>
-  <div id="status">Appuie sur Start pour commencer</div>
-
-  <div id="transcript-area"></div>
-
-  <button id="mic-btn" aria-label="Start">
-    <span class="btn-label" id="btn-label">Start</span>
-  </button>
-  <div id="stop-hint">Appuie à nouveau pour arrêter</div>
-
-  <div class="hint" id="hint-text">Dis ce que tu ressens.</div>
 
   <script type="module" src="./js/app.js"></script>
 
