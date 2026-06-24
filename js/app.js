@@ -47,6 +47,7 @@ const dom = {
   practiceBody: document.getElementById("practice-body"),
   practiceKickoff: document.getElementById("practice-kicker"),
   groundButton: document.getElementById("ground-btn"),
+  faqIntro: document.getElementById("faq-intro"),
   faqList: document.getElementById("faq-list"),
   contactTitle: document.getElementById("contact-title"),
   contactCta: document.getElementById("contact-cta"),
@@ -238,6 +239,7 @@ function updatePageCopy() {
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
   if (dom.groundReturnButton) dom.groundReturnButton.textContent = t("groundReturnCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
+  if (dom.faqIntro) dom.faqIntro.textContent = t("faqIntro");
   if (dom.contactTitle) dom.contactTitle.textContent = t("contactTitle");
   if (dom.contactCta) dom.contactCta.textContent = t("contactCta");
   if (dom.howTitle) dom.howTitle.textContent = t("howTitle");
