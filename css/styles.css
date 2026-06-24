@@ -768,13 +768,14 @@ body[data-view="home"] .page-home {
 
 .duration-prompt {
   width: 100%;
-  margin-bottom: clamp(1.75rem, 5vh, 2.65rem);
+  margin-bottom: clamp(2.05rem, 5.8vh, 3.05rem);
   color: rgba(244, 229, 207, 0.74);
   font-size: clamp(1.06rem, 4.2vw, 1.2rem);
   font-weight: 300;
   letter-spacing: 0.04em;
   line-height: 1.35;
   text-align: left;
+  transform: translateY(-0.45rem);
 }
 
 .duration-options {
@@ -889,6 +890,7 @@ body[data-view="home"] .page-home {
   min-height: min(58vh, 520px);
   align-content: center;
   justify-items: center;
+  transform: translateY(-1rem);
 }
 
 .practice-focus-logo {
@@ -899,7 +901,7 @@ body[data-view="home"] .page-home {
 
 #practice-live-copy {
   color: rgba(218, 166, 98, 0.72);
-  font-size: 0.9rem;
+  font-size: 0.96rem;
   letter-spacing: 0.12em;
   line-height: 1.4;
 }

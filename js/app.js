@@ -67,7 +67,7 @@ const dom = {
 };
 
 const state = {
-  lang: "fr",
+  lang: "en",
   isActive: false,
   isSpeaking: false,
   recognition: null,
@@ -311,6 +311,7 @@ function setView(view) {
 
 function setLang(lang) {
   state.lang = lang;
+  document.documentElement.lang = lang;
   dom.langButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.lang === lang);
   });
