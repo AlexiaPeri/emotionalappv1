@@ -1152,6 +1152,8 @@ body[data-view="ground"] .page-ground {
 }
 
 .faq-contact .contact-button {
+  display: flex;
+  width: max-content;
   margin-top: 1.55rem;
 }
 

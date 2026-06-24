@@ -83,6 +83,7 @@ const state = {
   closingCancelled: false,
   viewBeforeGround: "practice",
   wasActiveBeforeGround: false,
+  groundingCycleId: 0,
   view: "home",
 };
 
@@ -862,6 +863,8 @@ function handleWritePlaceholder() {
 }
 
 async function triggerGrounding() {
+  const groundingCycleId = state.groundingCycleId + 1;
+  state.groundingCycleId = groundingCycleId;
   state.viewBeforeGround = state.view;
   state.wasActiveBeforeGround = state.isActive;
   if (state.isActive) {
@@ -871,13 +874,19 @@ async function triggerGrounding() {
   setView("ground");
   setStatus(t("groundStatus"));
   await speakText(t("groundText"), t("groundStatus"));
+  if (state.groundingCycleId !== groundingCycleId || state.view !== "ground") return;
 }
 
 function returnFromGround() {
+  state.groundingCycleId += 1;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  state.recognitionPauseRequested = false;
   setView(state.viewBeforeGround || "practice");
   if (state.wasActiveBeforeGround && (state.sessionPhase === "timed" || state.sessionPhase === "open")) {
     state.isActive = true;
     document.body.classList.add("session-active");
+    updateButton();
     scheduleRecognitionRestart(150);
     setStatus(t("listening"));
   }
