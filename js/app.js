@@ -23,6 +23,9 @@ const dom = {
   durationRecommendedButton: document.getElementById("duration-recommended-btn"),
   durationRecommendedValue: document.getElementById("duration-recommended-value"),
   durationRecommendedLabel: document.getElementById("duration-recommended-label"),
+  durationTestButton: document.getElementById("duration-test-btn"),
+  durationTestValue: document.getElementById("duration-test-value"),
+  durationTestLabel: document.getElementById("duration-test-label"),
   durationCustomInput: document.getElementById("duration-custom-input"),
   durationCustomChoice: document.querySelector(".duration-custom"),
   durationCustomLabel: document.getElementById("duration-custom-label"),
@@ -224,6 +227,8 @@ function updatePageCopy() {
   if (dom.durationPrompt) dom.durationPrompt.textContent = t("durationPrompt");
   if (dom.durationRecommendedValue) dom.durationRecommendedValue.textContent = t("durationRecommendedValue");
   if (dom.durationRecommendedLabel) dom.durationRecommendedLabel.textContent = t("durationRecommendedLabel");
+  if (dom.durationTestValue) dom.durationTestValue.textContent = t("durationTestValue");
+  if (dom.durationTestLabel) dom.durationTestLabel.textContent = t("durationTestLabel");
   if (dom.durationCustomLabel) dom.durationCustomLabel.textContent = t("durationCustomLabel");
   if (dom.practiceLiveCopy) dom.practiceLiveCopy.textContent = t("practiceLiveCopy");
   if (dom.closingCopy) dom.closingCopy.textContent = t("closingCopy");
@@ -362,6 +367,7 @@ function formatSessionTime(ms) {
 }
 
 function getSelectedDurationMinutes() {
+  if (state.durationMode === "test") return 10 / 60;
   if (state.durationMode === "recommended") return 15;
   const value = Number(dom.durationCustomInput?.value);
   if (!Number.isFinite(value) || value < 12 || value > 60) return null;
@@ -373,7 +379,8 @@ function updateDurationControls(showError = false) {
   const isCustom = state.durationMode === "custom";
   const hasInvalidCustom = isCustom && duration === null;
 
-  dom.durationRecommendedButton?.classList.toggle("is-selected", !isCustom);
+  dom.durationRecommendedButton?.classList.toggle("is-selected", state.durationMode === "recommended");
+  dom.durationTestButton?.classList.toggle("is-selected", state.durationMode === "test");
   dom.durationCustomInput?.closest(".duration-choice")?.classList.toggle("is-selected", isCustom);
 
   if (dom.durationError) {
@@ -1081,6 +1088,12 @@ function initUi() {
   if (dom.durationRecommendedButton) {
     dom.durationRecommendedButton.addEventListener("click", () => {
       setDurationMode("recommended");
+      startTimedSession();
+    });
+  }
+  if (dom.durationTestButton) {
+    dom.durationTestButton.addEventListener("click", () => {
+      setDurationMode("test");
       startTimedSession();
     });
   }

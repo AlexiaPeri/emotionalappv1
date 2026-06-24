@@ -760,8 +760,8 @@ body[data-view="home"] .page-home {
 .duration-options {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
+  grid-template-columns: 1fr 0.78fr 1fr;
+  gap: 0.55rem;
 }
 
 .duration-choice {
@@ -770,7 +770,7 @@ body[data-view="home"] .page-home {
   min-height: 88px;
   align-content: center;
   gap: 0.25rem;
-  padding: 0.85rem;
+  padding: 0.72rem;
   border: 1px solid rgba(218, 166, 98, 0.16);
   border-radius: 8px;
   background: rgba(7, 6, 5, 0.36);
@@ -805,7 +805,7 @@ body[data-view="home"] .page-home {
 .duration-input-wrap {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.28rem;
   color: rgba(218, 166, 98, 0.72);
   font-size: 0.78rem;
   letter-spacing: 0.12em;
@@ -813,7 +813,7 @@ body[data-view="home"] .page-home {
 }
 
 .duration-input-wrap input {
-  width: min(100%, 76px);
+  width: min(100%, 54px);
   height: 34px;
   border: 1px solid rgba(218, 166, 98, 0.2);
   border-radius: 6px;
