@@ -9,14 +9,14 @@ const dom = {
   pages: document.querySelectorAll(".page"),
   settingsToggle: document.getElementById("settings-toggle"),
   settingsPanel: document.getElementById("settings-panel"),
+  firstWelcome: document.getElementById("first-welcome"),
+  firstGuidePrompt: document.getElementById("first-guide-prompt"),
+  firstGuideButton: document.getElementById("first-guide-btn"),
   title: document.getElementById("title"),
   welcome: document.getElementById("welcome-copy"),
   homeStartBtn: document.getElementById("home-start-btn"),
   introTitle: document.getElementById("intro-title"),
-  introLead: document.getElementById("intro-lead"),
   introWritten: document.getElementById("intro-written"),
-  introContinueButton: document.getElementById("intro-continue-btn"),
-  introNote: document.getElementById("intro-note"),
   practiceSetup: document.getElementById("practice-setup"),
   practiceLive: document.getElementById("practice-live"),
   durationPrompt: document.getElementById("duration-prompt"),
@@ -43,6 +43,13 @@ const dom = {
   groundTitle: document.getElementById("ground-title"),
   groundReturnButton: document.getElementById("ground-return-btn"),
   endMessage: document.getElementById("end-message"),
+  reflectTitle: document.getElementById("reflect-title"),
+  reflectForm: document.getElementById("reflect-form"),
+  reflectInput: document.getElementById("reflect-input"),
+  reflectSendButton: document.getElementById("reflect-send-btn"),
+  notesTitle: document.getElementById("notes-title"),
+  notesEmpty: document.getElementById("notes-empty"),
+  notesList: document.getElementById("notes-list"),
   status: document.getElementById("status"),
   transcript: document.getElementById("transcript-area"),
   practiceTitle: document.getElementById("practice-title"),
@@ -76,7 +83,6 @@ const state = {
   recognitionCycleId: 0,
   recognitionHandledCycleId: -1,
   currentAudio: null,
-  introReadComplete: false,
   durationMode: "recommended",
   selectedDurationMinutes: 15,
   sessionPhase: "setup",
@@ -87,6 +93,7 @@ const state = {
   viewBeforeGround: "practice",
   wasActiveBeforeGround: false,
   groundingCycleId: 0,
+  reflectSaveTimer: null,
   view: "home",
 };
 
@@ -170,42 +177,6 @@ function renderIntro() {
     node.textContent = paragraph;
     dom.introWritten.appendChild(node);
   });
-  requestAnimationFrame(() => {
-    if (
-      state.view === "intro" &&
-      dom.introWritten.clientHeight > 0 &&
-      dom.introWritten.scrollHeight <= dom.introWritten.clientHeight + 8
-    ) {
-      state.introReadComplete = true;
-    }
-    updateIntroCompletion();
-  });
-}
-
-function canContinueIntro() {
-  if (hasSeenIntro()) return true;
-  return state.introReadComplete;
-}
-
-function getIntroProgressText() {
-  if (hasSeenIntro()) return t("introReviewReady");
-  if (canContinueIntro()) return t("introReady");
-  return t("introRequirementRead");
-}
-
-function updateIntroCompletion() {
-  if (dom.introContinueButton) {
-    const unlocked = canContinueIntro();
-    dom.introContinueButton.disabled = !unlocked;
-    dom.introContinueButton.setAttribute("aria-disabled", String(!unlocked));
-    dom.introContinueButton.classList.toggle("is-disabled", !unlocked);
-  }
-  if (dom.introNote) {
-    dom.introNote.textContent = getIntroProgressText();
-  }
-  if (dom.introWritten) {
-    dom.introWritten.classList.toggle("is-complete", state.introReadComplete);
-  }
 }
 
 function updatePageCopy() {
@@ -213,17 +184,18 @@ function updatePageCopy() {
     practice: t("navStart"),
     intro: t("navGuide"),
     faq: t("navFaq"),
+    notes: t("navNotes"),
   };
   dom.pageButtons.forEach((button) => {
     if (navLabels[button.dataset.view]) {
       button.textContent = navLabels[button.dataset.view];
     }
   });
+  if (dom.firstWelcome) dom.firstWelcome.textContent = t("firstWelcome");
+  if (dom.firstGuidePrompt) dom.firstGuidePrompt.textContent = t("firstGuidePrompt");
+  if (dom.firstGuideButton) dom.firstGuideButton.textContent = t("firstGuideCta");
   if (dom.homeStartBtn) dom.homeStartBtn.textContent = t("homeCta");
   if (dom.introTitle) dom.introTitle.textContent = t("introTitle");
-  if (dom.introLead) dom.introLead.textContent = t("introLead");
-  if (dom.introContinueButton) dom.introContinueButton.textContent = hasSeenIntro() ? t("practiceStart") : t("introContinueCta");
-  if (dom.introNote) dom.introNote.textContent = t("introNote");
   if (dom.durationPrompt) dom.durationPrompt.textContent = t("durationPrompt");
   if (dom.durationRecommendedValue) dom.durationRecommendedValue.textContent = t("durationRecommendedValue");
   if (dom.durationRecommendedLabel) dom.durationRecommendedLabel.textContent = t("durationRecommendedLabel");
@@ -245,6 +217,11 @@ function updatePageCopy() {
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
   if (dom.groundReturnButton) dom.groundReturnButton.textContent = t("groundReturnCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
+  if (dom.reflectTitle) dom.reflectTitle.textContent = t("reflectTitle");
+  if (dom.reflectInput) dom.reflectInput.placeholder = t("reflectPlaceholder");
+  if (dom.reflectSendButton) dom.reflectSendButton.setAttribute("aria-label", t("reflectSendLabel"));
+  if (dom.notesTitle) dom.notesTitle.textContent = t("notesTitle");
+  if (dom.notesEmpty) dom.notesEmpty.textContent = t("notesEmpty");
   if (dom.faqIntro) dom.faqIntro.textContent = t("faqIntro");
   if (dom.contactTitle) dom.contactTitle.textContent = t("contactTitle");
   if (dom.contactCta) dom.contactCta.textContent = t("contactCta");
@@ -253,9 +230,17 @@ function updatePageCopy() {
   updateDurationControls();
   renderIntro();
   renderFaq();
+  renderNotes();
 }
 
 function setView(view) {
+  if (!hasSeenIntro() && view !== "first" && view !== "intro") {
+    view = "intro";
+  }
+  if (view === "intro" && !hasSeenIntro()) {
+    markIntroSeen();
+  }
+
   state.view = view;
   document.body.dataset.view = view;
   dom.pageButtons.forEach((button) => {
@@ -275,7 +260,9 @@ function setView(view) {
     setStatus(state.isActive ? t("listening") : t("press"));
   } else if (view === "intro") {
     renderIntro();
-    updateIntroCompletion();
+    setStatus(t("press"));
+  } else if (view === "notes") {
+    renderNotes();
     setStatus(t("press"));
   } else if (!state.isActive) {
     setStatus(t("press"));
@@ -332,6 +319,63 @@ function markIntroSeen() {
 
 function enterFromHome() {
   setView(hasSeenIntro() ? "practice" : "intro");
+}
+
+function loadReflectionNotes() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.notes) || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((note) => note && typeof note.text === "string" && note.text.trim())
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch {
+    return [];
+  }
+}
+
+function saveReflectionNote(text) {
+  const notes = loadReflectionNotes();
+  const note = {
+    id: String(Date.now()),
+    createdAt: new Date().toISOString(),
+    text: text.trim(),
+  };
+  localStorage.setItem(STORAGE_KEYS.notes, JSON.stringify([note, ...notes]));
+}
+
+function formatNoteDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat(state.lang === "fr" ? "fr-FR" : "en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function renderNotes() {
+  if (!dom.notesList || !dom.notesEmpty) return;
+
+  const notes = loadReflectionNotes();
+  dom.notesList.innerHTML = "";
+  dom.notesEmpty.hidden = notes.length > 0;
+
+  notes.forEach((note) => {
+    const article = document.createElement("article");
+    article.className = "note-item";
+
+    const date = document.createElement("time");
+    date.className = "note-date";
+    date.dateTime = note.createdAt;
+    date.textContent = formatNoteDate(note.createdAt);
+
+    const text = document.createElement("p");
+    text.className = "note-text";
+    text.textContent = note.text;
+
+    article.appendChild(date);
+    article.appendChild(text);
+    dom.notesList.appendChild(article);
+  });
 }
 
 function getApiKey() {
@@ -865,8 +909,47 @@ function endSession() {
   setView("end");
 }
 
-function handleWritePlaceholder() {
-  setStatus(t("writePlaceholderStatus"));
+function resetReflectForm() {
+  if (state.reflectSaveTimer) {
+    clearTimeout(state.reflectSaveTimer);
+    state.reflectSaveTimer = null;
+  }
+  if (dom.reflectInput) dom.reflectInput.value = "";
+  if (dom.reflectSendButton) {
+    dom.reflectSendButton.disabled = false;
+    dom.reflectSendButton.classList.remove("is-saved");
+    dom.reflectSendButton.innerHTML = '<span aria-hidden="true">→</span>';
+    dom.reflectSendButton.setAttribute("aria-label", t("reflectSendLabel"));
+  }
+}
+
+function openReflectPage() {
+  resetReflectForm();
+  setView("reflect");
+  dom.reflectInput?.focus();
+}
+
+function handleReflectSubmit(event) {
+  event.preventDefault();
+  const text = dom.reflectInput?.value.trim() || "";
+  if (!text) {
+    setStatus(t("reflectEmptyStatus"));
+    dom.reflectInput?.focus();
+    return;
+  }
+
+  saveReflectionNote(text);
+  renderNotes();
+  if (dom.reflectSendButton) {
+    dom.reflectSendButton.disabled = true;
+    dom.reflectSendButton.classList.add("is-saved");
+    dom.reflectSendButton.textContent = t("reflectSaved");
+  }
+  state.reflectSaveTimer = setTimeout(() => {
+    state.reflectSaveTimer = null;
+    setView("end");
+    resetReflectForm();
+  }, 500);
 }
 
 async function triggerGrounding() {
@@ -898,26 +981,6 @@ function returnFromGround() {
     setStatus(t("listening"));
   }
   state.wasActiveBeforeGround = false;
-}
-
-function continueFromIntro() {
-  if (!canContinueIntro()) {
-    updateIntroCompletion();
-    return;
-  }
-  stopSpeechPlayback();
-  state.isSpeaking = false;
-  markIntroSeen();
-  setView("practice");
-}
-
-function handleIntroScroll() {
-  if (!dom.introWritten) return;
-  const atEnd = dom.introWritten.scrollTop + dom.introWritten.clientHeight >= dom.introWritten.scrollHeight - 8;
-  if (atEnd) {
-    state.introReadComplete = true;
-    updateIntroCompletion();
-  }
 }
 
 function updateTtsStatus() {
@@ -1069,21 +1132,14 @@ function initUi() {
   });
   dom.pageButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      if (button.dataset.view === "practice" && !hasSeenIntro()) {
-        setView("intro");
-        return;
-      }
       setView(button.dataset.view);
     });
   });
+  if (dom.firstGuideButton) {
+    dom.firstGuideButton.addEventListener("click", () => setView("intro"));
+  }
   if (dom.homeStartBtn) {
     dom.homeStartBtn.addEventListener("click", enterFromHome);
-  }
-  if (dom.introContinueButton) {
-    dom.introContinueButton.addEventListener("click", continueFromIntro);
-  }
-  if (dom.introWritten) {
-    dom.introWritten.addEventListener("scroll", handleIntroScroll);
   }
   if (dom.durationRecommendedButton) {
     dom.durationRecommendedButton.addEventListener("click", () => {
@@ -1133,13 +1189,16 @@ function initUi() {
     dom.sessionCloseInline.addEventListener("click", closeSession);
   }
   if (dom.sessionWriteButton) {
-    dom.sessionWriteButton.addEventListener("click", handleWritePlaceholder);
+    dom.sessionWriteButton.addEventListener("click", openReflectPage);
   }
   if (dom.sessionEndButton) {
     dom.sessionEndButton.addEventListener("click", endSession);
   }
   if (dom.groundReturnButton) {
     dom.groundReturnButton.addEventListener("click", returnFromGround);
+  }
+  if (dom.reflectForm) {
+    dom.reflectForm.addEventListener("submit", handleReflectSubmit);
   }
 }
 
@@ -1155,9 +1214,8 @@ function init() {
   initUi();
   initSpeechRecognition();
   initVoices();
-  updatePageCopy();
-  setView("home");
   setLang(state.lang);
+  setView(hasSeenIntro() ? "home" : "first");
 }
 
 init();

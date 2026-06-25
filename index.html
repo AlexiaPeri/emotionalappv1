@@ -18,6 +18,7 @@
       <button class="page-btn active" data-view="practice">Emerge</button>
       <button class="page-btn" data-view="intro">Guide</button>
       <button class="page-btn" data-view="faq">FAQ</button>
+      <button class="page-btn" data-view="notes">My Notes</button>
     </nav>
 
     <button class="settings-btn" id="settings-toggle" title="Réglages">⚙️</button>
@@ -61,6 +62,14 @@
     </div>
 
     <main class="pages">
+      <section class="page page-first" data-view="first" hidden>
+        <div class="first-card">
+          <p id="first-welcome">Welcome to Emerge.</p>
+          <p id="first-guide-prompt">Before your first session, it is important that you read the guide.</p>
+          <button class="page-cta" id="first-guide-btn" type="button">Guide</button>
+        </div>
+      </section>
+
       <section class="page page-home is-active" data-view="home">
         <div class="home-screen">
           <div class="home-status">
@@ -91,16 +100,9 @@
 
       <section class="page page-intro" data-view="intro" hidden>
         <div class="page-card intro-card">
-          <h2 class="page-title" id="intro-title">Avant de commencer</h2>
-          <p class="page-copy intro-lead" id="intro-lead">Avant ta première session, choisis comment recevoir l'explication.</p>
+          <h2 class="page-title" id="intro-title">How the practice works</h2>
 
           <div class="intro-written" id="intro-written"></div>
-
-          <div class="intro-actions">
-            <button class="page-cta intro-continue-btn" id="intro-continue-btn" type="button">Commencer</button>
-          </div>
-
-          <p class="intro-note" id="intro-note">Tu pourras revenir à cette explication à tout moment.</p>
         </div>
       </section>
 
@@ -149,7 +151,7 @@
             <button class="text-link session-close-inline" id="session-close-inline" type="button" hidden>terminer la pratique</button>
 
             <div class="post-closing-actions" id="post-closing-actions" hidden>
-              <button class="text-link session-write-btn" id="session-write-btn" type="button">Write</button>
+              <button class="text-link session-write-btn" id="session-write-btn" type="button">Reflect</button>
               <button class="page-cta session-end-btn" id="session-end-btn" type="button">End</button>
             </div>
 
@@ -173,6 +175,26 @@
       <section class="page page-end" data-view="end" hidden>
         <div class="visual-screen end-screen">
           <div class="end-message" id="end-message">Thank you ♥</div>
+        </div>
+      </section>
+
+      <section class="page page-reflect" data-view="reflect" hidden>
+        <div class="page-card reflect-card">
+          <h2 class="reflect-title" id="reflect-title">What emerged?</h2>
+          <form class="reflect-form" id="reflect-form">
+            <textarea id="reflect-input" rows="8"></textarea>
+            <button class="reflect-send-btn" id="reflect-send-btn" type="submit" aria-label="Save note">
+              <span aria-hidden="true">→</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section class="page page-notes" data-view="notes" hidden>
+        <div class="page-card notes-card">
+          <h2 class="page-title notes-title" id="notes-title">My Notes</h2>
+          <p class="notes-empty" id="notes-empty">No notes yet.</p>
+          <div class="notes-list" id="notes-list"></div>
         </div>
       </section>
 
