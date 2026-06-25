@@ -2,7 +2,7 @@ export const STORAGE_KEYS = {
   apiKey: "elevenlabs_key",
   voiceFr: "elevenlabs_voice_fr",
   voiceEn: "elevenlabs_voice_en",
-  introSeen: "emerge_first_guide_seen_v1",
+  introSeen: "emerge_first_guide_seen_v2",
   notes: "emerge_reflection_notes",
 };
 

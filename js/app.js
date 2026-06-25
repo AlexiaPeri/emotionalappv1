@@ -174,7 +174,18 @@ function renderIntro() {
   dom.introWritten.innerHTML = "";
   t("introReadText").forEach((paragraph) => {
     const node = document.createElement("p");
-    node.textContent = paragraph;
+    const stepMatch = paragraph.match(/^(\d+\.)\s*(.*)$/);
+
+    if (stepMatch) {
+      const number = document.createElement("span");
+      number.className = "intro-step-number";
+      number.textContent = stepMatch[1];
+      node.appendChild(number);
+      node.append(` ${stepMatch[2]}`);
+    } else {
+      node.textContent = paragraph;
+    }
+
     dom.introWritten.appendChild(node);
   });
 }
@@ -234,7 +245,7 @@ function updatePageCopy() {
 }
 
 function setView(view) {
-  if (!hasSeenIntro() && view !== "first" && view !== "intro") {
+  if (!hasSeenIntro() && view !== "home" && view !== "first" && view !== "intro") {
     view = "intro";
   }
   if (view === "intro" && !hasSeenIntro()) {
@@ -318,7 +329,7 @@ function markIntroSeen() {
 }
 
 function enterFromHome() {
-  setView(hasSeenIntro() ? "practice" : "intro");
+  setView(hasSeenIntro() ? "practice" : "first");
 }
 
 function loadReflectionNotes() {
@@ -1215,7 +1226,7 @@ function init() {
   initSpeechRecognition();
   initVoices();
   setLang(state.lang);
-  setView(hasSeenIntro() ? "home" : "first");
+  setView("home");
 }
 
 init();
