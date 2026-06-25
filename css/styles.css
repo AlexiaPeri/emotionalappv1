@@ -640,6 +640,10 @@ body[data-view="home"] .page-home {
   max-width: 30rem;
 }
 
+.intro-lead:empty {
+  display: none;
+}
+
 .intro-written {
   display: grid;
   gap: 0.75rem;
@@ -886,32 +890,55 @@ body[data-view="home"] .page-home {
 }
 
 .closing-panel {
+  position: relative;
+  isolation: isolate;
   display: grid;
   min-height: min(58vh, 520px);
   grid-template-rows: 1fr auto 1fr auto;
   justify-items: center;
 }
 
+.closing-panel::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 38%;
+  left: 50%;
+  width: min(92vw, 520px);
+  height: 150px;
+  background:
+    radial-gradient(ellipse at center, rgba(198, 91, 57, 0.24) 0%, rgba(120, 50, 32, 0.12) 42%, transparent 72%);
+  filter: blur(20px);
+  transform: translate(-50%, -50%);
+}
+
 .closing-panel p {
   grid-row: 2;
-  color: rgba(199, 111, 76, 0.94);
+  color: rgba(222, 126, 86, 0.96);
   font-size: clamp(1.08rem, 4vw, 1.32rem);
   font-weight: 300;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-shadow: 0 0 18px rgba(199, 99, 63, 0.12);
+  letter-spacing: 0.08em;
+  text-transform: none;
+  text-shadow:
+    0 0 18px rgba(199, 99, 63, 0.18),
+    0 2px 10px rgba(0, 0, 0, 0.28);
 }
 
 .session-continue-btn {
   grid-row: 4;
   margin-bottom: clamp(1.4rem, 6vh, 3.4rem);
+  min-height: 52px;
+  padding-inline: 1.35rem;
+  border-color: rgba(218, 166, 98, 0.32);
+  color: rgba(231, 189, 118, 0.92);
+  font-size: 0.78rem;
 }
 
 .post-closing-actions {
   display: grid;
   width: min(100%, 250px);
   grid-template-columns: minmax(0, 1fr);
-  gap: 0.85rem;
+  gap: 1.35rem;
   justify-content: center;
 }
 
