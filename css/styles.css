@@ -887,24 +887,39 @@ body[data-view="home"] .page-home {
 
 .closing-panel {
   display: grid;
-  gap: 1rem;
   min-height: min(58vh, 520px);
-  align-content: center;
+  grid-template-rows: 1fr auto 1fr auto;
   justify-items: center;
 }
 
 .closing-panel p {
+  grid-row: 2;
   color: rgba(244, 229, 207, 0.7);
-  font-size: 0.9rem;
-  letter-spacing: 0.08em;
+  font-size: clamp(1.08rem, 4vw, 1.32rem);
+  font-weight: 300;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
+.session-continue-btn {
+  grid-row: 4;
+  margin-bottom: clamp(1.4rem, 6vh, 3.4rem);
+}
+
 .post-closing-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
+  display: grid;
+  width: min(100%, 350px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.35rem, 6vw, 2rem);
   justify-content: center;
+}
+
+.post-closing-actions .text-link,
+.post-closing-actions .page-cta {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
 }
 
 .session-close-inline {
@@ -1012,7 +1027,7 @@ body[data-view="home"] .page-home {
   place-items: center;
   border: 2px solid rgba(245, 245, 245, 0.22);
   border-radius: 3.55rem;
-  background-image: url("../assets/end-bg-thank-you-filaments.png");
+  background-image: url("../assets/end-bg-thank-you-v1.png");
   background-position: center;
   background-size: cover;
   box-shadow:
