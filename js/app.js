@@ -74,7 +74,7 @@ const dom = {
 };
 
 const state = {
-  lang: "en",
+  lang: getInitialLang(),
   isActive: false,
   isSpeaking: false,
   recognition: null,
@@ -105,6 +105,11 @@ const state = {
 
 function t(key) {
   return I18N[state.lang][key] || key;
+}
+
+function getInitialLang() {
+  const language = navigator.language || navigator.userLanguage || "";
+  return language.toLowerCase().startsWith("fr") ? "fr" : "en";
 }
 
 function setStatus(message) {
@@ -278,6 +283,9 @@ function setView(view) {
   }
 
   if (view === "practice") {
+    if (!state.isActive && state.sessionPhase !== "timed" && state.sessionPhase !== "open" && state.sessionPhase !== "closing") {
+      showPracticeSetup();
+    }
     setStatus(state.isActive ? t("listening") : t("press"));
   } else if (view === "intro") {
     renderIntro();
@@ -1300,6 +1308,17 @@ function initUi() {
   }
   if (dom.reflectForm) {
     dom.reflectForm.addEventListener("submit", handleReflectSubmit);
+  }
+  if (dom.reflectSendButton) {
+    dom.reflectSendButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (dom.reflectSendButton.disabled) return;
+      if (dom.reflectForm?.requestSubmit) {
+        dom.reflectForm.requestSubmit();
+      } else {
+        handleReflectSubmit(event);
+      }
+    });
   }
 }
 
