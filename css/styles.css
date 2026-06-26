@@ -217,13 +217,12 @@ button {
   z-index: 28;
   display: flex;
   width: min(calc(100vw - 3.55rem), 334px);
-  gap: 0.22rem;
-  padding: 0.28rem;
-  border: 1px solid rgba(218, 166, 98, 0.18);
+  gap: 0.28rem;
+  padding: 0;
+  border: 0;
   border-radius: 999px;
-  background: rgba(7, 6, 5, 0.8);
+  background: transparent;
   transform: translateX(-50%);
-  backdrop-filter: blur(16px);
 }
 
 .page-btn {
@@ -984,7 +983,7 @@ body[data-view="first"] .page-first {
   display: grid;
   width: min(100%, 250px);
   grid-template-columns: minmax(0, 1fr);
-  gap: 1.95rem;
+  gap: 3rem;
   justify-content: center;
 }
 
@@ -1220,11 +1219,24 @@ body[data-view="first"] .page-first {
   gap: 1rem;
 }
 
+.page-notes .notes-card {
+  align-content: center;
+  background:
+    radial-gradient(ellipse at 50% 64%, rgba(151, 84, 36, 0.13), transparent 42%),
+    radial-gradient(ellipse at 50% 42%, rgba(48, 22, 15, 0.52), transparent 56%),
+    linear-gradient(180deg, #1f0e09 0%, #120b08 48%, #0a0806 100%);
+}
+
 .notes-actions {
   display: grid;
   justify-self: center;
   width: min(100%, 230px);
   gap: 0.85rem;
+}
+
+.page-notes .notes-actions {
+  width: min(100%, 236px);
+  gap: 2.15rem;
 }
 
 .notes-actions .page-cta,
@@ -1242,6 +1254,18 @@ body[data-view="first"] .page-first {
   font-size: 0.72rem;
   letter-spacing: 0.17em;
   text-indent: 0.17em;
+}
+
+.page-notes .notes-actions .page-cta,
+.page-notes .notes-actions .text-link {
+  border-color: rgba(203, 139, 72, 0.9);
+  background:
+    linear-gradient(180deg, rgba(20, 11, 8, 0.9) 0%, rgba(10, 7, 6, 0.94) 100%);
+  box-shadow:
+    0 0 0 1px rgba(203, 139, 72, 0.18) inset,
+    0 14px 30px rgba(0, 0, 0, 0.34),
+    0 0 34px rgba(151, 84, 36, 0.12);
+  color: rgba(246, 218, 169, 0.94);
 }
 
 .notes-title {
