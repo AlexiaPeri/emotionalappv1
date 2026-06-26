@@ -182,7 +182,7 @@
       </section>
 
       <section class="page page-end" data-view="end" hidden>
-        <div class="visual-screen end-screen">
+        <div class="visual-screen end-screen" id="end-screen" role="button" tabindex="0">
           <div class="end-message" id="end-message">Thank you ♥</div>
         </div>
       </section>
@@ -202,6 +202,16 @@
       <section class="page page-notes" data-view="notes" hidden>
         <div class="page-card notes-card">
           <h2 class="page-title notes-title" id="notes-title">My Notes</h2>
+          <div class="notes-actions">
+            <button class="page-cta notes-add-btn" id="notes-add-today-btn" type="button">Add notes for today</button>
+            <button class="text-link notes-read-btn" id="notes-read-btn" type="button">Read my notes</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page page-notes-list" data-view="notes-list" hidden>
+        <div class="page-card notes-card">
+          <h2 class="page-title notes-title" id="notes-list-title">My Notes</h2>
           <p class="notes-empty" id="notes-empty">No notes yet.</p>
           <div class="notes-list" id="notes-list"></div>
         </div>
@@ -209,7 +219,7 @@
 
       <section class="page page-faq" data-view="faq" hidden>
         <div class="page-card">
-          <p class="page-copy subtle faq-intro" id="faq-intro">Make sure you understand the practice</p>
+          <h2 class="page-title faq-title" id="faq-intro">Keep exploring how to use Emerge</h2>
           <div class="faq-list" id="faq-list"></div>
 
           <div class="faq-contact">

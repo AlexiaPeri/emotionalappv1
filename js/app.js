@@ -42,12 +42,16 @@ const dom = {
   groundKicker: document.getElementById("ground-kicker"),
   groundTitle: document.getElementById("ground-title"),
   groundReturnButton: document.getElementById("ground-return-btn"),
+  endScreen: document.getElementById("end-screen"),
   endMessage: document.getElementById("end-message"),
   reflectTitle: document.getElementById("reflect-title"),
   reflectForm: document.getElementById("reflect-form"),
   reflectInput: document.getElementById("reflect-input"),
   reflectSendButton: document.getElementById("reflect-send-btn"),
   notesTitle: document.getElementById("notes-title"),
+  notesListTitle: document.getElementById("notes-list-title"),
+  notesAddTodayButton: document.getElementById("notes-add-today-btn"),
+  notesReadButton: document.getElementById("notes-read-btn"),
   notesEmpty: document.getElementById("notes-empty"),
   notesList: document.getElementById("notes-list"),
   status: document.getElementById("status"),
@@ -93,6 +97,8 @@ const state = {
   viewBeforeGround: "practice",
   wasActiveBeforeGround: false,
   groundingCycleId: 0,
+  reflectMode: "new",
+  reflectAfterSaveView: "end",
   reflectSaveTimer: null,
   view: "home",
 };
@@ -232,6 +238,9 @@ function updatePageCopy() {
   if (dom.reflectInput) dom.reflectInput.placeholder = t("reflectPlaceholder");
   if (dom.reflectSendButton) dom.reflectSendButton.setAttribute("aria-label", t("reflectSendLabel"));
   if (dom.notesTitle) dom.notesTitle.textContent = t("notesTitle");
+  if (dom.notesListTitle) dom.notesListTitle.textContent = t("notesTitle");
+  if (dom.notesAddTodayButton) dom.notesAddTodayButton.textContent = t("notesAddTodayCta");
+  if (dom.notesReadButton) dom.notesReadButton.textContent = t("notesReadCta");
   if (dom.notesEmpty) dom.notesEmpty.textContent = t("notesEmpty");
   if (dom.faqIntro) dom.faqIntro.textContent = t("faqIntro");
   if (dom.contactTitle) dom.contactTitle.textContent = t("contactTitle");
@@ -255,7 +264,8 @@ function setView(view) {
   state.view = view;
   document.body.dataset.view = view;
   dom.pageButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.view === view);
+    const isNotesSubpage = view === "notes-list" && button.dataset.view === "notes";
+    button.classList.toggle("active", button.dataset.view === view || isNotesSubpage);
   });
   dom.pages.forEach((page) => {
     const active = page.dataset.view === view;
@@ -272,7 +282,7 @@ function setView(view) {
   } else if (view === "intro") {
     renderIntro();
     setStatus(t("press"));
-  } else if (view === "notes") {
+  } else if (view === "notes-list") {
     renderNotes();
     setStatus(t("press"));
   } else if (!state.isActive) {
@@ -328,6 +338,10 @@ function markIntroSeen() {
   localStorage.setItem(STORAGE_KEYS.introSeen, "true");
 }
 
+function clearLegacyTestNotes() {
+  localStorage.removeItem("emerge_reflection_notes");
+}
+
 function enterFromHome() {
   setView(hasSeenIntro() ? "practice" : "first");
 }
@@ -336,9 +350,7 @@ function loadReflectionNotes() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.notes) || "[]");
     if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter((note) => note && typeof note.text === "string" && note.text.trim())
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return parsed.filter((note) => note && typeof note.text === "string" && note.text.trim());
   } catch {
     return [];
   }
@@ -351,7 +363,40 @@ function saveReflectionNote(text) {
     createdAt: new Date().toISOString(),
     text: text.trim(),
   };
-  localStorage.setItem(STORAGE_KEYS.notes, JSON.stringify([note, ...notes]));
+  localStorage.setItem(STORAGE_KEYS.notes, JSON.stringify([...notes, note]));
+}
+
+function isSameLocalDay(value, reference = new Date()) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return false;
+  return (
+    date.getFullYear() === reference.getFullYear() &&
+    date.getMonth() === reference.getMonth() &&
+    date.getDate() === reference.getDate()
+  );
+}
+
+function getTodayReflectionNotes() {
+  return loadReflectionNotes()
+    .filter((note) => isSameLocalDay(note.createdAt))
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+}
+
+function getTodayReflectionText() {
+  return getTodayReflectionNotes().map((note) => note.text).join("\n\n");
+}
+
+function saveTodayReflectionNote(text) {
+  const existingTodayNotes = getTodayReflectionNotes();
+  const otherNotes = loadReflectionNotes().filter((note) => !isSameLocalDay(note.createdAt));
+  const firstTodayNote = existingTodayNotes[0];
+  const note = {
+    id: firstTodayNote?.id || String(Date.now()),
+    createdAt: firstTodayNote?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    text: text.trim(),
+  };
+  localStorage.setItem(STORAGE_KEYS.notes, JSON.stringify([...otherNotes, note]));
 }
 
 function formatNoteDate(value) {
@@ -366,7 +411,8 @@ function formatNoteDate(value) {
 function renderNotes() {
   if (!dom.notesList || !dom.notesEmpty) return;
 
-  const notes = loadReflectionNotes();
+  const notes = loadReflectionNotes()
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   dom.notesList.innerHTML = "";
   dom.notesEmpty.hidden = notes.length > 0;
 
@@ -925,6 +971,8 @@ function resetReflectForm() {
     clearTimeout(state.reflectSaveTimer);
     state.reflectSaveTimer = null;
   }
+  state.reflectMode = "new";
+  state.reflectAfterSaveView = "end";
   if (dom.reflectInput) dom.reflectInput.value = "";
   if (dom.reflectSendButton) {
     dom.reflectSendButton.disabled = false;
@@ -934,10 +982,28 @@ function resetReflectForm() {
   }
 }
 
-function openReflectPage() {
+function openReflectPage(options = {}) {
   resetReflectForm();
+  state.reflectMode = options.mode || "new";
+  state.reflectAfterSaveView = options.afterSaveView || "end";
+  if (dom.reflectInput && options.prefill) {
+    dom.reflectInput.value = options.prefill;
+  }
   setView("reflect");
   dom.reflectInput?.focus();
+}
+
+function openTodayNotesEditor() {
+  openReflectPage({
+    mode: "today",
+    afterSaveView: "notes-list",
+    prefill: getTodayReflectionText(),
+  });
+}
+
+function openNotesList() {
+  renderNotes();
+  setView("notes-list");
 }
 
 function handleReflectSubmit(event) {
@@ -949,7 +1015,11 @@ function handleReflectSubmit(event) {
     return;
   }
 
-  saveReflectionNote(text);
+  if (state.reflectMode === "today") {
+    saveTodayReflectionNote(text);
+  } else {
+    saveReflectionNote(text);
+  }
   renderNotes();
   if (dom.reflectSendButton) {
     dom.reflectSendButton.disabled = true;
@@ -957,10 +1027,15 @@ function handleReflectSubmit(event) {
     dom.reflectSendButton.textContent = t("reflectSaved");
   }
   state.reflectSaveTimer = setTimeout(() => {
+    const nextView = state.reflectAfterSaveView;
     state.reflectSaveTimer = null;
-    setView("end");
+    setView(nextView);
     resetReflectForm();
   }, 500);
+}
+
+function openFaqFromEnd() {
+  setView("faq");
 }
 
 async function triggerGrounding() {
@@ -1200,13 +1275,28 @@ function initUi() {
     dom.sessionCloseInline.addEventListener("click", closeSession);
   }
   if (dom.sessionWriteButton) {
-    dom.sessionWriteButton.addEventListener("click", openReflectPage);
+    dom.sessionWriteButton.addEventListener("click", () => openReflectPage());
   }
   if (dom.sessionEndButton) {
     dom.sessionEndButton.addEventListener("click", endSession);
   }
   if (dom.groundReturnButton) {
     dom.groundReturnButton.addEventListener("click", returnFromGround);
+  }
+  if (dom.endScreen) {
+    dom.endScreen.addEventListener("click", openFaqFromEnd);
+    dom.endScreen.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openFaqFromEnd();
+      }
+    });
+  }
+  if (dom.notesAddTodayButton) {
+    dom.notesAddTodayButton.addEventListener("click", openTodayNotesEditor);
+  }
+  if (dom.notesReadButton) {
+    dom.notesReadButton.addEventListener("click", openNotesList);
   }
   if (dom.reflectForm) {
     dom.reflectForm.addEventListener("submit", handleReflectSubmit);
@@ -1221,6 +1311,7 @@ function initVoices() {
 }
 
 function init() {
+  clearLegacyTestNotes();
   initSettings();
   initUi();
   initSpeechRecognition();

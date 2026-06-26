@@ -3,7 +3,7 @@ export const STORAGE_KEYS = {
   voiceFr: "elevenlabs_voice_fr",
   voiceEn: "elevenlabs_voice_en",
   introSeen: "emerge_first_guide_seen_v2",
-  notes: "emerge_reflection_notes",
+  notes: "emerge_reflection_notes_v2",
 };
 
 export const I18N = {
@@ -79,8 +79,10 @@ export const I18N = {
     reflectSaved: "Enregistré",
     reflectEmptyStatus: "Écris quelques mots avant d'enregistrer.",
     notesTitle: "Mes notes",
+    notesAddTodayCta: "Ajouter des notes aujourd'hui",
+    notesReadCta: "Lire mes notes",
     notesEmpty: "Aucune note pour le moment.",
-    faqIntro: "Assure-toi de bien comprendre la pratique",
+    faqIntro: "Continue à explorer comment utiliser Emerge",
     contactTitle: "Ta question n'est pas ici ?",
     contactCta: "Écrire à Alexia",
     howTitle: "Le geste",
@@ -194,8 +196,10 @@ export const I18N = {
     reflectSaved: "Saved",
     reflectEmptyStatus: "Write a few words before saving.",
     notesTitle: "My Notes",
+    notesAddTodayCta: "Add notes for today",
+    notesReadCta: "Read my notes",
     notesEmpty: "No notes yet.",
-    faqIntro: "Make sure you understand the practice",
+    faqIntro: "Keep exploring how to use Emerge",
     contactTitle: "Your question is not in there ?",
     contactCta: "Write to Alexia",
     howTitle: "The gesture",
