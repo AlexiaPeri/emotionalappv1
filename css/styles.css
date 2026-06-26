@@ -983,7 +983,7 @@ body[data-view="first"] .page-first {
   display: grid;
   width: min(100%, 250px);
   grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
+  gap: 8.6rem;
   justify-content: center;
 }
 
@@ -1236,7 +1236,7 @@ body[data-view="first"] .page-first {
 
 .page-notes .notes-actions {
   width: min(100%, 236px);
-  gap: 2.15rem;
+  gap: 8.6rem;
 }
 
 .notes-actions .page-cta,
