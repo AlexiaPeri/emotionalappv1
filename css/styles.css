@@ -751,6 +751,17 @@ body[data-view="first"] .page-first {
   color: rgba(207, 153, 91, 0.92);
 }
 
+.intro-return-btn {
+  justify-self: center;
+  margin-top: 1.15rem;
+  min-height: 42px;
+  padding-inline: 1.15rem;
+  border-color: rgba(218, 166, 98, 0.28);
+  color: rgba(231, 189, 118, 0.86);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+}
+
 .practice-card {
   display: flex;
   flex-direction: column;
@@ -781,7 +792,7 @@ body[data-view="first"] .page-first {
 .closing-panel[hidden],
 .post-closing-actions[hidden],
 .session-close-inline[hidden],
-.ground-btn[hidden],
+.practice-support-actions[hidden],
 .practice-focus[hidden] {
   display: none;
 }
@@ -918,7 +929,7 @@ body[data-view="first"] .page-first {
   min-height: min(58vh, 500px);
   align-content: center;
   justify-items: center;
-  transform: translateY(-1rem);
+  transform: translateY(-2.45rem);
 }
 
 .practice-focus-logo {
@@ -1013,20 +1024,43 @@ body[data-view="first"] .page-first {
   margin-top: 0.4rem;
 }
 
-.ground-btn {
+.practice-support-actions {
+  display: grid;
+  width: min(100%, 302px);
+  gap: 0.72rem;
   align-self: center;
-  min-height: 38px;
   margin-top: auto;
+}
+
+.practice-support-btn {
+  width: 100%;
+  min-height: 38px;
   padding: 0 1rem;
   border: 1px solid rgba(218, 166, 98, 0.2);
   border-radius: 999px;
-  background: transparent;
+  background: rgba(7, 6, 5, 0.18);
   color: rgba(244, 229, 207, 0.54);
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.practice-remind-btn,
+.practice-complete-btn {
+  border-color: rgba(218, 166, 98, 0.24);
+  color: rgba(244, 229, 207, 0.68);
+}
+
+.practice-complete-btn {
+  color: rgba(231, 189, 118, 0.78);
+}
+
+.practice-safety-btn {
+  margin-top: 1.8rem;
+  border-color: rgba(218, 166, 98, 0.16);
+  color: rgba(244, 229, 207, 0.46);
 }
 
 .visual-screen {
@@ -1354,7 +1388,7 @@ body[data-view="end"] .page-end {
   justify-content: center;
 }
 
-.ground-btn:hover {
+.practice-support-btn:hover {
   border-color: rgba(218, 166, 98, 0.42);
   color: rgba(244, 229, 207, 0.82);
 }

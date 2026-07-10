@@ -17,6 +17,7 @@ const dom = {
   homeStartBtn: document.getElementById("home-start-btn"),
   introTitle: document.getElementById("intro-title"),
   introWritten: document.getElementById("intro-written"),
+  introReturnButton: document.getElementById("intro-return-btn"),
   practiceSetup: document.getElementById("practice-setup"),
   practiceLive: document.getElementById("practice-live"),
   durationPrompt: document.getElementById("duration-prompt"),
@@ -39,6 +40,9 @@ const dom = {
   sessionEndButton: document.getElementById("session-end-btn"),
   sessionContinueButton: document.getElementById("session-continue-btn"),
   sessionCloseInline: document.getElementById("session-close-inline"),
+  practiceSupportActions: document.getElementById("practice-support-actions"),
+  practiceRemindButton: document.getElementById("practice-remind-btn"),
+  practiceCompleteButton: document.getElementById("practice-complete-btn"),
   groundKicker: document.getElementById("ground-kicker"),
   groundTitle: document.getElementById("ground-title"),
   groundReturnButton: document.getElementById("ground-return-btn"),
@@ -96,6 +100,9 @@ const state = {
   closingCancelled: false,
   viewBeforeGround: "practice",
   wasActiveBeforeGround: false,
+  viewBeforeGuide: "practice",
+  wasActiveBeforeGuide: false,
+  guideReturnToPractice: false,
   groundingCycleId: 0,
   reflectMode: "new",
   reflectAfterSaveView: "end",
@@ -230,12 +237,15 @@ function updatePageCopy() {
   if (dom.practiceTitle) dom.practiceTitle.textContent = t("practiceTitle");
   if (dom.practiceLead) dom.practiceLead.textContent = t("practiceLead");
   if (dom.practiceBody) dom.practiceBody.textContent = t("practiceBody");
-  if (dom.groundButton) dom.groundButton.textContent = t("groundCta");
   if (dom.sessionContinueButton) dom.sessionContinueButton.textContent = t("sessionContinuePracticeCta");
   if (dom.sessionCloseInline) dom.sessionCloseInline.textContent = t("sessionClosePracticeCta");
   if (dom.sessionWriteButton) dom.sessionWriteButton.textContent = t("sessionWriteCta");
   if (dom.sessionEndButton) dom.sessionEndButton.textContent = t("sessionEndCta");
+  if (dom.practiceRemindButton) dom.practiceRemindButton.textContent = t("remindPracticeCta");
+  if (dom.practiceCompleteButton) dom.practiceCompleteButton.textContent = t("completePracticeCta");
+  if (dom.introReturnButton) dom.introReturnButton.textContent = t("introReturnCta");
   if (dom.groundKicker) dom.groundKicker.textContent = t("groundCta");
+  if (dom.groundButton) dom.groundButton.textContent = t("safetyStopCta");
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
   if (dom.groundReturnButton) dom.groundReturnButton.textContent = t("groundReturnCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
@@ -258,12 +268,20 @@ function updatePageCopy() {
   renderNotes();
 }
 
+function updateIntroReturnButton() {
+  if (!dom.introReturnButton) return;
+  dom.introReturnButton.hidden = !(state.view === "intro" && state.guideReturnToPractice);
+}
+
 function setView(view) {
   if (!hasSeenIntro() && view !== "home" && view !== "first" && view !== "intro") {
     view = "intro";
   }
   if (view === "intro" && !hasSeenIntro()) {
     markIntroSeen();
+  }
+  if (view !== "intro") {
+    state.guideReturnToPractice = false;
   }
 
   state.view = view;
@@ -296,6 +314,7 @@ function setView(view) {
   } else if (!state.isActive) {
     setStatus(t("press"));
   }
+  updateIntroReturnButton();
 }
 
 function setLang(lang) {
@@ -555,6 +574,7 @@ function showPracticeSetup(message = "") {
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
   if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   if (dom.practiceFocus) dom.practiceFocus.hidden = false;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
   document.body.classList.remove("session-active", "session-complete", "session-open");
   updateDurationControls();
@@ -569,6 +589,7 @@ function showPracticeLive() {
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
   if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = false;
   if (dom.groundButton) dom.groundButton.hidden = false;
 }
 
@@ -928,6 +949,7 @@ async function beginClosingGuidance() {
   state.closingCancelled = false;
   document.body.classList.add("session-closing");
   if (dom.practiceFocus) dom.practiceFocus.hidden = true;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
   if (dom.closingPanel) dom.closingPanel.hidden = false;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
@@ -943,6 +965,7 @@ function showPostClosingActions() {
   document.body.classList.remove("session-closing", "session-active", "session-open");
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = false;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
   setStatus(t("postClosingStatus"));
 }
@@ -957,8 +980,9 @@ function continueSession() {
   document.body.classList.add("session-active", "session-open");
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.practiceFocus) dom.practiceFocus.hidden = false;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = false;
   if (dom.groundButton) dom.groundButton.hidden = false;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = false;
+  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   startVoiceCapture();
 }
 
@@ -1075,6 +1099,42 @@ function returnFromGround() {
     setStatus(t("listening"));
   }
   state.wasActiveBeforeGround = false;
+}
+
+function openGuideFromPractice() {
+  state.viewBeforeGuide = state.view;
+  state.wasActiveBeforeGuide = state.isActive;
+  state.guideReturnToPractice = true;
+  if (state.isActive) {
+    pauseRecognitionForTts();
+    state.isActive = false;
+  }
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  state.recognitionPauseRequested = false;
+  document.body.classList.remove("session-active");
+  setView("intro");
+  updateButton();
+  updateIntroReturnButton();
+}
+
+function returnFromGuide() {
+  const shouldResumePractice = state.wasActiveBeforeGuide && (state.sessionPhase === "timed" || state.sessionPhase === "open");
+  const returnView = state.viewBeforeGuide || "practice";
+  state.guideReturnToPractice = false;
+  setView(returnView);
+  if (returnView === "practice" && (state.sessionPhase === "timed" || state.sessionPhase === "open")) {
+    showPracticeLive();
+  }
+  if (shouldResumePractice) {
+    state.isActive = true;
+    document.body.classList.add("session-active");
+    updateButton();
+    scheduleRecognitionRestart(150);
+    setStatus(t("listening"));
+  }
+  state.wasActiveBeforeGuide = false;
+  state.viewBeforeGuide = "practice";
 }
 
 function updateTtsStatus() {
@@ -1275,6 +1335,15 @@ function initUi() {
   }
   if (dom.groundButton) {
     dom.groundButton.addEventListener("click", triggerGrounding);
+  }
+  if (dom.practiceRemindButton) {
+    dom.practiceRemindButton.addEventListener("click", openGuideFromPractice);
+  }
+  if (dom.practiceCompleteButton) {
+    dom.practiceCompleteButton.addEventListener("click", closeSession);
+  }
+  if (dom.introReturnButton) {
+    dom.introReturnButton.addEventListener("click", returnFromGuide);
   }
   if (dom.sessionContinueButton) {
     dom.sessionContinueButton.addEventListener("click", continueSession);
