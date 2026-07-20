@@ -284,6 +284,65 @@ function clearGuideReturnState() {
   state.viewBeforeGuide = "practice";
 }
 
+function cancelClosingForNavigation(nextView) {
+  if (state.sessionPhase !== "closing") return;
+  state.closingCancelled = true;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  document.body.classList.remove("session-closing", "session-complete");
+  if (dom.closingPanel) dom.closingPanel.hidden = true;
+  if (dom.postClosingActions) dom.postClosingActions.hidden = true;
+  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
+
+  if (nextView === "practice") {
+    state.sessionPhase = "open";
+    state.isActive = true;
+    document.body.classList.add("session-active", "session-open");
+    if (dom.practiceFocus) dom.practiceFocus.hidden = false;
+    if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = false;
+    if (dom.groundButton) dom.groundButton.hidden = false;
+    updateButton();
+    scheduleRecognitionRestart(150);
+    return;
+  }
+
+  state.sessionPhase = "setup";
+  state.isActive = false;
+  document.body.classList.remove("session-active", "session-open");
+  if (dom.practiceFocus) dom.practiceFocus.hidden = false;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
+  if (dom.groundButton) dom.groundButton.hidden = true;
+  updateButton();
+}
+
+function cancelGroundingForNavigation(nextView) {
+  if (state.view !== "ground" || nextView === "ground") return;
+  state.groundingCycleId += 1;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+
+  if (nextView === "practice" && state.wasActiveBeforeGround && (state.sessionPhase === "timed" || state.sessionPhase === "open")) {
+    state.isActive = true;
+    document.body.classList.add("session-active");
+    updateButton();
+    scheduleRecognitionRestart(150);
+    setStatus(t("listening"));
+    state.wasActiveBeforeGround = false;
+  } else if (nextView !== "practice") {
+    clearSessionTimer();
+    state.sessionPhase = "setup";
+    state.isActive = false;
+    document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
+    state.wasActiveBeforeGround = false;
+    updateButton();
+  }
+}
+
+function cancelGuidanceForNavigation(nextView) {
+  cancelClosingForNavigation(nextView);
+  cancelGroundingForNavigation(nextView);
+}
+
 function setView(view, options = {}) {
   if (!hasSeenIntro() && view !== "home" && view !== "first" && view !== "intro") {
     view = "intro";
@@ -291,6 +350,7 @@ function setView(view, options = {}) {
   if (view === "intro" && !hasSeenIntro()) {
     markIntroSeen();
   }
+  cancelGuidanceForNavigation(view);
   if (view === "intro" && !options.returnToPractice) {
     clearGuideReturnState();
   } else if (view !== "intro") {
