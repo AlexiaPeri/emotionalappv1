@@ -270,18 +270,31 @@ function updatePageCopy() {
 
 function updateIntroReturnButton() {
   if (!dom.introReturnButton) return;
-  dom.introReturnButton.hidden = !(state.view === "intro" && state.guideReturnToPractice);
+  const canReturnToPractice =
+    state.view === "intro" &&
+    state.guideReturnToPractice &&
+    state.wasActiveBeforeGuide &&
+    (state.sessionPhase === "timed" || state.sessionPhase === "open");
+  dom.introReturnButton.hidden = !canReturnToPractice;
 }
 
-function setView(view) {
+function clearGuideReturnState() {
+  state.guideReturnToPractice = false;
+  state.wasActiveBeforeGuide = false;
+  state.viewBeforeGuide = "practice";
+}
+
+function setView(view, options = {}) {
   if (!hasSeenIntro() && view !== "home" && view !== "first" && view !== "intro") {
     view = "intro";
   }
   if (view === "intro" && !hasSeenIntro()) {
     markIntroSeen();
   }
-  if (view !== "intro") {
-    state.guideReturnToPractice = false;
+  if (view === "intro" && !options.returnToPractice) {
+    clearGuideReturnState();
+  } else if (view !== "intro") {
+    clearGuideReturnState();
   }
 
   state.view = view;
@@ -1113,7 +1126,7 @@ function openGuideFromPractice() {
   state.isSpeaking = false;
   state.recognitionPauseRequested = false;
   document.body.classList.remove("session-active");
-  setView("intro");
+  setView("intro", { returnToPractice: true });
   updateButton();
   updateIntroReturnButton();
 }

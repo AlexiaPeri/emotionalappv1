@@ -762,6 +762,10 @@ body[data-view="first"] .page-first {
   letter-spacing: 0.08em;
 }
 
+.intro-return-btn[hidden] {
+  display: none;
+}
+
 .practice-card {
   display: flex;
   flex-direction: column;
