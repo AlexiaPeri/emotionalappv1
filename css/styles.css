@@ -230,8 +230,18 @@ button {
   min-height: 30px;
   padding: 0 0.24rem;
   border-radius: 999px;
+  background: rgba(7, 6, 5, 0.94);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
   font-size: 0.56rem;
   letter-spacing: 0.08em;
+  backdrop-filter: blur(14px);
+}
+
+.page-btn.active {
+  background: rgba(136, 63, 40, 0.88);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 229, 197, 0.12);
 }
 
 .pages {
@@ -1146,12 +1156,87 @@ body[data-view="first"] .page-first {
   line-height: 1.18;
 }
 
-.visual-return-btn {
+.ground-actions {
+  display: grid;
   grid-row: 3;
+  width: min(100%, 286px);
+  gap: 1rem;
   align-self: end;
-  border-color: rgba(91, 55, 51, 0.22);
-  background: rgba(255, 238, 238, 0.42);
-  color: rgba(91, 55, 51, 0.82);
+  margin-bottom: 0.4rem;
+  padding: 1rem;
+  border: 1px solid rgba(122, 78, 74, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 239, 239, 0.34);
+  box-shadow:
+    0 18px 40px rgba(122, 78, 74, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.ground-actions[hidden] {
+  display: none;
+}
+
+.ground-choice-btn {
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1px solid rgba(117, 74, 69, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 248, 245, 0.58);
+  color: rgba(87, 55, 53, 0.82);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow:
+    0 10px 24px rgba(117, 74, 69, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.ground-more-btn {
+  background: rgba(244, 230, 237, 0.56);
+  color: rgba(92, 62, 72, 0.8);
+}
+
+.support-screen {
+  cursor: pointer;
+}
+
+.support-overlay {
+  grid-template-rows: 1fr auto 1fr;
+  padding: 2.2rem 1.35rem;
+}
+
+.support-card {
+  grid-row: 2;
+  width: min(100%, 312px);
+  padding: 1.3rem 1.15rem 1.35rem;
+  border: 1px solid rgba(117, 74, 69, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 242, 242, 0.36);
+  color: rgba(83, 54, 55, 0.86);
+  box-shadow:
+    0 20px 46px rgba(117, 74, 69, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  backdrop-filter: blur(9px);
+}
+
+.support-title {
+  margin-bottom: 1rem;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.support-list {
+  display: grid;
+  gap: 0.82rem;
+  list-style: none;
+  text-align: left;
+}
+
+.support-list li {
+  font-size: 0.88rem;
+  line-height: 1.45;
 }
 
 .end-screen {
@@ -1373,6 +1458,9 @@ body[data-view="first"] .page-first {
 body[data-view="ground"] .top-bar,
 body[data-view="ground"] .page-nav,
 body[data-view="ground"] .settings-btn,
+body[data-view="support"] .top-bar,
+body[data-view="support"] .page-nav,
+body[data-view="support"] .settings-btn,
 body[data-view="end"] .top-bar,
 body[data-view="end"] .page-nav,
 body[data-view="end"] .settings-btn {
@@ -1380,6 +1468,7 @@ body[data-view="end"] .settings-btn {
 }
 
 body[data-view="ground"] .pages,
+body[data-view="support"] .pages,
 body[data-view="end"] .pages {
   width: 100%;
   max-width: none;
@@ -1387,6 +1476,7 @@ body[data-view="end"] .pages {
 }
 
 body[data-view="ground"] .pages,
+body[data-view="support"] .pages,
 body[data-view="end"] .pages {
   display: flex;
   min-height: 100vh;
@@ -1396,6 +1486,7 @@ body[data-view="end"] .pages {
 }
 
 body[data-view="ground"] .page-ground,
+body[data-view="support"] .page-support,
 body[data-view="end"] .page-end {
   display: flex;
   width: 100%;

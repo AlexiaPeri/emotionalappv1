@@ -181,7 +181,21 @@
               <div class="section-kicker" id="ground-kicker">Ground</div>
               <h2 id="ground-title">You are here</h2>
             </div>
-            <button class="text-link visual-return-btn" id="ground-return-btn" type="button">Return to practice</button>
+            <div class="ground-actions" id="ground-actions" hidden>
+              <button class="ground-choice-btn ground-better-btn" id="ground-better-btn" type="button">I'm feeling better</button>
+              <button class="ground-choice-btn ground-more-btn" id="ground-more-btn" type="button">I still need support</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page page-support" data-view="support" hidden>
+        <div class="visual-screen ground-screen support-screen" id="support-screen" role="button" tabindex="0">
+          <div class="visual-overlay support-overlay">
+            <div class="support-card">
+              <p class="support-title" id="support-title">Here are a few things that often help:</p>
+              <ul class="support-list" id="support-list"></ul>
+            </div>
           </div>
         </div>
       </section>

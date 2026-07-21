@@ -45,7 +45,12 @@ const dom = {
   practiceCompleteButton: document.getElementById("practice-complete-btn"),
   groundKicker: document.getElementById("ground-kicker"),
   groundTitle: document.getElementById("ground-title"),
-  groundReturnButton: document.getElementById("ground-return-btn"),
+  groundActions: document.getElementById("ground-actions"),
+  groundBetterButton: document.getElementById("ground-better-btn"),
+  groundMoreButton: document.getElementById("ground-more-btn"),
+  supportScreen: document.getElementById("support-screen"),
+  supportTitle: document.getElementById("support-title"),
+  supportList: document.getElementById("support-list"),
   endScreen: document.getElementById("end-screen"),
   endMessage: document.getElementById("end-message"),
   reflectTitle: document.getElementById("reflect-title"),
@@ -98,8 +103,6 @@ const state = {
   sessionEndsAt: 0,
   audioContext: null,
   closingCancelled: false,
-  viewBeforeGround: "practice",
-  wasActiveBeforeGround: false,
   viewBeforeGuide: "practice",
   wasActiveBeforeGuide: false,
   guideReturnToPractice: false,
@@ -187,6 +190,16 @@ function renderFaq() {
   });
 }
 
+function renderSupportTips() {
+  if (!dom.supportList) return;
+  dom.supportList.innerHTML = "";
+  I18N[state.lang].supportTips.forEach((tip) => {
+    const item = document.createElement("li");
+    item.textContent = tip;
+    dom.supportList.appendChild(item);
+  });
+}
+
 function renderIntro() {
   if (!dom.introWritten) return;
   dom.introWritten.innerHTML = "";
@@ -247,7 +260,9 @@ function updatePageCopy() {
   if (dom.groundKicker) dom.groundKicker.textContent = t("groundCta");
   if (dom.groundButton) dom.groundButton.textContent = t("safetyStopCta");
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
-  if (dom.groundReturnButton) dom.groundReturnButton.textContent = t("groundReturnCta");
+  if (dom.groundBetterButton) dom.groundBetterButton.textContent = t("groundBetterCta");
+  if (dom.groundMoreButton) dom.groundMoreButton.textContent = t("groundMoreCta");
+  if (dom.supportTitle) dom.supportTitle.textContent = t("supportTitle");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
   if (dom.reflectTitle) dom.reflectTitle.textContent = t("reflectTitle");
   if (dom.reflectInput) dom.reflectInput.placeholder = t("reflectPlaceholder");
@@ -265,6 +280,7 @@ function updatePageCopy() {
   updateDurationControls();
   renderIntro();
   renderFaq();
+  renderSupportTips();
   renderNotes();
 }
 
@@ -320,22 +336,11 @@ function cancelGroundingForNavigation(nextView) {
   state.groundingCycleId += 1;
   stopSpeechPlayback();
   state.isSpeaking = false;
-
-  if (nextView === "practice" && state.wasActiveBeforeGround && (state.sessionPhase === "timed" || state.sessionPhase === "open")) {
-    state.isActive = true;
-    document.body.classList.add("session-active");
-    updateButton();
-    scheduleRecognitionRestart(150);
-    setStatus(t("listening"));
-    state.wasActiveBeforeGround = false;
-  } else if (nextView !== "practice") {
-    clearSessionTimer();
-    state.sessionPhase = "setup";
-    state.isActive = false;
-    document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
-    state.wasActiveBeforeGround = false;
-    updateButton();
-  }
+  clearSessionTimer();
+  state.sessionPhase = "setup";
+  state.isActive = false;
+  document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
+  updateButton();
 }
 
 function cancelGuidanceForNavigation(nextView) {
@@ -1014,8 +1019,6 @@ function finishTimedSession() {
 
 async function beginClosingGuidance() {
   if (state.view !== "practice") {
-    state.wasActiveBeforeGround = false;
-    state.viewBeforeGround = "practice";
     setView("practice");
   }
   state.sessionPhase = "closing";
@@ -1143,35 +1146,47 @@ function openFaqFromEnd() {
   setView("faq");
 }
 
+function openReflectFromSupport() {
+  state.groundingCycleId += 1;
+  clearSessionTimer();
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  state.isActive = false;
+  state.sessionPhase = "setup";
+  document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
+  openReflectPage();
+}
+
+function showSupportChoices() {
+  if (dom.groundActions) dom.groundActions.hidden = false;
+  setStatus(t("groundStatus"));
+}
+
+function showMoreSupport() {
+  state.groundingCycleId += 1;
+  clearSessionTimer();
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  state.isActive = false;
+  state.sessionPhase = "setup";
+  document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
+  setView("support");
+}
+
 async function triggerGrounding() {
   const groundingCycleId = state.groundingCycleId + 1;
   state.groundingCycleId = groundingCycleId;
-  state.viewBeforeGround = state.view;
-  state.wasActiveBeforeGround = state.isActive;
-  if (state.isActive) {
-    pauseRecognitionForTts();
-    state.isActive = false;
-  }
+  clearSessionTimer();
+  stopVoiceCapture();
+  state.sessionPhase = "support";
+  state.closingCancelled = true;
+  document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
+  if (dom.groundActions) dom.groundActions.hidden = true;
   setView("ground");
   setStatus(t("groundStatus"));
   await speakText(t("groundText"), t("groundStatus"));
   if (state.groundingCycleId !== groundingCycleId || state.view !== "ground") return;
-}
-
-function returnFromGround() {
-  state.groundingCycleId += 1;
-  stopSpeechPlayback();
-  state.isSpeaking = false;
-  state.recognitionPauseRequested = false;
-  setView(state.viewBeforeGround || "practice");
-  if (state.wasActiveBeforeGround && (state.sessionPhase === "timed" || state.sessionPhase === "open")) {
-    state.isActive = true;
-    document.body.classList.add("session-active");
-    updateButton();
-    scheduleRecognitionRestart(150);
-    setStatus(t("listening"));
-  }
-  state.wasActiveBeforeGround = false;
+  showSupportChoices();
 }
 
 function openGuideFromPractice() {
@@ -1418,6 +1433,12 @@ function initUi() {
   if (dom.introReturnButton) {
     dom.introReturnButton.addEventListener("click", returnFromGuide);
   }
+  if (dom.groundBetterButton) {
+    dom.groundBetterButton.addEventListener("click", openReflectFromSupport);
+  }
+  if (dom.groundMoreButton) {
+    dom.groundMoreButton.addEventListener("click", showMoreSupport);
+  }
   if (dom.sessionContinueButton) {
     dom.sessionContinueButton.addEventListener("click", continueSession);
   }
@@ -1430,8 +1451,14 @@ function initUi() {
   if (dom.sessionEndButton) {
     dom.sessionEndButton.addEventListener("click", endSession);
   }
-  if (dom.groundReturnButton) {
-    dom.groundReturnButton.addEventListener("click", returnFromGround);
+  if (dom.supportScreen) {
+    dom.supportScreen.addEventListener("click", openReflectFromSupport);
+    dom.supportScreen.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openReflectFromSupport();
+      }
+    });
   }
   if (dom.endScreen) {
     dom.endScreen.addEventListener("click", openFaqFromEnd);
