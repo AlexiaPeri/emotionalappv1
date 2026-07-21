@@ -1038,11 +1038,16 @@ async function beginClosingGuidance() {
 
 function showPostClosingActions() {
   state.sessionPhase = "postClosing";
-  document.body.classList.remove("session-closing", "session-active", "session-open");
+  state.isActive = false;
+  document.body.classList.remove("session-closing", "session-active", "session-open", "session-complete");
+  if (dom.practiceSetup) dom.practiceSetup.hidden = true;
+  if (dom.practiceLive) dom.practiceLive.hidden = false;
+  if (dom.practiceFocus) dom.practiceFocus.hidden = true;
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = false;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
+  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   setStatus(t("postClosingStatus"));
 }
 
@@ -1146,7 +1151,7 @@ function openFaqFromEnd() {
   setView("faq");
 }
 
-function openReflectFromSupport() {
+function openCompletionChoicesFromSupport() {
   state.groundingCycleId += 1;
   clearSessionTimer();
   stopSpeechPlayback();
@@ -1154,7 +1159,8 @@ function openReflectFromSupport() {
   state.isActive = false;
   state.sessionPhase = "setup";
   document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
-  openReflectPage();
+  setView("practice");
+  showPostClosingActions();
 }
 
 function showSupportChoices() {
@@ -1434,7 +1440,7 @@ function initUi() {
     dom.introReturnButton.addEventListener("click", returnFromGuide);
   }
   if (dom.groundBetterButton) {
-    dom.groundBetterButton.addEventListener("click", openReflectFromSupport);
+    dom.groundBetterButton.addEventListener("click", openCompletionChoicesFromSupport);
   }
   if (dom.groundMoreButton) {
     dom.groundMoreButton.addEventListener("click", showMoreSupport);
@@ -1452,11 +1458,11 @@ function initUi() {
     dom.sessionEndButton.addEventListener("click", endSession);
   }
   if (dom.supportScreen) {
-    dom.supportScreen.addEventListener("click", openReflectFromSupport);
+    dom.supportScreen.addEventListener("click", openCompletionChoicesFromSupport);
     dom.supportScreen.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        openReflectFromSupport();
+        openCompletionChoicesFromSupport();
       }
     });
   }

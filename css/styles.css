@@ -1112,7 +1112,13 @@ body[data-view="first"] .page-first {
 }
 
 .ground-screen::before {
-  display: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  background: rgba(255, 238, 240, 0.24);
+  pointer-events: none;
 }
 
 .ground-screen::after {
@@ -1148,6 +1154,10 @@ body[data-view="first"] .page-first {
   display: none;
 }
 
+.page-ground .visual-copy {
+  display: none;
+}
+
 .visual-copy h2 {
   color: rgba(91, 55, 51, 0.86);
   font-size: clamp(1.35rem, 5.2vw, 2.2rem);
@@ -1158,15 +1168,15 @@ body[data-view="first"] .page-first {
 
 .ground-actions {
   display: grid;
-  grid-row: 3;
+  grid-row: 2;
   width: min(100%, 286px);
   gap: 1rem;
-  align-self: end;
-  margin-bottom: 0.4rem;
+  align-self: center;
+  margin: 0;
   padding: 1rem;
   border: 1px solid rgba(122, 78, 74, 0.12);
   border-radius: 22px;
-  background: rgba(255, 239, 239, 0.34);
+  background: rgba(255, 239, 239, 0.46);
   box-shadow:
     0 18px 40px rgba(122, 78, 74, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
