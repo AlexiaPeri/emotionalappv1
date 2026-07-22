@@ -48,6 +48,7 @@ const dom = {
   groundTitle: document.getElementById("ground-title"),
   groundGuidanceIndicator: document.getElementById("ground-guidance-indicator"),
   groundGuidanceLabel: document.getElementById("ground-guidance-label"),
+  groundEndGuidanceButton: document.getElementById("ground-end-guidance-btn"),
   groundActions: document.getElementById("ground-actions"),
   groundBetterButton: document.getElementById("ground-better-btn"),
   groundMoreButton: document.getElementById("ground-more-btn"),
@@ -264,6 +265,7 @@ function updatePageCopy() {
   if (dom.groundButton) dom.groundButton.textContent = t("safetyStopCta");
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
   if (dom.groundGuidanceLabel) dom.groundGuidanceLabel.textContent = t("groundGuidanceLabel");
+  if (dom.groundEndGuidanceButton) dom.groundEndGuidanceButton.textContent = t("groundEndGuidanceCta");
   if (dom.groundBetterButton) dom.groundBetterButton.textContent = t("groundBetterCta");
   if (dom.groundMoreButton) dom.groundMoreButton.textContent = t("groundMoreCta");
   if (dom.supportTitle) dom.supportTitle.textContent = t("supportTitle");
@@ -1169,8 +1171,18 @@ function openCompletionChoicesFromSupport() {
 
 function showSupportChoices() {
   if (dom.groundGuidanceIndicator) dom.groundGuidanceIndicator.hidden = true;
+  if (dom.groundEndGuidanceButton) dom.groundEndGuidanceButton.hidden = true;
   if (dom.groundActions) dom.groundActions.hidden = false;
   setStatus(t("groundStatus"));
+}
+
+function endGroundingGuidance() {
+  if (state.view !== "ground") return;
+  state.groundingCycleId += 1;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  updateButton();
+  showSupportChoices();
 }
 
 function showMoreSupport() {
@@ -1193,6 +1205,7 @@ async function triggerGrounding() {
   state.closingCancelled = true;
   document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
   if (dom.groundGuidanceIndicator) dom.groundGuidanceIndicator.hidden = false;
+  if (dom.groundEndGuidanceButton) dom.groundEndGuidanceButton.hidden = false;
   if (dom.groundActions) dom.groundActions.hidden = true;
   setView("ground");
   setStatus(t("groundStatus"));
@@ -1435,6 +1448,9 @@ function initUi() {
   }
   if (dom.groundButton) {
     dom.groundButton.addEventListener("click", triggerGrounding);
+  }
+  if (dom.groundEndGuidanceButton) {
+    dom.groundEndGuidanceButton.addEventListener("click", endGroundingGuidance);
   }
   if (dom.practiceRemindButton) {
     dom.practiceRemindButton.addEventListener("click", openGuideFromPractice);

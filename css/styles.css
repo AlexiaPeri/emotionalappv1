@@ -1033,8 +1033,13 @@ body[data-home-version="home2"] .home-screen {
 
 .post-closing-actions .session-write-btn {
   gap: 10px;
-  border-color: rgba(218, 166, 98, 0.18);
-  color: rgba(231, 189, 118, 0.76);
+  border-color: rgba(226, 174, 112, 0.3);
+  background:
+    linear-gradient(180deg, rgba(126, 84, 58, 0.56) 0%, rgba(78, 45, 34, 0.64) 100%);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 235, 207, 0.12);
+  color: rgba(245, 215, 170, 0.9);
 }
 
 .session-write-emoji {
@@ -1169,6 +1174,29 @@ body[data-home-version="home2"] .home-screen {
 }
 
 .ground-guidance-indicator[hidden] {
+  display: none;
+}
+
+.ground-end-guidance-btn {
+  position: absolute;
+  bottom: 1.7rem;
+  left: 50%;
+  z-index: 4;
+  min-height: 34px;
+  padding: 0 1.15rem;
+  border: 1px solid rgba(103, 63, 74, 0.18);
+  border-radius: 999px;
+  background: rgba(236, 211, 218, 0.38);
+  color: rgba(73, 45, 53, 0.74);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transform: translateX(-50%);
+  backdrop-filter: blur(9px);
+}
+
+.ground-end-guidance-btn[hidden] {
   display: none;
 }
 
