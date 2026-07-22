@@ -161,6 +161,23 @@ python3 -m http.server 8000
 - **Cible** : personnes stylées, intellectuelles, qui cherchent à gérer leurs émotions de manière profonde et efficace
 - **Ton** : sobre, scientifique, chaleureux — pas wellness-hippy
 
+### Versions de la homepage
+
+Deux versions complètes de la homepage sont conservées dans le projet :
+
+- **Home 1** : fond noir avec un jet organique de poussière cuivre et or. C'est la version active.
+- **Home 2** : fond noir avec les courbes orbitales discrètes de la version précédente.
+
+Le choix actif se trouve sur la balise `<body>` dans `index.html` :
+
+```html
+<body data-home-version="home1">
+```
+
+Pour restaurer Home 2, il suffit de remplacer `home1` par `home2`. Les deux fonds restent enregistrés dans `assets/` et aucune reconstruction n'est nécessaire.
+
+Voir [la comparaison visuelle des deux homepages](docs/homepage-comparison.md).
+
 ---
 
 ## Notes de développement

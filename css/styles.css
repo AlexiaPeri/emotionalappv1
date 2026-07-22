@@ -299,7 +299,7 @@ body[data-view="first"] .page-first {
   border-radius: 3.55rem;
   background:
     radial-gradient(ellipse at 50% 38%, rgba(151, 75, 48, 0.2), transparent 44%),
-    #070706 url("../assets/home-bg.png") center / cover no-repeat;
+    #070706 url("../assets/home1-bg.png") center / cover no-repeat;
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.06),
     0 0 0 6px rgba(0, 0, 0, 0.94),
@@ -356,7 +356,7 @@ body[data-view="first"] .page-first {
   border: 2px solid rgba(245, 245, 245, 0.22);
   border-radius: 3.55rem;
   background:
-    #070706 url("../assets/home-bg.png") center / cover no-repeat;
+    #070706 url("../assets/home1-bg.png") center / cover no-repeat;
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.06),
     0 0 0 6px rgba(0, 0, 0, 0.94),
@@ -364,6 +364,17 @@ body[data-view="first"] .page-first {
     inset 0 0 0 1px rgba(255, 255, 255, 0.05),
     inset 0 0 48px rgba(0, 0, 0, 0.65);
   text-align: center;
+}
+
+body[data-home-version="home2"] .first-card {
+  background:
+    radial-gradient(ellipse at 50% 38%, rgba(151, 75, 48, 0.2), transparent 44%),
+    #070706 url("../assets/home2-bg.png") center / cover no-repeat;
+}
+
+body[data-home-version="home2"] .home-screen {
+  background:
+    #070706 url("../assets/home2-bg.png") center / cover no-repeat;
 }
 
 .home-screen::before,
@@ -1021,8 +1032,15 @@ body[data-view="first"] .page-first {
 }
 
 .post-closing-actions .session-write-btn {
+  gap: 10px;
   border-color: rgba(218, 166, 98, 0.18);
   color: rgba(231, 189, 118, 0.76);
+}
+
+.session-write-emoji {
+  font-size: 1.18em;
+  line-height: 1;
+  letter-spacing: 0;
 }
 
 .post-closing-actions .session-end-btn {
@@ -1103,7 +1121,7 @@ body[data-view="first"] .page-first {
   min-height: min(804px, calc(100vh - 1.45rem));
   border: 2px solid rgba(245, 245, 245, 0.22);
   border-radius: 3.55rem;
-  background: #f6c9c8 url("../assets/ground-bg.png") center bottom / 100% auto no-repeat;
+  background: #9f7784 url("../assets/ground-bg-soft.png") center bottom / cover no-repeat;
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.06),
     0 0 0 6px rgba(0, 0, 0, 0.94),
@@ -1117,12 +1135,69 @@ body[data-view="first"] .page-first {
   inset: 0;
   z-index: 1;
   display: block;
-  background: rgba(255, 238, 240, 0.24);
+  background: rgba(95, 63, 91, 0.08);
   pointer-events: none;
 }
 
 .ground-screen::after {
   display: none;
+}
+
+.ground-guidance-indicator {
+  position: absolute;
+  top: 61.5%;
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  width: min(calc(100% - 4rem), 264px);
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(110, 70, 78, 0.14);
+  border-radius: 999px;
+  background: rgba(241, 219, 224, 0.48);
+  box-shadow:
+    0 13px 30px rgba(78, 43, 52, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: rgba(73, 45, 53, 0.76);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+}
+
+.ground-guidance-indicator[hidden] {
+  display: none;
+}
+
+.ground-guidance-wave {
+  display: flex;
+  height: 14px;
+  align-items: center;
+  gap: 2px;
+}
+
+.ground-guidance-wave i {
+  display: block;
+  width: 2px;
+  border-radius: 2px;
+  background: rgba(103, 61, 73, 0.54);
+}
+
+.ground-guidance-wave i:nth-child(1),
+.ground-guidance-wave i:nth-child(5) {
+  height: 5px;
+}
+
+.ground-guidance-wave i:nth-child(2),
+.ground-guidance-wave i:nth-child(4) {
+  height: 9px;
+}
+
+.ground-guidance-wave i:nth-child(3) {
+  height: 14px;
 }
 
 .visual-overlay {

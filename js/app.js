@@ -37,6 +37,7 @@ const dom = {
   closingCopy: document.getElementById("closing-copy"),
   postClosingActions: document.getElementById("post-closing-actions"),
   sessionWriteButton: document.getElementById("session-write-btn"),
+  sessionWriteLabel: document.getElementById("session-write-label"),
   sessionEndButton: document.getElementById("session-end-btn"),
   sessionContinueButton: document.getElementById("session-continue-btn"),
   sessionCloseInline: document.getElementById("session-close-inline"),
@@ -45,6 +46,8 @@ const dom = {
   practiceCompleteButton: document.getElementById("practice-complete-btn"),
   groundKicker: document.getElementById("ground-kicker"),
   groundTitle: document.getElementById("ground-title"),
+  groundGuidanceIndicator: document.getElementById("ground-guidance-indicator"),
+  groundGuidanceLabel: document.getElementById("ground-guidance-label"),
   groundActions: document.getElementById("ground-actions"),
   groundBetterButton: document.getElementById("ground-better-btn"),
   groundMoreButton: document.getElementById("ground-more-btn"),
@@ -252,7 +255,7 @@ function updatePageCopy() {
   if (dom.practiceBody) dom.practiceBody.textContent = t("practiceBody");
   if (dom.sessionContinueButton) dom.sessionContinueButton.textContent = t("sessionContinuePracticeCta");
   if (dom.sessionCloseInline) dom.sessionCloseInline.textContent = t("sessionClosePracticeCta");
-  if (dom.sessionWriteButton) dom.sessionWriteButton.textContent = t("sessionWriteCta");
+  if (dom.sessionWriteLabel) dom.sessionWriteLabel.textContent = t("sessionWriteCta");
   if (dom.sessionEndButton) dom.sessionEndButton.textContent = t("sessionEndCta");
   if (dom.practiceRemindButton) dom.practiceRemindButton.textContent = t("remindPracticeCta");
   if (dom.practiceCompleteButton) dom.practiceCompleteButton.textContent = t("completePracticeCta");
@@ -260,6 +263,7 @@ function updatePageCopy() {
   if (dom.groundKicker) dom.groundKicker.textContent = t("groundCta");
   if (dom.groundButton) dom.groundButton.textContent = t("safetyStopCta");
   if (dom.groundTitle) dom.groundTitle.textContent = t("groundTitle");
+  if (dom.groundGuidanceLabel) dom.groundGuidanceLabel.textContent = t("groundGuidanceLabel");
   if (dom.groundBetterButton) dom.groundBetterButton.textContent = t("groundBetterCta");
   if (dom.groundMoreButton) dom.groundMoreButton.textContent = t("groundMoreCta");
   if (dom.supportTitle) dom.supportTitle.textContent = t("supportTitle");
@@ -1164,6 +1168,7 @@ function openCompletionChoicesFromSupport() {
 }
 
 function showSupportChoices() {
+  if (dom.groundGuidanceIndicator) dom.groundGuidanceIndicator.hidden = true;
   if (dom.groundActions) dom.groundActions.hidden = false;
   setStatus(t("groundStatus"));
 }
@@ -1187,6 +1192,7 @@ async function triggerGrounding() {
   state.sessionPhase = "support";
   state.closingCancelled = true;
   document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
+  if (dom.groundGuidanceIndicator) dom.groundGuidanceIndicator.hidden = false;
   if (dom.groundActions) dom.groundActions.hidden = true;
   setView("ground");
   setStatus(t("groundStatus"));

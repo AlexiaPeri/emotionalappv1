@@ -9,7 +9,7 @@
 ## Ce qui doit rester stable
 - Le nom Emerge.
 - Le principe de pratique vocale.
-- Le home validé comme seule référence visuelle.
+- Les deux variantes documentées du home doivent rester disponibles.
 - Le français et l’anglais.
 
 ## Ce qui doit être traité séparément
@@ -22,7 +22,11 @@
 - Le screenshot validé est la seule base visuelle.
 - Le logo utilisé doit être celui fourni par l’utilisateur.
 - Les ajouts créatifs non demandés doivent être évités.
+- Home 1 est la version active : fond noir avec jet organique de poussière cuivre et or.
+- Home 2 conserve intégralement le fond orbital précédent. Le choix se fait avec `data-home-version` dans `index.html`.
+- La comparaison partageable des deux versions se trouve dans `docs/homepage-comparison.md`.
 - Page Ground : utiliser l'image verticale fournie du 20 juin 18:45, affichée en format iPhone et ancrée en bas pour préserver le chat.
+- Page Ground : la variante mauve assombrie est active ; l'indicateur audio est placé dans la partie basse de la rivière, entre la cascade et le chat.
 - Page choix durée : afficher une petite phrase (`Commençons` / `Let's begin`) au-dessus des deux boutons.
 - Page pratique : phrase centrale `Tout ce que tu ressens est bienvenu` / `Everything you feel is welcome`.
 - Pages Guide/FAQ : éviter les titres répétitifs en haut des cartes ; la FAQ n'a pas besoin d'un titre `FAQ` en plus de l'onglet.

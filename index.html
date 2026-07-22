@@ -8,7 +8,7 @@
   <link rel="preload" href="./assets/end-bg-thank-you-v1.png" as="image">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
-<body>
+<body data-home-version="home1">
   <div class="app-shell">
     <div class="top-bar">
       <button class="lang-btn active" data-lang="en">EN</button>
@@ -161,7 +161,10 @@
             <button class="text-link session-close-inline" id="session-close-inline" type="button" hidden>terminer la pratique</button>
 
             <div class="post-closing-actions" id="post-closing-actions" hidden>
-              <button class="text-link session-write-btn" id="session-write-btn" type="button">Reflect</button>
+              <button class="text-link session-write-btn" id="session-write-btn" type="button">
+                <span id="session-write-label">Reflect</span>
+                <span class="session-write-emoji" aria-hidden="true">📝</span>
+              </button>
               <button class="page-cta session-end-btn" id="session-end-btn" type="button">End</button>
             </div>
 
@@ -176,6 +179,10 @@
 
       <section class="page page-ground" data-view="ground" hidden>
         <div class="visual-screen ground-screen">
+          <div class="ground-guidance-indicator" id="ground-guidance-indicator">
+            <span class="ground-guidance-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span id="ground-guidance-label">Calming down...</span>
+          </div>
           <div class="visual-overlay">
             <div class="visual-copy">
               <div class="section-kicker" id="ground-kicker">Ground</div>
