@@ -140,6 +140,7 @@ python3 -m http.server 8000
 - [ ] Intro vocale (15s pour first-timer, rien pour les suivants)
 - [ ] Outro vocale (atterrissage doux en fin de session)
 - [ ] Bouton grounding discret (pause d'urgence)
+- [x] Respiration guidée 5 minutes (5 secondes d'inspiration / 5 secondes d'expiration)
 
 ### v3 — iPhone natif
 - [ ] Reprendre le core portable dans une app iPhone

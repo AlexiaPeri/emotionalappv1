@@ -55,6 +55,9 @@ const dom = {
   supportScreen: document.getElementById("support-screen"),
   supportTitle: document.getElementById("support-title"),
   supportList: document.getElementById("support-list"),
+  breathingGuide: document.getElementById("breathing-guide"),
+  breathingPhase: document.getElementById("breathing-phase"),
+  breathingEndButton: document.getElementById("breathing-end-btn"),
   endScreen: document.getElementById("end-screen"),
   endMessage: document.getElementById("end-message"),
   reflectTitle: document.getElementById("reflect-title"),
@@ -111,11 +114,19 @@ const state = {
   wasActiveBeforeGuide: false,
   guideReturnToPractice: false,
   groundingCycleId: 0,
+  breathingCycleId: 0,
+  breathingPhaseIndex: 0,
+  breathingStartedAt: 0,
+  breathingTimerId: null,
+  breathingToneNodes: [],
   reflectMode: "new",
   reflectAfterSaveView: "end",
   reflectSaveTimer: null,
   view: "home",
 };
+
+const BREATHING_PHASE_MS = 5000;
+const BREATHING_PHASE_COUNT = 60;
 
 function t(key) {
   return I18N[state.lang][key] || key;
@@ -197,9 +208,24 @@ function renderFaq() {
 function renderSupportTips() {
   if (!dom.supportList) return;
   dom.supportList.innerHTML = "";
-  I18N[state.lang].supportTips.forEach((tip) => {
+  I18N[state.lang].supportTips.forEach((tip, index) => {
     const item = document.createElement("li");
-    item.textContent = tip;
+
+    if (index === 0) {
+      item.className = "support-breathing-item";
+      const button = document.createElement("button");
+      button.className = "support-breathing-btn";
+      button.type = "button";
+      button.textContent = tip;
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        startBreathingGuidance();
+      });
+      item.appendChild(button);
+    } else {
+      item.textContent = tip;
+    }
+
     dom.supportList.appendChild(item);
   });
 }
@@ -269,6 +295,7 @@ function updatePageCopy() {
   if (dom.groundBetterButton) dom.groundBetterButton.textContent = t("groundBetterCta");
   if (dom.groundMoreButton) dom.groundMoreButton.textContent = t("groundMoreCta");
   if (dom.supportTitle) dom.supportTitle.textContent = t("supportTitle");
+  if (dom.breathingEndButton) dom.breathingEndButton.textContent = t("breathingEndCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
   if (dom.reflectTitle) dom.reflectTitle.textContent = t("reflectTitle");
   if (dom.reflectInput) dom.reflectInput.placeholder = t("reflectPlaceholder");
@@ -349,9 +376,42 @@ function cancelGroundingForNavigation(nextView) {
   updateButton();
 }
 
+function stopBreathingTone() {
+  state.breathingToneNodes.forEach((node) => {
+    try {
+      node.stop?.();
+    } catch {
+      // The oscillator may already have ended.
+    }
+    try {
+      node.disconnect?.();
+    } catch {
+      // no-op
+    }
+  });
+  state.breathingToneNodes = [];
+}
+
+function clearBreathingGuidance() {
+  state.breathingCycleId += 1;
+  if (state.breathingTimerId) {
+    clearTimeout(state.breathingTimerId);
+    state.breathingTimerId = null;
+  }
+  stopBreathingTone();
+  state.breathingPhaseIndex = 0;
+  state.breathingStartedAt = 0;
+}
+
+function cancelBreathingForNavigation(nextView) {
+  if (state.view !== "breathing" || nextView === "breathing") return;
+  clearBreathingGuidance();
+}
+
 function cancelGuidanceForNavigation(nextView) {
   cancelClosingForNavigation(nextView);
   cancelGroundingForNavigation(nextView);
+  cancelBreathingForNavigation(nextView);
 }
 
 function setView(view, options = {}) {
@@ -647,6 +707,104 @@ function playSessionChime() {
     oscillator.start(start);
     oscillator.stop(start + 0.24);
   });
+}
+
+function getBreathingAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  if (!state.audioContext) state.audioContext = new AudioContext();
+  state.audioContext.resume?.();
+  return state.audioContext;
+}
+
+function playBreathingTone(isInhale) {
+  const context = getBreathingAudioContext();
+  if (!context) return;
+  stopBreathingTone();
+
+  const start = context.currentTime + 0.04;
+  const end = start + 4.88;
+  const masterGain = context.createGain();
+  const startFrequency = isInhale ? 349.23 : 311.13;
+  const endFrequency = isInhale ? 392 : 277.18;
+
+  masterGain.gain.setValueAtTime(0.0001, start);
+  masterGain.gain.exponentialRampToValueAtTime(0.028, start + 0.9);
+  masterGain.gain.setValueAtTime(0.028, end - 1.15);
+  masterGain.gain.exponentialRampToValueAtTime(0.0001, end);
+  masterGain.connect(context.destination);
+
+  const oscillators = [-4, 4].map((detune) => {
+    const oscillator = context.createOscillator();
+    const voiceGain = context.createGain();
+    oscillator.type = "sine";
+    oscillator.detune.value = detune;
+    oscillator.frequency.setValueAtTime(startFrequency, start);
+    oscillator.frequency.exponentialRampToValueAtTime(endFrequency, end);
+    voiceGain.gain.value = 0.5;
+    oscillator.connect(voiceGain);
+    voiceGain.connect(masterGain);
+    oscillator.start(start);
+    oscillator.stop(end + 0.02);
+    state.breathingToneNodes.push(voiceGain);
+    return oscillator;
+  });
+
+  state.breathingToneNodes.push(masterGain, ...oscillators);
+}
+
+function updateBreathingPhase(isInhale) {
+  if (dom.breathingPhase) {
+    dom.breathingPhase.textContent = t(isInhale ? "breathingIn" : "breathingOut");
+  }
+  if (dom.breathingGuide) {
+    dom.breathingGuide.classList.toggle("is-inhale", isInhale);
+    dom.breathingGuide.classList.toggle("is-exhale", !isInhale);
+  }
+  setStatus(t("breathingStatus"));
+}
+
+function runBreathingPhase(cycleId) {
+  if (state.breathingCycleId !== cycleId || state.view !== "breathing") return;
+
+  if (state.breathingPhaseIndex >= BREATHING_PHASE_COUNT) {
+    setView("support");
+    return;
+  }
+
+  const isInhale = state.breathingPhaseIndex % 2 === 0;
+  updateBreathingPhase(isInhale);
+  playBreathingTone(isInhale);
+  state.breathingPhaseIndex += 1;
+
+  const nextPhaseAt = state.breathingStartedAt + state.breathingPhaseIndex * BREATHING_PHASE_MS;
+  state.breathingTimerId = setTimeout(
+    () => runBreathingPhase(cycleId),
+    Math.max(0, nextPhaseAt - Date.now()),
+  );
+}
+
+function startBreathingGuidance() {
+  clearBreathingGuidance();
+  stopSpeechPlayback();
+  getBreathingAudioContext();
+  setView("breathing");
+
+  const cycleId = state.breathingCycleId + 1;
+  state.breathingCycleId = cycleId;
+  state.breathingPhaseIndex = 0;
+  state.breathingStartedAt = Date.now();
+  if (dom.breathingGuide) {
+    dom.breathingGuide.classList.remove("is-inhale", "is-exhale");
+    dom.breathingGuide.classList.add("is-exhale");
+    void dom.breathingGuide.offsetWidth;
+  }
+  runBreathingPhase(cycleId);
+}
+
+function endBreathingGuidance() {
+  if (state.view !== "breathing") return;
+  setView("support");
 }
 
 function showPracticeSetup(message = "") {
@@ -1467,6 +1625,9 @@ function initUi() {
   if (dom.groundMoreButton) {
     dom.groundMoreButton.addEventListener("click", showMoreSupport);
   }
+  if (dom.breathingEndButton) {
+    dom.breathingEndButton.addEventListener("click", endBreathingGuidance);
+  }
   if (dom.sessionContinueButton) {
     dom.sessionContinueButton.addEventListener("click", continueSession);
   }
@@ -1480,8 +1641,12 @@ function initUi() {
     dom.sessionEndButton.addEventListener("click", endSession);
   }
   if (dom.supportScreen) {
-    dom.supportScreen.addEventListener("click", openCompletionChoicesFromSupport);
+    dom.supportScreen.addEventListener("click", (event) => {
+      if (event.target.closest(".support-breathing-btn")) return;
+      openCompletionChoicesFromSupport();
+    });
     dom.supportScreen.addEventListener("keydown", (event) => {
+      if (event.target.closest(".support-breathing-btn")) return;
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         openCompletionChoicesFromSupport();
@@ -1517,6 +1682,16 @@ function initUi() {
       }
     });
   }
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && state.view === "breathing") {
+      setView("support");
+    }
+  });
+  window.addEventListener("pagehide", () => {
+    if (state.view === "breathing") {
+      clearBreathingGuidance();
+    }
+  });
 }
 
 function initVoices() {
