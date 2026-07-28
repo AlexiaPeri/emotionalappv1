@@ -723,25 +723,25 @@ function playBreathingTone(isInhale) {
   stopBreathingTone();
 
   const start = context.currentTime + 0.04;
-  const end = start + 4.88;
+  const end = start + 3.85;
   const masterGain = context.createGain();
-  const startFrequency = isInhale ? 349.23 : 311.13;
-  const endFrequency = isInhale ? 392 : 277.18;
+  const frequencies = isInhale
+    ? [261.63, 329.63, 392]
+    : [196, 246.94, 293.66];
+  const voiceLevels = [0.56, 0.28, 0.16];
 
   masterGain.gain.setValueAtTime(0.0001, start);
-  masterGain.gain.exponentialRampToValueAtTime(0.028, start + 0.9);
-  masterGain.gain.setValueAtTime(0.028, end - 1.15);
+  masterGain.gain.exponentialRampToValueAtTime(0.02, start + 0.45);
+  masterGain.gain.exponentialRampToValueAtTime(0.012, start + 1.55);
   masterGain.gain.exponentialRampToValueAtTime(0.0001, end);
   masterGain.connect(context.destination);
 
-  const oscillators = [-4, 4].map((detune) => {
+  const oscillators = frequencies.map((frequency, index) => {
     const oscillator = context.createOscillator();
     const voiceGain = context.createGain();
     oscillator.type = "sine";
-    oscillator.detune.value = detune;
-    oscillator.frequency.setValueAtTime(startFrequency, start);
-    oscillator.frequency.exponentialRampToValueAtTime(endFrequency, end);
-    voiceGain.gain.value = 0.5;
+    oscillator.frequency.setValueAtTime(frequency, start);
+    voiceGain.gain.value = voiceLevels[index];
     oscillator.connect(voiceGain);
     voiceGain.connect(masterGain);
     oscillator.start(start);

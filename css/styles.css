@@ -1150,7 +1150,7 @@ body[data-home-version="home2"] .home-screen {
 
 .ground-guidance-indicator {
   position: absolute;
-  top: 61.5%;
+  top: 55.5%;
   left: 50%;
   z-index: 3;
   display: flex;

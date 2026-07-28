@@ -81,7 +81,7 @@ export const I18N = {
     groundMoreCta: "I still need support",
     supportTitle: "Here are a few things that often help:",
     supportTips: [
-      "🌬 Slow your breathing (5 seconds in, 5 seconds out)",
+      "🌬 Respiration lente (5 s inspire, 5 s expire)",
       "💧 Rinse your face with cold water",
       "🚶 Take a short walk outside",
       "✍️ Write down what you're feeling",
@@ -217,7 +217,7 @@ export const I18N = {
     groundMoreCta: "I still need support",
     supportTitle: "Here are a few things that often help:",
     supportTips: [
-      "🌬 Slow your breathing (5 seconds in, 5 seconds out)",
+      "🌬 Slow breathing (5s in, 5s out)",
       "💧 Rinse your face with cold water",
       "🚶 Take a short walk outside",
       "✍️ Write down what you're feeling",
