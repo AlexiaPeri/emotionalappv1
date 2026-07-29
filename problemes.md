@@ -89,3 +89,47 @@ Lui transmettre :
 - les changements déjà refusés,
 - l’état du code,
 - la prochaine action unique.
+
+---
+
+## 6. Reconnaissance vocale fragile dans le prototype web
+
+**Problème**
+
+La Web Speech API de Chrome peut s'arrêter, redémarrer difficilement ou ne plus produire de résultat après une courte durée. Cette fiabilité est insuffisante pour une pratique de 12 à 60 minutes.
+
+**Cause probable**
+
+Le navigateur garde une partie du cycle de vie de la reconnaissance et de la détection de fin de phrase hors du contrôle de l'app.
+
+**Solution prévue**
+
+- Ne pas utiliser Chrome comme référence de fiabilité pour l'app finale.
+- Construire deux prototypes natifs identiques : Apple SpeechAnalyzer et Deepgram Flux.
+- Tester les deux pendant 60 minutes sur plusieurs iPhone.
+- Utiliser une machine d'état explicite : écoute → fin de tour → transformation → répétition → reprise.
+- Suspendre l'écoute pendant la voix de répétition pour éviter l'auto-transcription.
+- Ajouter récupération automatique, surveillance de connexion et gestion des interruptions audio.
+
+**Prévention**
+
+Valider toute modification de la couche vocale avec un test d'endurance et des mesures de latence, pas seulement avec quelques phrases manuelles.
+
+---
+
+## 7. Choix prématuré d'un fournisseur vocal
+
+**Problème**
+
+Deepgram a d'abord été retenu pour remplacer Chrome, mais Apple SpeechAnalyzer offre désormais une alternative native, locale et potentiellement plus fiable sur iOS 26.
+
+**Solution**
+
+- Garder les deux options ouvertes jusqu'au test comparatif.
+- Vérifier `SpeechTranscriber.isAvailable` et les locales installables sur chaque appareil.
+- Comparer avec la même interface, la même voix et le même moteur de pronoms.
+- Documenter la décision finale et ses mesures dans `docs/ios-voice-strategy.md`.
+
+**Prévention**
+
+Ne pas engager une architecture, un abonnement ou un backend avant d'avoir mesuré le comportement sur les iPhone cibles.

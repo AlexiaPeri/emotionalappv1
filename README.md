@@ -1,6 +1,6 @@
 # Emerge: Let it out
 
-**App web de libération émotionnelle par la voix**
+**Prototype web d'une future app iPhone de pratique émotionnelle par la voix**
 
 Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emerge, tu parles, et l'app te répète ce que tu ressens. C'est tout. Ça marche.
 
@@ -8,9 +8,9 @@ Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emer
 
 ## Ce que c'est
 
-Emerge est une app voice-only basée sur la technique de répétition de Meisner. L'utilisateur parle librement de ce qu'il ressent. L'app capte sa voix, transforme les pronoms (je → tu, I → you), et le répète vocalement via ElevenLabs TTS.
+Emerge est une pratique vocale inspirée de la répétition de Meisner et centrée sur l'utilisateur. L'utilisateur exprime une émotion avec une phrase simple. L'app capte cette phrase, transforme localement les pronoms quand nécessaire (`je → tu`, `I → you`), puis la répète avec une voix calme.
 
-Pas de journaling. Pas de conseils. Juste tes mots, retournés vers toi par une voix calme.
+Pendant la pratique, il n'y a ni analyse ni conseils : seulement les mots de l'utilisateur, retournés vers lui par une voix calme. Une réflexion écrite facultative est proposée après la session.
 
 ### Pourquoi ça marche
 
@@ -22,7 +22,7 @@ La répétition émotionnelle force à rester dans le ressenti au lieu de l'anal
 
 ---
 
-## Fonctionnement
+## Fonctionnement du prototype web actuel
 
 ```
 Utilisateur parle
@@ -36,11 +36,11 @@ ElevenLabs TTS (voix naturelle)
 L'app répète vocalement
 ```
 
-**Pas de texte affiché pendant la session.** Expérience 100% vocale.
+**Pas de texte affiché pendant la session.** L'expérience de pratique reste vocale.
 
 ---
 
-## Stack technique
+## Stack du prototype web
 
 - **Frontend** : HTML / CSS / JS vanilla (zéro dépendance)
 - **Core portable** : copy, presets de voix, transformation de texte
@@ -49,6 +49,44 @@ L'app répète vocalement
 - **TTS** : ElevenLabs API (`eleven_turbo_v2_5`) + fallback voix navigateur
 - **Hébergement** : GitHub Pages
 - **Clé API** : stockée en localStorage côté client, jamais en dur dans le code
+
+Cette stack sert à tester les parcours et le design. Elle n'est pas l'architecture vocale prévue pour l'app iPhone finale.
+
+---
+
+## Cible iPhone
+
+L'app finale doit être native, construite avec SwiftUI. Son architecture vocale cible est :
+
+```
+Microphone iPhone
+       ↓
+Apple SpeechAnalyzer ou Deepgram Flux
+       ↓
+Transformation locale et déterministe des pronoms
+       ↓
+AVSpeechSynthesizer avec une voix iPhone
+       ↓
+L'app répète la phrase
+```
+
+- **Reconnaissance vocale** : comparer Apple SpeechAnalyzer et Deepgram Flux dans deux prototypes natifs identiques avant de choisir.
+- **Répétition** : utiliser les voix Enhanced ou Premium disponibles sur l'iPhone.
+- **Guidances** : utiliser les fichiers audio préenregistrés avec la voix d'Alexia.
+- **Transformation des pronoms** : rester locale et déterministe ; ne pas utiliser de LLM susceptible de reformuler l'émotion.
+- **Fiabilité** : gérer explicitement les états écoute → transformation → répétition → reprise, les interruptions audio et le redémarrage automatique.
+- **Confidentialité** : privilégier le traitement local. Si Deepgram est retenu, ne jamais embarquer sa clé dans l'app ; utiliser des jetons temporaires délivrés par un backend.
+
+La décision détaillée et le protocole de comparaison sont documentés dans [docs/ios-voice-strategy.md](docs/ios-voice-strategy.md).
+
+### Compatibilité de la bêta
+
+- **Appareil minimum visé** : iPhone 15.
+- **Système minimum visé** : iOS 26.
+- **Langues initiales** : français et anglais.
+- **Connexion internet** : requise pendant la première bêta afin de conserver Deepgram comme candidat ou solution de repli.
+- **Contrôle au démarrage** : vérifier `SpeechTranscriber.isAvailable` et la présence de la locale FR ou EN avant d'activer Apple SpeechAnalyzer.
+- **Échantillon alpha minimum** : un iPhone 15/15 Plus, un iPhone 15 Pro/Pro Max et un iPhone 16 ou plus récent.
 
 ---
 
@@ -143,14 +181,19 @@ python3 -m http.server 8000
 - [x] Respiration guidée 5 minutes (5 secondes d'inspiration / 5 secondes d'expiration)
 
 ### v3 — iPhone natif
-- [ ] Reprendre le core portable dans une app iPhone
-- [ ] Remplacer la couche voix web par une couche iOS native
-- [ ] Valider le ressenti vocal sur iPhone
+- [ ] Créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer
+- [ ] Créer le même prototype avec Deepgram Flux
+- [ ] Comparer latence, précision, découpage des silences et stabilité pendant 60 minutes
+- [ ] Choisir le moteur principal et décider si un fallback est nécessaire
+- [ ] Reprendre le core portable dans l'app iPhone
+- [ ] Utiliser AVSpeechSynthesizer pour la répétition
+- [ ] Intégrer les guidances préenregistrées
+- [ ] Valider le ressenti vocal sur iPhone 15, 15 Pro et 16+
 
 ### v4 — Futur
 - [ ] Mode Rewire : choisir une énergie → posture guidée → affirmations × 3
 - [ ] PWA (manifest.json + icônes, installable sur téléphone)
-- [ ] App Store (Capacitor)
+- [ ] Bêta TestFlight puis publication App Store
 - [ ] Prompts vocaux subtils pendant la session (×1-2 max)
 
 ---

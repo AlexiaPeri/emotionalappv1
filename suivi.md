@@ -2,9 +2,10 @@
 
 ## État actuel
 - Le projet contient un prototype web multi-pages.
-- Le core voix / répétition existe déjà.
+- Le core web voix / répétition existe déjà, mais la Web Speech API de Chrome n'est pas considérée assez fiable pour l'app finale.
 - Le home a été l’objet principal de dérive visuelle.
 - Le logo fourni par l’utilisateur est présent dans le projet.
+- L'architecture iPhone doit maintenant être validée par un prototype natif.
 
 ## Ce qui doit rester stable
 - Le nom Emerge.
@@ -17,6 +18,7 @@
 - La stabilité de la voix.
 - Les textes.
 - La préparation iPhone.
+- La comparaison Apple SpeechAnalyzer / Deepgram Flux.
 
 ## Décisions prises
 - Le screenshot validé est la seule base visuelle.
@@ -33,12 +35,27 @@
 - Pages Guide/FAQ : éviter les titres répétitifs en haut des cartes ; la FAQ n'a pas besoin d'un titre `FAQ` en plus de l'onglet.
 - Gestion Git : Codex doit gérer les commits/push régulièrement après les blocs de travail stables. Les instructions persistantes sont dans `AGENTS.md`.
 - Textes Guide/FAQ : modifier directement `js/app-config.js`, dans `introReadText` et `faqItems` pour chaque langue.
+- L'app finale sera native en SwiftUI ; Capacitor n'est plus la stratégie cible.
+- Cible de la première bêta : iPhone 15 ou plus récent avec iOS 26 ou plus récent.
+- La première bêta demande une connexion internet afin de garder Deepgram disponible pendant l'évaluation.
+- Apple SpeechAnalyzer et Deepgram Flux sont les deux candidats pour la reconnaissance vocale.
+- Le choix final sera fait après deux prototypes identiques et un test d'endurance de 60 minutes.
+- L'app vérifiera dynamiquement `SpeechTranscriber.isAvailable` et les locales FR/EN.
+- La répétition utilisera AVSpeechSynthesizer avec une voix iPhone Enhanced ou Premium.
+- Les guidances utiliseront la voix préenregistrée d'Alexia.
+- La transformation des pronoms restera locale et déterministe, sans LLM.
+- Si Deepgram est retenu, la clé restera sur un backend et l'app recevra uniquement un jeton temporaire.
+- La source de vérité technique est `docs/ios-voice-strategy.md`.
 
 ## À faire ensuite
-1. Revenir à une base UI stable.
-2. Verrouiller une version de référence du home.
-3. Vérifier que les langues FR/EN restent disponibles.
-4. Reprendre ensuite la pratique vocale si besoin.
+1. Créer le document maître des textes et audios FR/EN.
+2. Créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer.
+3. Créer le même prototype avec Deepgram Flux.
+4. Tester sur iPhone 15/15 Plus, iPhone 15 Pro/Pro Max et iPhone 16+.
+5. Comparer latence, précision, pauses émotionnelles et stabilité pendant 60 minutes.
+6. Choisir le moteur STT principal et décider si un fallback est nécessaire.
+7. Finaliser et enregistrer les guidances.
+8. Construire l'app native complète puis préparer TestFlight.
 
 ## Notes
 - Les erreurs précédentes venaient surtout d’une interprétation trop libre.
