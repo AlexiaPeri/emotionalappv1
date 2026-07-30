@@ -95,14 +95,30 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 ```
 .
 ├── index.html          ← Point d'entrée
+├── writing.html        ← Studio privé de rédaction et d'export des textes
 ├── css/
 │   └── styles.css      ← Thème terracotta
 ├── js/
 │   ├── app-config.js   ← Copy, presets de voix, clés
 │   ├── pronouns.js     ← Conversion FR / EN portable
 │   └── app.js          ← Shell web + voix navigateur
+├── docs/
+│   └── content-inventory.md ← Inventaire éditorial
 └── README.md
 ```
+
+### Studio d'écriture
+
+Ouvrir `http://127.0.0.1:5173/writing.html` lorsque le serveur Vite est lancé.
+
+- 26 ensembles de textes organisés par priorité.
+- Versions française et anglaise indépendantes.
+- Objectif éditorial et questions de réflexion pour chaque texte.
+- Sauvegarde automatique dans le navigateur.
+- Statuts `À écrire`, `À revoir`, `Brouillon` et `Validé`.
+- Export complet en Markdown.
+
+Les brouillons ne sont pas envoyés vers un serveur et ne modifient pas automatiquement le code de l'app. Utiliser régulièrement le bouton `Exporter` pour conserver une copie en dehors du navigateur.
 
 ---
 

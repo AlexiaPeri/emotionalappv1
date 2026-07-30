@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14201e">
+  <title>Emerge · Studio d’écriture</title>
+  <link rel="stylesheet" href="./css/writing-studio.css">
+</head>
+<body>
+  <div class="writing-studio" id="writing-studio">
+    <aside class="studio-sidebar" id="studio-sidebar" aria-label="Textes Emerge">
+      <div class="sidebar-image" aria-hidden="true"></div>
+
+      <div class="sidebar-content">
+        <header class="studio-brand">
+          <img src="./assets/logo.png" alt="" width="42" height="46">
+          <div>
+            <span>Emerge</span>
+            <strong>Studio d’écriture</strong>
+          </div>
+        </header>
+
+        <section class="progress-section" aria-labelledby="progress-label">
+          <div class="progress-copy">
+            <span id="progress-label">Progression</span>
+            <strong id="progress-value">0 / 52</strong>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progress-bar"></span>
+          </div>
+          <p id="progress-detail">Aucun texte validé pour le moment</p>
+        </section>
+
+        <div class="priority-tabs" role="tablist" aria-label="Priorité">
+          <button class="priority-tab is-active" type="button" data-priority="now">Maintenant</button>
+          <button class="priority-tab" type="button" data-priority="beta">Bêta</button>
+          <button class="priority-tab" type="button" data-priority="later">Plus tard</button>
+          <button class="priority-tab" type="button" data-priority="all">Tous</button>
+        </div>
+
+        <label class="search-field">
+          <span class="sr-only">Rechercher un texte</span>
+          <input id="writing-search" type="search" placeholder="Rechercher un texte" autocomplete="off">
+        </label>
+
+        <nav class="writing-list" id="writing-list" aria-label="Inventaire éditorial"></nav>
+
+        <footer class="sidebar-footer">
+          <span class="save-dot" aria-hidden="true"></span>
+          <span>Les brouillons restent sur cet appareil</span>
+        </footer>
+      </div>
+    </aside>
+
+    <main class="studio-main">
+      <header class="studio-toolbar">
+        <button class="icon-command sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Ouvrir les textes" title="Ouvrir les textes">☰</button>
+
+        <div class="toolbar-location">
+          <span id="toolbar-category">Fondations</span>
+          <strong id="toolbar-position">1 sur 26</strong>
+        </div>
+
+        <div class="toolbar-actions">
+          <div class="language-switch" role="group" aria-label="Langue du texte">
+            <button type="button" data-writing-lang="fr" class="is-active">FR</button>
+            <button type="button" data-writing-lang="en">EN</button>
+          </div>
+          <button class="toolbar-button focus-toggle" id="focus-toggle" type="button">Mode focus</button>
+          <button class="toolbar-button export-button" id="export-button" type="button">Exporter</button>
+        </div>
+      </header>
+
+      <article class="writing-page">
+        <header class="writing-header">
+          <div class="writing-meta">
+            <span id="item-kind">Guide</span>
+            <span id="item-priority">À écrire maintenant</span>
+            <span id="item-format">Lecture cible · 2 à 4 minutes</span>
+          </div>
+          <h1 id="item-title">Guide écrit complet</h1>
+          <p class="writing-objective" id="item-objective"></p>
+        </header>
+
+        <section class="writing-prompts" aria-labelledby="prompt-title">
+          <h2 id="prompt-title">Garde en tête</h2>
+          <ul id="item-prompts"></ul>
+        </section>
+
+        <section class="editor-region" aria-label="Zone d’écriture">
+          <textarea id="writing-editor" spellcheck="true" aria-label="Brouillon"></textarea>
+
+          <footer class="editor-footer">
+            <div class="document-state">
+              <label for="status-select">État</label>
+              <select id="status-select"></select>
+            </div>
+
+            <span class="document-count" id="document-count">0 mot · 0 caractère</span>
+            <span class="save-state" id="save-state" role="status">Sauvegardé</span>
+
+            <button class="text-command" id="copy-button" type="button">Copier</button>
+            <button class="text-command restore-button" id="restore-button" type="button">Restaurer le texte actuel</button>
+          </footer>
+        </section>
+
+        <nav class="document-navigation" aria-label="Textes précédent et suivant">
+          <button class="document-arrow" id="previous-button" type="button" aria-label="Texte précédent" title="Texte précédent">←</button>
+          <span id="document-position">1 / 26</span>
+          <button class="document-arrow" id="next-button" type="button" aria-label="Texte suivant" title="Texte suivant">→</button>
+        </nav>
+      </article>
+    </main>
+  </div>
+
+  <div class="studio-toast" id="studio-toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./js/writing-studio.js"></script>
+</body>
+</html>

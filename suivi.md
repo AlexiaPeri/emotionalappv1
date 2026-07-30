@@ -46,9 +46,12 @@
 - La transformation des pronoms restera locale et déterministe, sans LLM.
 - Si Deepgram est retenu, la clé restera sur un backend et l'app recevra uniquement un jeton temporaire.
 - La source de vérité technique est `docs/ios-voice-strategy.md`.
+- Le studio privé `writing.html` centralise les 26 ensembles de textes FR/EN, leurs objectifs, leurs statuts et leur export.
+- L'inventaire éditorial de référence se trouve dans `docs/content-inventory.md`.
+- Les brouillons du studio restent dans le navigateur et doivent être exportés régulièrement ; ils ne sont pas ajoutés automatiquement à Git.
 
 ## À faire ensuite
-1. Créer le document maître des textes et audios FR/EN.
+1. Rédiger et valider les textes et audios FR/EN dans le studio d'écriture.
 2. Créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer.
 3. Créer le même prototype avec Deepgram Flux.
 4. Tester sur iPhone 15/15 Plus, iPhone 15 Pro/Pro Max et iPhone 16+.
