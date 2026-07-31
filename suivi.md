@@ -52,6 +52,10 @@
 - Le site public consacré uniquement à l'app se trouve dans `site/` et s'ouvre localement sur `/site/`.
 - Le wording du premier site Emerge est archivé dans `docs/previous-app-site-copy.md` avant la réaffectation du domaine d'Alexia.
 - Le site distingue les mécanismes soutenus par la recherche de l'hypothèse produit propre à la répétition vocale Emerge.
+- Le site public ne révèle pas la boucle exacte de répétition avant que la personne comprenne l'intérêt de la pratique. Il parle d'abord de focus, de contact, de mouvement, de profondeur et de sortie du mental.
+- La répétition Meisner est citée comme inspiration, sans présenter Emerge comme une formation Meisner.
+- Le design en étapes séparées précédemment créé pour expliquer `Feel / Say / Hear / Repeat` est conservé comme piste pour une future refonte du Guide, pas pour le site public. La référence se trouve dans `docs/guide-step-layout-reference.md`.
+- Dans la communication scientifique, ne pas confondre libération émotionnelle et simple défoulement. Les liens entre difficultés de régulation et agressivité sont associatifs, pas une preuve qu'Emerge prévient la violence.
 
 ## À faire ensuite
 1. Rédiger et valider les textes et audios FR/EN dans le studio d'écriture.
