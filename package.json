@@ -2,7 +2,7 @@
   "name": "emotionalappv1",
   "version": "1.0.0",
   "private": true,
-  "description": "App web d'expression emotionnelle avec STT + TTS",
+  "description": "Prototype d'une app de liberation emotionnelle guidee par la voix",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

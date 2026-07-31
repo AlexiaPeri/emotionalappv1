@@ -1,20 +1,20 @@
 # Emerge: Let it out
 
-**Prototype web d'une future app iPhone de pratique émotionnelle par la voix**
+**Prototype web d'une future app iPhone de libération émotionnelle guidée par la voix**
 
-Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emerge, tu parles, et l'app te répète ce que tu ressens. C'est tout. Ça marche.
+Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emerge, tu nommes simplement ce que tu ressens et l'app te le répète. Cette boucle vocale aide à rester au contact du ressenti plutôt que de repartir dans l'analyse.
 
 ---
 
 ## Ce que c'est
 
-Emerge est une pratique vocale inspirée de la répétition de Meisner et centrée sur l'utilisateur. L'utilisateur exprime une émotion avec une phrase simple. L'app capte cette phrase, transforme localement les pronoms quand nécessaire (`je → tu`, `I → you`), puis la répète avec une voix calme.
+Emerge est une pratique de libération émotionnelle inspirée de la répétition de Meisner et centrée sur l'utilisateur. L'utilisateur met son ressenti en mots avec une phrase simple. L'app capte cette phrase, transforme localement les pronoms quand nécessaire (`je → tu`, `I → you`), puis la répète avec une voix calme.
 
 Pendant la pratique, il n'y a ni analyse ni conseils : seulement les mots de l'utilisateur, retournés vers lui par une voix calme. Une réflexion écrite facultative est proposée après la session.
 
-### Pourquoi ça marche
+### Hypothèse produit
 
-La répétition émotionnelle force à rester dans le ressenti au lieu de l'analyser. S'entendre dire "tu te sens dépassé" par une voix extérieure active une distanciation naturelle — le même mécanisme que dans la thérapie Meisner ou la gestalt.
+Emerge rassemble plusieurs mécanismes étudiés séparément : mettre les émotions en mots, rester au contact de l'expérience ressentie et inviter le corps à bouger. La répétition vocale est le mécanisme distinctif du produit : elle est conçue pour soutenir l'attention sans ajouter d'analyse. Son effet propre devra être évalué pendant les tests utilisateurs ; il n'est pas présenté comme cliniquement démontré.
 
 ### Positionnement
 
@@ -95,6 +95,7 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 ```
 .
 ├── index.html          ← Point d'entrée
+├── site/               ← Site public de présentation d'Emerge
 ├── writing.html        ← Studio privé de rédaction et d'export des textes
 ├── css/
 │   └── styles.css      ← Thème terracotta
@@ -119,6 +120,12 @@ Ouvrir `http://127.0.0.1:5173/writing.html` lorsque le serveur Vite est lancé.
 - Export complet en Markdown.
 
 Les brouillons ne sont pas envoyés vers un serveur et ne modifient pas automatiquement le code de l'app. Utiliser régulièrement le bouton `Exporter` pour conserver une copie en dehors du navigateur.
+
+### Site public Emerge
+
+Ouvrir `http://127.0.0.1:5173/site/` lorsque le serveur Vite est lancé.
+
+Le site public présente le besoin, la boucle vocale, l'expérience, les fondements scientifiques et la vision du produit. Il reste distinct du prototype et ne présente pas les mécanismes étudiés comme une preuve d'efficacité de l'app. La stratégie éditoriale et les sources sont documentées dans [docs/marketing-site-strategy.md](docs/marketing-site-strategy.md).
 
 ---
 

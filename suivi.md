@@ -49,6 +49,9 @@
 - Le studio privé `writing.html` centralise les 26 ensembles de textes FR/EN, leurs objectifs, leurs statuts et leur export.
 - L'inventaire éditorial de référence se trouve dans `docs/content-inventory.md`.
 - Les brouillons du studio restent dans le navigateur et doivent être exportés régulièrement ; ils ne sont pas ajoutés automatiquement à Git.
+- Le site public consacré uniquement à l'app se trouve dans `site/` et s'ouvre localement sur `/site/`.
+- Le wording du premier site Emerge est archivé dans `docs/previous-app-site-copy.md` avant la réaffectation du domaine d'Alexia.
+- Le site distingue les mécanismes soutenus par la recherche de l'hypothèse produit propre à la répétition vocale Emerge.
 
 ## À faire ensuite
 1. Rédiger et valider les textes et audios FR/EN dans le studio d'écriture.
