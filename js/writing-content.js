@@ -101,6 +101,95 @@ export const WRITING_STATUSES = [
   { id: "final", label: "Validé" },
 ];
 
+export const WRITING_FR_TRANSLATION_REVISION = 2;
+
+export const WRITING_FR_TRANSLATIONS = {
+  faq: `1. Pourquoi rester avec la même phrase ?
+Tu répètes afin de :
+- lâcher la pensée, puisque tu n'as plus besoin de décider quoi dire, ce qui te permet d'être davantage en contact avec tes émotions ;
+- te concentrer sur une seule émotion et l'approfondir, ce qui est la meilleure façon de la traverser.
+
+2. Quand dois-je changer de phrase ?
+Seulement lorsqu'une autre phrase apparaît d'elle-même et semble plus honnête dans ton corps.
+
+3. Et si ma phrase ne correspond plus à ce que je ressens, mais qu'aucune nouvelle phrase n'est apparue ?
+Ce n'est pas un problème de continuer à dire une phrase qui ne correspond plus exactement à ce que tu ressens. Le fait de la dire t'a aidé à laisser sortir quelque chose et à évoluer ; rester avec elle peut donc encore être bénéfique. Le but est de relâcher, pas d'exprimer parfaitement ce que tu ressens.
+
+4. Et si je ne sais pas ce que je ressens ?
+Dans ce cas, décris une sensation corporelle. Par exemple : « Je sens de la chaleur dans mes mains », « Je sens des picotements dans mon ventre » ou « Je sens quelque chose dans ma poitrine ».
+
+5. Et si je ressens plusieurs choses à la fois ?
+Concentre-toi simplement sur ce qui semble le plus présent. Tu pourras toujours revenir aux autres émotions plus tard.
+
+6. Est-ce que je dois bouger ?
+Oui, fais circuler tes émotions dans ton corps et exprime-les par le mouvement. Tu peux aussi rester dans une position de repos si cela te semble juste, mais invite tout de même ton corps à bouger. Essaie de le laisser bouger sans restriction.
+
+7. Et si cela devient trop intense ?
+La pratique peut être intense et permettre d'aller très profondément dans ce que tu ressens. Cependant, si c'est trop, appuie sur le bouton d'aide : une guidance t'aidera à revenir au calme.
+
+8. Pourquoi devrais-je faire cette pratique ?
+Fais-la pour toi et pour ton entourage. Traverser tes émotions peut rendre la vie de chacun plus sincère, plus paisible, plus connectée et plus présente.
+
+9. Est-ce une thérapie ?
+Non. Emerge est une pratique guidée d'expression émotionnelle. Ce n'est ni un soin médical, ni une psychothérapie, ni un service d'urgence.`,
+  "audio-closing": `Allonge-toi ou assieds-toi confortablement. Ferme les yeux. Laisse à ton corps un moment pour intégrer. Inspire profondément, puis expire par la bouche. Reste aussi longtemps que tu en as besoin.`,
+  "audio-returning-opening": `Ferme les yeux. Inspire profondément, puis expire par la bouche. Tourne ton attention vers l'intérieur. Comment te sens-tu ?`,
+  "audio-grounding": `Fais une pause. Trouve la position la plus confortable possible. Laisse ton corps devenir aussi lourd qu'il en a besoin. Pose tes mains sur ta poitrine. Observe ta respiration. Laisse l'expiration s'allonger un peu. Sens le support sous ton corps. Laisse ton corps se déposer à son propre rythme. Reste ici aussi longtemps que tu en as besoin.`,
+  "written-guide": `Exprime tes émotions, sans les expliquer ni les analyser, afin qu'elles puissent circuler en profondeur.
+
+Comment faire :
+
+1. Porte ton attention sur ton corps.
+
+2. Dis une phrase simple qui exprime ce que tu ressens, sans donner d'explication.
+
+3. Écoute l'app te la répéter, puis répète-la à ton tour.
+
+Par exemple : tu dis « Je suis triste », l'app dit « Tu es triste », tu répètes « Je suis triste », l'app dit « Tu es triste », etc.
+
+4. Continue à répéter. Bouge ton corps. Lâche prise.
+
+5. Lorsque tes émotions changent, tu peux changer ce que tu dis pour que ta phrase corresponde à ton nouvel état. Ne cherche pas à changer : laisse le changement se produire, s'il se produit. Accepte de rester un moment avec la même émotion.
+
+6. Répète ou change de phrase autant de fois que tu le souhaites. N'essaie pas de faire parfaitement. Ce qui compte, c'est que ce que tu dis t'aide à lâcher prise, même si cela ne correspond pas exactement à ce que tu ressens.
+
+Pendant toute la pratique, invite ton corps à bouger. Ne retiens rien. Exprime-toi pleinement, dis ce que tu as envie de dire, concentre-toi, répète, avance avec courage, fais face à ce qui se présente, lâche prise, sois toi-même !
+
+La pratique t'invite à ressentir toutes les émotions, y compris les plus difficiles. Si tu restes avec elles suffisamment longtemps, elles finiront probablement par évoluer. Mais si tout devient trop intense et que tu as besoin de t'arrêter et de t'ancrer, appuie sur le bouton d'aide : une guidance t'accompagnera dans un retour en douceur.`,
+  "audio-first-guide": `Exprime tes émotions sans les expliquer, afin qu'elles puissent circuler facilement et en profondeur.
+
+Voici comment faire :
+
+1. Porte ton attention sur ton corps.
+
+2. Dis une phrase simple qui exprime ce que tu ressens, sans donner d'explication.
+
+3. Écoute l'app te la répéter, puis répète-la à ton tour.
+
+Par exemple : tu dis « Je suis triste », l'app dit « Tu es triste », tu répètes « Je suis triste », l'app dit « Tu es triste », etc.
+
+4. Continue à répéter. Bouge ton corps. Lâche prise.
+
+5. Lorsque tes émotions changent, tu peux changer ce que tu dis pour que ta phrase corresponde à ton nouvel état. Ne cherche pas à changer : laisse le changement se produire, s'il se produit. Accepte de rester un moment avec la même émotion.
+
+6. Répète ou change de phrase autant de fois que tu le souhaites. N'essaie pas de faire parfaitement. Ce qui compte, c'est que ce que tu dis t'aide à lâcher prise, même si cela ne correspond pas exactement à ce que tu ressens.
+
+Pendant toute la pratique, invite ton corps à bouger. Ne retiens rien. Exprime-toi pleinement, dis ce que tu as envie de dire, concentre-toi, répète, avance avec courage, fais face à ce qui se présente, lâche prise, sois toi-même !
+
+La pratique t'invite à ressentir toutes les émotions, y compris les plus difficiles. Si tu restes avec elles suffisamment longtemps, elles finiront probablement par évoluer. Mais si tout devient trop intense et que tu as besoin de t'arrêter et de t'ancrer, appuie sur le bouton d'aide : une guidance t'accompagnera dans un retour en douceur.`,
+  "audio-first-welcome": `Bienvenue dans ta première session de Miur.
+Fais confiance au processus, même si, au début, tu ressens simplement de l'ennui. Je te promets que si tu traverses patiemment ce moment, tu trouveras une véritable libération. Il te faudra aussi du courage. Tu auras peut-être besoin de faire face à des choses difficiles. Dans ce cas, là encore, fais confiance au processus. Tu finiras par traverser ce qui se présente. Surtout, sois libre. Ne juge pas tes émotions. Tourne ton attention vers l'intérieur et ressens.
+Voici comment cela fonctionne. Écoute ce qui se passe à l'intérieur de toi. Dis une phrase qui exprime ce que tu ressens. Cela peut être n'importe quoi, de « Je me sens triste » à « J'ai envie d'exploser », « Je me sens grandir » ou « Je suis enthousiaste ». Juste après ta phrase, la voix de l'app te la répétera. Répète-la à ton tour, puis continue cet aller-retour.
+Répéter la même phrase te permettra d'approfondir ton émotion, ce qui est nécessaire pour la relâcher. Cela t'aidera également à sortir du mental, qui te maintient souvent dans une impasse.
+Lorsque ton émotion a changé et qu'une autre phrase apparaît, passe simplement à la répétition de cette nouvelle phrase.
+Ne cherche pas à changer ton émotion ou ta phrase, même si tu t'ennuies. Le changement doit se produire spontanément.
+Pendant la pratique, bouge ton corps. Cela t'aidera vraiment, alors laisse-le bouger librement. Tu peux pratiquer dans la position de ton choix : au sol, sur une chaise ou debout.
+Si tu ressens le besoin de t'arrêter immédiatement et de revenir au calme, appuie sur le bouton d'aide.
+À la fin de ta pratique, une très courte guidance t'aidera à la clôturer. L'app t'invitera ensuite à écrire sur ton expérience.
+Maintenant, commençons.
+Ferme les yeux. Inspire profondément, puis expire par la bouche. Tourne ton attention vers l'intérieur. Comment te sens-tu ?`,
+};
+
 export const WRITING_ITEMS = [
   {
     id: "brand-home",

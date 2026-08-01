@@ -1,5 +1,7 @@
 import {
   WRITING_CATEGORIES,
+  WRITING_FR_TRANSLATIONS,
+  WRITING_FR_TRANSLATION_REVISION,
   WRITING_ITEMS,
   WRITING_PRIORITIES,
   WRITING_STATUSES,
@@ -58,15 +60,34 @@ function loadState() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!parsed || parsed.version !== 1) return structuredClone(fallbackState);
-    return {
+    const loadedState = {
       ...structuredClone(fallbackState),
       ...parsed,
       drafts: parsed.drafts || {},
       statuses: parsed.statuses || {},
     };
+    applyFrenchTranslations(loadedState);
+    return loadedState;
   } catch {
     return structuredClone(fallbackState);
   }
+}
+
+function applyFrenchTranslations(targetState) {
+  if ((targetState.translationRevisions?.fr || 0) >= WRITING_FR_TRANSLATION_REVISION) return;
+
+  Object.entries(WRITING_FR_TRANSLATIONS).forEach(([itemId, translation]) => {
+    targetState.drafts[itemId] ||= {};
+    targetState.drafts[itemId].fr = translation;
+    targetState.statuses[itemId] ||= {};
+    targetState.statuses[itemId].fr = "draft";
+  });
+
+  targetState.translationRevisions = {
+    ...targetState.translationRevisions,
+    fr: WRITING_FR_TRANSLATION_REVISION,
+  };
+  targetState.language = "fr";
 }
 
 function saveState() {
@@ -467,6 +488,7 @@ function renderDocumentNavigation() {
 }
 
 function init() {
+  saveState();
   renderStatusOptions();
   dom.priorityTabs.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.priority === state.priority);
