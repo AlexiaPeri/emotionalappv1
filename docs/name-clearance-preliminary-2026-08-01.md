@@ -102,8 +102,8 @@ This round screened exact US App Store titles, indexed software and wellness use
 
 | Candidate | Character | Preliminary findings | Current view |
 | --- | --- | --- | --- |
-| **Murre** | Short, warm and slightly unusual. A murre is a small seabird, giving it the same random-but-logoable quality as `Loon`. | No exact US App Store title or indexed software/wellness product was found. The clearest exact trademark result located was an unrelated Indian clothing mark. `murre.app` returned no RDAP registration on 1 Aug 2026; the `.com` is registered. | **Strongest candidate from this round.** Cute without sounding childish, but still requires EU/UK/US similarity clearance and native-speaker testing. |
-| **Lomie** | Soft, friendly and easy to say in French; almost suggests `l'ami` without being descriptive. | No exact US App Store title or indexed software/wellness product was found. An unrelated Indian jewellery filing was located. `lomie.app` returned no RDAP registration; the `.com` is registered. | Promising invented-brand direction. Check English pronunciation and whether it sounds too close to `loamy`. |
+| **Murre** | Short, warm and slightly unusual. A murre is a small seabird, giving it the same random-but-logoable quality as `Loon`. | No exact US App Store title or indexed software/wellness product was found. The clearest exact trademark result located was an unrelated Indian clothing mark. `murre.app` returned no RDAP registration on 1 Aug 2026; the `.com` is registered. | Attractive visually, but **downgraded after English-first review**. It is pronounced `mer`, yet many English speakers will not know the bird name and may need the spelling repeated. |
+| **Lomie** | Soft, friendly and easy to say in French; almost suggests `l'ami` without being descriptive. | No exact US App Store title was found under `Lomie`, but `Lomi` is an established consumer brand with an active iPhone app, `lomi.com`, and registered software-related rights. `lomie.app` returned no RDAP registration; the `.com` is registered. | **Eliminate.** In English it is likely to be heard as `Lomi`, creating spelling friction and the appearance of a derivative brand. |
 | **Pimoa** | Playful and distinctive, with a smooth three-syllable sound. | No exact US App Store title or obvious indexed software/wellness product was found. `Pimoa` is also a spider genus. `pimoa.app` returned no RDAP registration; the `.com` is registered. | Ownable-looking, but less immediately elegant than `Murre`; pronunciation testing is essential. |
 | **Nimsy** | Whimsical, compact and memorable. | No exact US App Store title was found. `NIMSY BABY` appears in cosmetics, but no direct software/wellness collision was located. `nimsy.app` returned no RDAP registration; the `.com` is registered. | Worth testing if a more playful identity is desired; may feel too child-oriented for an emotionally serious practice. |
 | **Pomeli** | Cheerful, round and friendly; visually attractive as a wordmark. | No exact US App Store title or direct indexed software/wellness product was found. It is the Italian plural of `pomelo`, so it has a clear citrus association. The `.app` and `.com` are registered. | Attractive but less ownable and potentially food/cosmetics-coded. |
@@ -111,14 +111,25 @@ This round screened exact US App Store titles, indexed software and wellness use
 
 Other ideas rejected during this round include `Pimu` (Finnish slang for an attractive young woman and an acronym used for problematic interactive media use), `Noru` (current Health & Fitness app), `Soli` (direct self-care app), `Murm` (direct emotional check-in and ambient-sound apps), `Fawn` (current health app), `Pipit` (existing apps), `Mimu` and `Nelu` (exact current apps), `Nolla` (current health app), and `Thrum` (current meditation and relationship-wellness apps).
 
+### English-first naming requirement
+
+The worldwide launch is primarily English-facing. A candidate should therefore pass a stricter spoken-brand test:
+
+- an English speaker should pronounce it correctly on first sight;
+- an English speaker should spell it correctly after hearing it once;
+- it should not depend on a silent final `e`, an unexpected doubled consonant, or an accent mark;
+- the simpler spelling should not already belong to a prominent app or consumer brand;
+- it should sound natural in a sentence such as `I use ___` or `Download ___`.
+
+This changes the assessment of two candidates. `Mure` is not a cleaner substitute for `Murre`: Cambridge gives the English pronunciation as `myoor`, not `mer`, and the word is an archaic English term related to enclosing something within walls. No exact app title was found in the five App Store countries checked, but both `mure.com` and `mure.app` are registered. `Lomi` is already an active Lifestyle app and consumer appliance brand, with both primary domains registered and software-related trademark rights.
+
 ### Creative shortlist to test with people
 
-1. **Murre**
-2. **Lomie**
-3. **Pimoa**
-4. **Nimsy**
+1. **Pimoa**
+2. **Nimsy**
+3. **Murre**, only if spoken testing shows that the spelling burden is acceptable
 
-The next useful step is not another legal deep dive on all four. First, test the sound, emotional impression and memorability of these names with a small bilingual group. Then perform professional clearance only on the one or two names people genuinely like.
+The next naming round should prioritize English sound-to-spelling reliability before legal screening. The useful sequence is: generate candidates, run a blind spoken spelling test with English speakers, and only then perform professional clearance on the one or two names people genuinely like.
 
 ## Limits of this research
 
