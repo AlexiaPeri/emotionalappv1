@@ -104,7 +104,8 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 │   ├── pronouns.js     ← Conversion FR / EN portable
 │   └── app.js          ← Shell web + voix navigateur
 ├── docs/
-│   └── content-inventory.md ← Inventaire éditorial
+│   ├── content-inventory.md ← Inventaire éditorial
+│   └── site-archive/        ← Sauvegarde complète du premier site Emerge
 └── README.md
 ```
 
@@ -125,7 +126,9 @@ Les brouillons ne sont pas envoyés vers un serveur et ne modifient pas automati
 
 Ouvrir `http://127.0.0.1:5173/site/` lorsque le serveur Vite est lancé.
 
-Le site public présente le besoin, la boucle vocale, l'expérience, les fondements scientifiques et la vision du produit. Il reste distinct du prototype et ne présente pas les mécanismes étudiés comme une preuve d'efficacité de l'app. La stratégie éditoriale et les sources sont documentées dans [docs/marketing-site-strategy.md](docs/marketing-site-strategy.md).
+Le site public présente le besoin, la pratique, l'expérience, les fondements scientifiques et la vision du produit, sans dévoiler trop tôt la mécanique exacte de répétition. Il reste distinct du prototype et ne présente pas les mécanismes étudiés comme une preuve d'efficacité de l'app. La stratégie éditoriale et les sources sont documentées dans [docs/marketing-site-strategy.md](docs/marketing-site-strategy.md).
+
+Le premier site publié sur `alexiaperineau.com` est sauvegardé dans [docs/site-archive/Emerge-original-site-archive.md](docs/site-archive/Emerge-original-site-archive.md). Le dossier contient également un document `.docx` ouvrable dans Pages, une capture pleine page, le HTML original et son logo.
 
 ---
 

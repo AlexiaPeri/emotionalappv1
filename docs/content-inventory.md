@@ -34,7 +34,7 @@ Les brouillons du studio sont stockés dans le navigateur de l'utilisateur et ne
 
 1. Politique de confidentialité
 2. Page App Store
-3. Site de présentation
+3. Site de présentation (le texte du premier site est conservé comme source dans le studio)
 4. Invitation et accueil des bêta-testeurs
 5. Questionnaire UX
 6. Instagram : bio et premiers contenus

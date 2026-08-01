@@ -4,6 +4,8 @@ This document preserves the wording of the first public Emerge page hosted at `a
 
 Captured on 31 July 2026.
 
+The complete archive captured from the live site on 1 August 2026, including an editable Pages/Word document, full-page screenshot and original HTML, is available in [`docs/site-archive/`](./site-archive/).
+
 ## Metadata
 
 - Title: `Emerge`

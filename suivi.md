@@ -51,6 +51,7 @@
 - Les brouillons du studio restent dans le navigateur et doivent être exportés régulièrement ; ils ne sont pas ajoutés automatiquement à Git.
 - Le site public consacré uniquement à l'app se trouve dans `site/` et s'ouvre localement sur `/site/`.
 - Le wording du premier site Emerge est archivé dans `docs/previous-app-site-copy.md` avant la réaffectation du domaine d'Alexia.
+- La sauvegarde complète du premier site (capture, document Pages/Word, texte copiable et HTML original) se trouve dans `docs/site-archive/`. Son wording anglais est aussi disponible dans l'entrée `Site de présentation · texte source` du studio d'écriture.
 - Le site distingue les mécanismes soutenus par la recherche de l'hypothèse produit propre à la répétition vocale Emerge.
 - Le site public ne révèle pas la boucle exacte de répétition avant que la personne comprenne l'intérêt de la pratique. Il parle d'abord de focus, de contact, de mouvement, de profondeur et de sortie du mental.
 - La répétition Meisner est citée comme inspiration, sans présenter Emerge comme une formation Meisner.
