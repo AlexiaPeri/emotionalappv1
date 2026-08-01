@@ -131,18 +131,34 @@ The user strongly prefers the English sound of `Mure` and proposed alternative s
 | --- | --- | --- | --- |
 | **Miur** | Likely to be read as two syllables (`mee-ur`) rather than the one-syllable English `myoor`; pronunciation is not reliably shared across English and French. | `MIUR` is strongly associated with Italy's former Ministry of Education, Universities and Research and is extensively indexed online. `miur.com` and `miur.app` are registered. | Eliminate: poor search ownership and institutional association. |
 | **Myur** | Compact and visually attractive, but an English speaker may parse it as `my-er`, while a French speaker may produce two syllables. It still needs to be spelled aloud. | An exact [MYUR EU mark](https://www.trademarkelite.com/europe/trademark/trademark-detail/019017448/MYUR) is registered in class 14, and an exact [`myur!` app](https://www.appbrain.com/appstore/myur/ios-1536724107) has existed on iOS and Android. `myur.com` is registered; `myur.app` returned no RDAP registration on 1 Aug 2026. | Do not prioritize: the trademark class is not directly conflicting, but the prior exact app weakens uniqueness. |
-| **Myoor** | The clearest written cue for the desired English pronunciation. In French it will probably be understandable after one introduction, though it may be pronounced as two syllables. The doubled `o` makes the spelling less elegant and not fully guessable from hearing the name. | No exact indexed App Store title or obvious exact EU/US software mark was located in the preliminary search. `myoor.com` is registered; `myoor.app` returned no RDAP registration on 1 Aug 2026. | Best of these four for preserving the sound, and worth spoken testing. Not yet cleared. |
+| **Myoor** | The clearest written cue for the desired English pronunciation. In French it will probably be understandable after one introduction, though it may be pronounced as two syllables. The doubled `o` makes the spelling less elegant and not fully guessable from hearing the name. | No exact indexed App Store title or obvious exact EU/US software mark was located in the preliminary search. `myoor.com` is registered; `myoor.app` returned no RDAP registration on 1 Aug 2026. However, it is intended to sound like `MURE`, which has directly overlapping EU software rights. | **Eliminate as a workaround for MURE.** A different spelling does not remove the likely phonetic similarity. |
 | **Mioor** | More elegant than `Myoor` to some eyes, but English speakers are likely to say `mee-or`, so it loses the exact sound being protected. | No exact indexed App Store title or obvious exact EU/US software mark was located. A Chinese `MIOOR` registration exists for pet products, and `Mioor` is used by a music artist. `mioor.com` is registered; `mioor.app` returned no RDAP registration on 1 Aug 2026. | Weaker than `Myoor` because the English pronunciation is less reliable. |
 
-Among these spellings, **Myoor** is the only candidate worth taking into a blind English/French pronunciation test. Its advantage is phonetic transparency in English; its weakness is visual elegance and spelling recall. The sound `myoor` remains a useful creative brief even if none of these four spellings becomes the final name.
+None of these spellings should be prioritized. EUIPO guidance expressly treats aural similarity as part of the likelihood-of-confusion assessment, including pronunciations used in the relevant EU territories. A coined spelling that is meant to be pronounced exactly like `MURE` is therefore not a prudent way around the directly overlapping MURE registration. See the official [EUIPO list of likelihood-of-confusion factors](https://guidelines.euipo.europa.eu/2302857/2227748/trade-mark-guidelines/4-2-list-of-factors-for-assessing-the-likelihood-of-confusion) and [EUIPO phonetic-comparison guidance](https://guidelines.euipo.europa.eu/2214313/1996584/-/3-4-2-comparacion-fonetica).
+
+The sound `myoor` can still serve as a creative reference: compact, warm and serious. The final candidate should move far enough away from `MURE` both visually and phonetically.
+
+### Final coined-name round
+
+This last round prioritized names that an English and a French speaker can both attempt from sight, while preserving the soft and slightly unexpected quality liked in `Mure`, `Loon` and `Lomie`.
+
+| Candidate | Character and pronunciation | Preliminary findings | Current view |
+| --- | --- | --- | --- |
+| **Moluva** | `mo-LOO-vah`. Soft but serious, visually balanced, and natural enough in both English and French. | No exact indexed App Store title or obvious exact software/wellness mark was found. `moluva.app` returned no RDAP registration on 1 Aug 2026. The name is used by unrelated European companies, including a [Lithuanian company with no listed trademarks](https://rekvizitai.vz.lt/en/company/moluva/trademarks/), so the wider namespace is not empty. | **Strongest new candidate.** Distinctive without sounding childish, but it still needs similarity clearance and blind pronunciation testing. |
+| **Molumi** | `mo-LOO-mee`. Rounder, warmer and cuter than Moluva; easy to say in both target languages. | No exact indexed App Store title or obvious exact software/wellness mark was found. `molumi.app` returned no RDAP registration on 1 Aug 2026. The word also appears as a surname and in unrelated small-company names. | **Best softer alternative.** Memorable, though it may feel slightly more child-oriented than the product. |
+| **Moruva** | `mo-ROO-vah`. More grounded and mature, with a slightly stronger sound. | No exact indexed App Store title or obvious exact software/wellness mark was found. `moruva.app` returned no RDAP registration on 1 Aug 2026. A recent [music track uses the exact title](https://audiomack.com/domkaos/song/moruva), and there are scattered geographic and product uses. | **Best more serious alternative.** Less immediately tender than Moluva and potentially confusable when heard with `Morava`. |
+
+`Molura` was also screened but not retained. It is already used by an active online shop and has historical software-company usage, including software distributed under the Molura publisher name. `Nolumi` was comparatively clear in the direct app screen, but the opening `No` creates an avoidable negative reading and the name is already used by a music artist.
 
 ### Creative shortlist to test with people
 
-1. **Pimoa**
-2. **Nimsy**
-3. **Murre**, only if spoken testing shows that the spelling burden is acceptable
+1. **Moluva**
+2. **Molumi**
+3. **Moruva**
 
-The next naming round should prioritize English sound-to-spelling reliability before legal screening. The useful sequence is: generate candidates, run a blind spoken spelling test with English speakers, and only then perform professional clearance on the one or two names people genuinely like.
+`Pimoa` and `Nimsy` remain secondary options. `Murre` remains attractive on the page, but its English spelling burden makes it a weaker global candidate.
+
+The next step should not be another large naming round. Run a blind spoken test in English and French with these three names, then commission professional similarity clearance on the one or two names people genuinely like. The spoken test should check both directions: show the name and ask the person to pronounce it, then say the name and ask the person to spell it.
 
 ## Limits of this research
 
