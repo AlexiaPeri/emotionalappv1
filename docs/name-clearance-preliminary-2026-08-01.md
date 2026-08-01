@@ -94,6 +94,32 @@ The next decision should therefore be between two naming strategies, not yet bet
 
 This group clarifies the preferred creative territory: short, real-sounding names that evoke release, voice or movement. The next naming round should preserve that simplicity while creating a more ownable sign, particularly around the ideas of a wave, passage, opening or release.
 
+## Cute and non-descriptive naming round
+
+The user also likes the naming logic of brands such as `Slack` and `Spotify`: the name can be memorable and appealing without explaining the product. `Loon` is a useful tonal reference because it is short, friendly and slightly unexpected. It is not a suitable final candidate: an exact [Loon app](https://apps.apple.com/us/app/loon/id1373567447) exists, and the name has substantial prior technology use.
+
+This round screened exact US App Store titles, indexed software and wellness uses, obvious trademark records, and `.app` registration status. Absence from these preliminary searches is not legal clearance.
+
+| Candidate | Character | Preliminary findings | Current view |
+| --- | --- | --- | --- |
+| **Murre** | Short, warm and slightly unusual. A murre is a small seabird, giving it the same random-but-logoable quality as `Loon`. | No exact US App Store title or indexed software/wellness product was found. The clearest exact trademark result located was an unrelated Indian clothing mark. `murre.app` returned no RDAP registration on 1 Aug 2026; the `.com` is registered. | **Strongest candidate from this round.** Cute without sounding childish, but still requires EU/UK/US similarity clearance and native-speaker testing. |
+| **Lomie** | Soft, friendly and easy to say in French; almost suggests `l'ami` without being descriptive. | No exact US App Store title or indexed software/wellness product was found. An unrelated Indian jewellery filing was located. `lomie.app` returned no RDAP registration; the `.com` is registered. | Promising invented-brand direction. Check English pronunciation and whether it sounds too close to `loamy`. |
+| **Pimoa** | Playful and distinctive, with a smooth three-syllable sound. | No exact US App Store title or obvious indexed software/wellness product was found. `Pimoa` is also a spider genus. `pimoa.app` returned no RDAP registration; the `.com` is registered. | Ownable-looking, but less immediately elegant than `Murre`; pronunciation testing is essential. |
+| **Nimsy** | Whimsical, compact and memorable. | No exact US App Store title was found. `NIMSY BABY` appears in cosmetics, but no direct software/wellness collision was located. `nimsy.app` returned no RDAP registration; the `.com` is registered. | Worth testing if a more playful identity is desired; may feel too child-oriented for an emotionally serious practice. |
+| **Pomeli** | Cheerful, round and friendly; visually attractive as a wordmark. | No exact US App Store title or direct indexed software/wellness product was found. It is the Italian plural of `pomelo`, so it has a clear citrus association. The `.app` and `.com` are registered. | Attractive but less ownable and potentially food/cosmetics-coded. |
+| **Dovekie** | The name of a tiny Arctic seabird; gentle and story-like. | No exact US App Store title was found and `dovekie.app` returned no RDAP registration; the `.com` is registered. | Charming, but spelling and pronunciation are too demanding for a primary global app name. |
+
+Other ideas rejected during this round include `Pimu` (Finnish slang for an attractive young woman and an acronym used for problematic interactive media use), `Noru` (current Health & Fitness app), `Soli` (direct self-care app), `Murm` (direct emotional check-in and ambient-sound apps), `Fawn` (current health app), `Pipit` (existing apps), `Mimu` and `Nelu` (exact current apps), `Nolla` (current health app), and `Thrum` (current meditation and relationship-wellness apps).
+
+### Creative shortlist to test with people
+
+1. **Murre**
+2. **Lomie**
+3. **Pimoa**
+4. **Nimsy**
+
+The next useful step is not another legal deep dive on all four. First, test the sound, emotional impression and memorability of these names with a small bilingual group. Then perform professional clearance only on the one or two names people genuinely like.
+
 ## Limits of this research
 
 This is a preliminary risk screen, not legal advice or a guarantee of availability. Search tools can be incomplete or delayed. Trademark assessment includes phonetic, visual and conceptual similarity, not only exact matches. App Store search results also do not guarantee that a name can be reserved in App Store Connect.
