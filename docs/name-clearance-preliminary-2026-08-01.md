@@ -81,6 +81,19 @@ The next decision should therefore be between two naming strategies, not yet bet
 - **Descriptive and immediate:** `Feel It Through`
 - **Distinctive and brandable:** `Emovela` or a further coined-name round
 
+## Additional ideas screened on 1 August 2026
+
+| Candidate | Product fit | Screening result | Decision |
+| --- | --- | --- | --- |
+| **Emmerge** | Preserves the sound and most of the visual identity of Emerge | No exact App Store title was found in the indexed searches, but [Emmerge has already been used by a software startup](https://www.producthunt.com/posts/emmerge) and other businesses. More importantly, it remains visually and phonetically very close to the crowded `EMERGE` marks. Many users would assume it is a misspelling. | Do not use as the final brand. It keeps the original clearance problem while reducing spelling quality. |
+| **Release** | Describes the central product benefit extremely well | Several direct wellness collisions exist, including [Release: Mindfulness & Tapping](https://apps.apple.com/us/app/release-mindfulness-tapping/id1493554638), an [exact-title Release emotional writing app](https://apps.apple.com/us/app/release/id6759187431), and [Release U](https://apps.apple.com/us/app/release-u/id6504209763). The word is also highly descriptive and consequently difficult to own. | Keep in positioning and copy, not as the brand name. |
+| **Emera** | Elegant, short and close in tone to Emerge | An [exact Emera app](https://apps.apple.com/us/app/emera/id6475636681) already exists and explicitly offers products and services in health and education. `Emera` is also the name of a major Canadian energy company and appears in numerous trademarks and company names. | Eliminate. |
+| **Onda** | The strongest aesthetic idea in this group; means "wave" in Spanish, Italian and Portuguese and fits the idea of emotion moving | Multiple exact-title apps exist. [ONDA: Live Coherence & HRV](https://apps.apple.com/us/app/onda-live-coherence-hrv/id6755912529) is a current Health & Fitness app for breathing, stress and interoceptive awareness. An active EU word mark `ONDA` also covers software, and a [UK ONDA+ filing](https://www.ipo.gov.uk/t-tmj.htm/t-tmj/t-tmj/tm-journals/2025-049/UK00004264262.html) covers stress-management and wellbeing software. | Eliminate as an exact name, but retain the wave/movement naming territory. |
+| **Avena** | Soft, international and easy to pronounce | An [exact Avena travel app](https://apps.apple.com/us/app/avena/id6760925957) exists, as does [Avena Health](https://avena.io/en-us/), a nutrition and patient-app platform. A recent US `AVENA` application covers classes 9 and 41. The word also means oats in Spanish/Latin-derived usage, creating a strong food association. | Eliminate. |
+| **Unmute** | Conceptually very strong for a voice-led emotional practice | Several closely adjacent apps already exist: [Unmute: Daily Mood Tracker](https://apps.apple.com/us/app/unmute-daily-mood-tracker/id6759707314), [Unmute - Be Heard](https://apps.apple.com/us/app/unmute-be-heard/id6756187586) for anonymous voice-based emotional support, and social-anxiety apps using the same name. A US `UNMUTE` registration covers mental-health matching and a virtual therapy platform. | Eliminate decisively. Retain the underlying idea for copy, not naming. |
+
+This group clarifies the preferred creative territory: short, real-sounding names that evoke release, voice or movement. The next naming round should preserve that simplicity while creating a more ownable sign, particularly around the ideas of a wave, passage, opening or release.
+
 ## Limits of this research
 
 This is a preliminary risk screen, not legal advice or a guarantee of availability. Search tools can be incomplete or delayed. Trademark assessment includes phonetic, visual and conceptual similarity, not only exact matches. App Store search results also do not guarantee that a name can be reserved in App Store Connect.
