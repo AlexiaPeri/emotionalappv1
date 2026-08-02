@@ -6,6 +6,11 @@ import {
   WRITING_PRIORITIES,
   WRITING_STATUSES,
 } from "./writing-content.js";
+import {
+  WRITING_COPYEDIT_REVISION,
+  WRITING_COPYEDITS,
+  WRITING_EDITORIAL_NOTES,
+} from "./writing-review.js";
 
 const STORAGE_KEY = "emerge_writing_studio_v1";
 const SAVE_DELAY_MS = 280;
@@ -30,6 +35,8 @@ const dom = {
   objective: document.getElementById("item-objective"),
   prompts: document.getElementById("item-prompts"),
   editor: document.getElementById("writing-editor"),
+  editorialLanguage: document.getElementById("editorial-language"),
+  editorialNotes: document.getElementById("editorial-notes"),
   status: document.getElementById("status-select"),
   count: document.getElementById("document-count"),
   saveState: document.getElementById("save-state"),
@@ -57,20 +64,25 @@ let saveTimer = null;
 let toastTimer = null;
 
 function loadState() {
+  let loadedState = structuredClone(fallbackState);
+
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!parsed || parsed.version !== 1) return structuredClone(fallbackState);
-    const loadedState = {
-      ...structuredClone(fallbackState),
-      ...parsed,
-      drafts: parsed.drafts || {},
-      statuses: parsed.statuses || {},
-    };
-    applyFrenchTranslations(loadedState);
-    return loadedState;
+    if (parsed?.version === 1) {
+      loadedState = {
+        ...loadedState,
+        ...parsed,
+        drafts: parsed.drafts || {},
+        statuses: parsed.statuses || {},
+      };
+    }
   } catch {
-    return structuredClone(fallbackState);
+    loadedState = structuredClone(fallbackState);
   }
+
+  applyFrenchTranslations(loadedState);
+  applyCopyedits(loadedState);
+  return loadedState;
 }
 
 function applyFrenchTranslations(targetState) {
@@ -88,6 +100,35 @@ function applyFrenchTranslations(targetState) {
     fr: WRITING_FR_TRANSLATION_REVISION,
   };
   targetState.language = "fr";
+}
+
+function applyCopyedits(targetState) {
+  if ((targetState.copyeditRevision || 0) >= WRITING_COPYEDIT_REVISION) return;
+
+  Object.entries(WRITING_COPYEDITS).forEach(([itemId, languageEdits]) => {
+    const item = WRITING_ITEMS.find((candidate) => candidate.id === itemId);
+    if (!item) return;
+
+    Object.entries(languageEdits).forEach(([language, replacements]) => {
+      let text = targetState.drafts[itemId]?.[language] ?? item.initial[language] ?? "";
+      let changed = false;
+
+      replacements.forEach(([before, after, requiredContext]) => {
+        if (requiredContext && !text.includes(requiredContext)) return;
+        if (!text.includes(before)) return;
+        text = text.replace(before, after);
+        changed = true;
+      });
+
+      if (!changed) return;
+      targetState.drafts[itemId] ||= {};
+      targetState.drafts[itemId][language] = text;
+      targetState.statuses[itemId] ||= {};
+      targetState.statuses[itemId][language] = "review";
+    });
+  });
+
+  targetState.copyeditRevision = WRITING_COPYEDIT_REVISION;
 }
 
 function saveState() {
@@ -252,6 +293,7 @@ function renderDocument() {
     ? "Écris librement ici…"
     : "Write freely here…";
   dom.status.value = itemStatus(item);
+  renderEditorialReview(item);
 
   dom.prompts.replaceChildren();
   item.prompts.forEach((prompt) => {
@@ -278,6 +320,18 @@ function renderDocument() {
   updateCount();
   renderList();
   updateProgress();
+}
+
+function renderEditorialReview(item) {
+  const notes = WRITING_EDITORIAL_NOTES[item.id]?.[state.language] || [];
+  dom.editorialLanguage.textContent = state.language.toUpperCase();
+  dom.editorialNotes.replaceChildren();
+
+  notes.forEach((note) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = note;
+    dom.editorialNotes.appendChild(listItem);
+  });
 }
 
 function selectItem(itemId) {
@@ -383,9 +437,17 @@ function exportMarkdown() {
         "",
         itemDraft(item, "fr") || "_À écrire_",
         "",
+        "**Regard éditorial · FR**",
+        "",
+        ...(WRITING_EDITORIAL_NOTES[item.id]?.fr || []).map((note) => `- ${note}`),
+        "",
         `**EN · ${statusLabel(itemStatus(item, "en"))}**`,
         "",
         itemDraft(item, "en") || "_To write_",
+        "",
+        "**Regard éditorial · EN**",
+        "",
+        ...(WRITING_EDITORIAL_NOTES[item.id]?.en || []).map((note) => `- ${note}`),
         "",
       );
     });
