@@ -259,7 +259,10 @@ body[data-view="first"] .top-bar,
 body[data-view="home"] .page-nav,
 body[data-view="first"] .page-nav,
 body[data-view="first"] .settings-btn,
-body[data-view="home"] .settings-btn {
+body[data-view="home"] .settings-btn,
+body.session-focus .top-bar,
+body.session-focus .page-nav,
+body.session-focus .settings-btn {
   display: none;
 }
 
@@ -1963,7 +1966,15 @@ body[data-view="end"] .page-end {
   }
 
   .pages {
-    padding-top: 7.2rem;
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(0.55rem, 2vh, 1.15rem) 0.7rem;
+  }
+
+  .page {
+    width: 100%;
   }
 
   .page-card {

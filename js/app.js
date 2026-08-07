@@ -333,6 +333,10 @@ function clearGuideReturnState() {
   state.viewBeforeGuide = "practice";
 }
 
+function setSessionFocusMode(active) {
+  document.body.classList.toggle("session-focus", active);
+}
+
 function cancelClosingForNavigation(nextView) {
   if (state.sessionPhase !== "closing") return;
   state.closingCancelled = true;
@@ -788,6 +792,7 @@ function startBreathingGuidance() {
   clearBreathingGuidance();
   stopSpeechPlayback();
   getBreathingAudioContext();
+  setSessionFocusMode(true);
   setView("breathing");
 
   const cycleId = state.breathingCycleId + 1;
@@ -808,6 +813,7 @@ function endBreathingGuidance() {
 }
 
 function showPracticeSetup(message = "") {
+  setSessionFocusMode(false);
   state.sessionPhase = "setup";
   clearSessionTimer();
   if (dom.practiceSetup) dom.practiceSetup.hidden = false;
@@ -1156,6 +1162,7 @@ function startTimedSession() {
   state.selectedDurationMinutes = duration;
   state.sessionPhase = "timed";
   state.sessionEndsAt = Date.now() + duration * 60 * 1000;
+  setSessionFocusMode(true);
   document.body.classList.add("session-active");
   document.body.classList.remove("session-complete", "session-open", "session-closing");
   showPracticeLive();
@@ -1187,6 +1194,7 @@ async function beginClosingGuidance() {
   }
   state.sessionPhase = "closing";
   state.closingCancelled = false;
+  setSessionFocusMode(true);
   document.body.classList.add("session-closing");
   if (dom.practiceFocus) dom.practiceFocus.hidden = true;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
@@ -1201,6 +1209,7 @@ async function beginClosingGuidance() {
 }
 
 function showPostClosingActions() {
+  setSessionFocusMode(true);
   state.sessionPhase = "postClosing";
   state.isActive = false;
   document.body.classList.remove("session-closing", "session-active", "session-open", "session-complete");
@@ -1218,6 +1227,7 @@ function showPostClosingActions() {
 function continueSession() {
   if (state.sessionPhase !== "closing") return;
   state.closingCancelled = true;
+  setSessionFocusMode(true);
   stopSpeechPlayback();
   state.isSpeaking = false;
   state.sessionPhase = "open";
@@ -1240,6 +1250,7 @@ function closeSession() {
 function endSession() {
   clearSessionTimer();
   stopVoiceCapture();
+  setSessionFocusMode(false);
   setView("end");
 }
 
@@ -1260,6 +1271,7 @@ function resetReflectForm() {
 }
 
 function openReflectPage(options = {}) {
+  setSessionFocusMode(false);
   resetReflectForm();
   state.reflectMode = options.mode || "new";
   state.reflectAfterSaveView = options.afterSaveView || "end";
@@ -1312,6 +1324,7 @@ function handleReflectSubmit(event) {
 }
 
 function openFaqFromEnd() {
+  setSessionFocusMode(false);
   setView("faq");
 }
 
@@ -1350,6 +1363,7 @@ function showMoreSupport() {
   state.isSpeaking = false;
   state.isActive = false;
   state.sessionPhase = "setup";
+  setSessionFocusMode(true);
   document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
   setView("support");
 }
@@ -1361,6 +1375,7 @@ async function triggerGrounding() {
   stopVoiceCapture();
   state.sessionPhase = "support";
   state.closingCancelled = true;
+  setSessionFocusMode(true);
   document.body.classList.remove("session-active", "session-open", "session-complete", "session-closing");
   if (dom.groundGuidanceIndicator) dom.groundGuidanceIndicator.hidden = false;
   if (dom.groundEndGuidanceButton) dom.groundEndGuidanceButton.hidden = false;

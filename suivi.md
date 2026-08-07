@@ -57,6 +57,8 @@
 - La répétition Meisner est citée comme inspiration, sans présenter Emerge comme une formation Meisner.
 - Le design en étapes séparées précédemment créé pour expliquer `Feel / Say / Hear / Repeat` est conservé comme piste pour une future refonte du Guide, pas pour le site public. La référence se trouve dans `docs/guide-step-layout-reference.md`.
 - Dans la communication scientifique, ne pas confondre libération émotionnelle et simple défoulement. Les liens entre difficultés de régulation et agressivité sont associatifs, pas une preuve qu'Emerge prévient la violence.
+- Sur un viewport iPhone, les pages de l'app restent entièrement contenues dans le cadre : la navigation principale est superposée dans sa zone haute et ne doit pas repousser le cadre sous la fenêtre.
+- Dès qu'une session commence, l'app passe en mode protégé : navigation, langue et réglages sont masqués pendant la pratique, le Guide ouvert comme pause, le closing et le parcours de soutien. Ils réapparaissent après la sortie de session.
 
 ## À faire ensuite
 1. Rédiger et valider les textes et audios FR/EN dans le studio d'écriture.
