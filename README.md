@@ -130,6 +130,18 @@ Le site public présente le besoin, la pratique, l'expérience, les fondements s
 
 Le premier site publié sur `alexiaperineau.com` est sauvegardé dans [docs/site-archive/Emerge-original-site-archive.md](docs/site-archive/Emerge-original-site-archive.md). Le dossier contient également un document `.docx` ouvrable dans Pages, une capture pleine page, le HTML original et son logo.
 
+### Espace de bêta-test
+
+Ouvrir `http://127.0.0.1:5173/beta/` pour préparer et consigner les sessions de recherche. Le questionnaire bilingue destiné aux testeurs se trouve sur `http://127.0.0.1:5173/beta/questionnaire.html`.
+
+- Checklist de préparation persistante.
+- Protocole de test modéré.
+- Journal de sessions avec codes participants.
+- Cadre de priorisation `S0` à `S3`.
+- Questionnaire FR/EN en cinq étapes avec sauvegarde locale et export JSON.
+
+Les données de recherche restent locales jusqu'à leur export et ne doivent jamais être ajoutées au dépôt Git. Le protocole complet se trouve dans [docs/beta-testing-plan.md](docs/beta-testing-plan.md).
+
 ---
 
 ## Lancer en local

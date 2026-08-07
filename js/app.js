@@ -55,6 +55,7 @@ const dom = {
   supportScreen: document.getElementById("support-screen"),
   supportTitle: document.getElementById("support-title"),
   supportList: document.getElementById("support-list"),
+  supportContinueButton: document.getElementById("support-continue-btn"),
   breathingGuide: document.getElementById("breathing-guide"),
   breathingPhase: document.getElementById("breathing-phase"),
   breathingEndButton: document.getElementById("breathing-end-btn"),
@@ -295,6 +296,7 @@ function updatePageCopy() {
   if (dom.groundBetterButton) dom.groundBetterButton.textContent = t("groundBetterCta");
   if (dom.groundMoreButton) dom.groundMoreButton.textContent = t("groundMoreCta");
   if (dom.supportTitle) dom.supportTitle.textContent = t("supportTitle");
+  if (dom.supportContinueButton) dom.supportContinueButton.textContent = t("supportContinueCta");
   if (dom.breathingEndButton) dom.breathingEndButton.textContent = t("breathingEndCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
   if (dom.reflectTitle) dom.reflectTitle.textContent = t("reflectTitle");
@@ -1643,6 +1645,9 @@ function initUi() {
   if (dom.breathingEndButton) {
     dom.breathingEndButton.addEventListener("click", endBreathingGuidance);
   }
+  if (dom.supportContinueButton) {
+    dom.supportContinueButton.addEventListener("click", openCompletionChoicesFromSupport);
+  }
   if (dom.sessionContinueButton) {
     dom.sessionContinueButton.addEventListener("click", continueSession);
   }
@@ -1657,11 +1662,11 @@ function initUi() {
   }
   if (dom.supportScreen) {
     dom.supportScreen.addEventListener("click", (event) => {
-      if (event.target.closest(".support-breathing-btn")) return;
+      if (event.target.closest(".support-breathing-btn, .support-action-btn")) return;
       openCompletionChoicesFromSupport();
     });
     dom.supportScreen.addEventListener("keydown", (event) => {
-      if (event.target.closest(".support-breathing-btn")) return;
+      if (event.target.closest(".support-breathing-btn, .support-action-btn")) return;
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         openCompletionChoicesFromSupport();

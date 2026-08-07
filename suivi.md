@@ -59,6 +59,8 @@
 - Dans la communication scientifique, ne pas confondre libération émotionnelle et simple défoulement. Les liens entre difficultés de régulation et agressivité sont associatifs, pas une preuve qu'Emerge prévient la violence.
 - Sur un viewport iPhone, les pages de l'app restent entièrement contenues dans le cadre : la navigation principale est superposée dans sa zone haute et ne doit pas repousser le cadre sous la fenêtre.
 - Dès qu'une session commence, l'app passe en mode protégé : navigation, langue et réglages sont masqués pendant la pratique, le Guide ouvert comme pause, le closing et le parcours de soutien. Ils réapparaissent après la sortie de session.
+- Le parcours de soutien doit rester entièrement dans la langue choisie et proposer une action de sortie visible en plus du raccourci consistant à toucher l'écran.
+- L'espace privé de pilotage des bêta-tests se trouve dans `beta/index.html` et le questionnaire bilingue dans `beta/questionnaire.html`. Les brouillons et réponses restent locaux jusqu'à leur export et ne doivent pas être commités.
 
 ## À faire ensuite
 1. Rédiger et valider les textes et audios FR/EN dans le studio d'écriture.

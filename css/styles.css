@@ -1375,7 +1375,21 @@ body[data-home-version="home2"] .home-screen {
   backdrop-filter: blur(8px);
 }
 
+.support-action-btn {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 1.15rem;
+  border: 1px solid rgba(105, 64, 75, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 246, 245, 0.5);
+  color: rgba(75, 47, 55, 0.82);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
 .support-breathing-btn:focus-visible,
+.support-action-btn:focus-visible,
 .breathing-end-btn:focus-visible {
   outline: 2px solid rgba(105, 64, 75, 0.42);
   outline-offset: 3px;

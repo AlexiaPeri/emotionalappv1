@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emerge — Beta feedback</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="questionnaire-body">
+  <header class="questionnaire-header">
+    <span class="wordmark">EMERGE</span>
+    <div class="language-switch" aria-label="Language">
+      <button type="button" data-language="en" class="active">EN</button>
+      <button type="button" data-language="fr">FR</button>
+    </div>
+  </header>
+
+  <main class="questionnaire-shell">
+    <div class="questionnaire-intro">
+      <p class="section-kicker" data-copy="eyebrow">Beta feedback</p>
+      <h1 data-copy="title">Tell us what actually happened.</h1>
+      <p data-copy="intro">This takes about 8 minutes. We are testing the product, not you. Please be direct: confusion and problems are especially useful.</p>
+      <p class="privacy-note" data-copy="privacy">You never need to describe the emotion you worked with. Your draft stays on this device until you export or copy it.</p>
+    </div>
+
+    <div class="progress-wrap" aria-label="Questionnaire progress">
+      <div class="progress-meta"><span id="progress-label">1 / 5</span><span id="progress-name">Context</span></div>
+      <div class="progress-track"><span id="progress-bar"></span></div>
+    </div>
+
+    <form id="beta-questionnaire" novalidate>
+      <section class="form-step active" data-step="0" data-step-name="context">
+        <div class="step-heading"><span>01</span><div><h2 data-copy="contextTitle">About this test</h2><p data-copy="contextLead">Use the participant code provided by the researcher. Do not enter your full name.</p></div></div>
+        <div class="field-grid">
+          <label><span data-copy="participant">Participant code</span><input name="participantCode" required autocomplete="off" placeholder="B07"></label>
+          <label><span data-copy="build">App build</span><input name="appBuild" autocomplete="off" placeholder="0.3.2 (18)"></label>
+          <label><span data-copy="device">iPhone model</span><input name="device" required autocomplete="off" placeholder="iPhone 15 Pro"></label>
+          <label><span data-copy="ios">iOS version</span><input name="iosVersion" required autocomplete="off" placeholder="26.0"></label>
+        </div>
+        <fieldset>
+          <legend data-copy="testLanguage">Language used in the app</legend>
+          <div class="choice-row"><label><input type="radio" name="appLanguage" value="EN" required><span>English</span></label><label><input type="radio" name="appLanguage" value="FR"><span>Français</span></label></div>
+        </fieldset>
+        <fieldset>
+          <legend data-copy="audioSetup">Audio setup</legend>
+          <div class="choice-row"><label><input type="radio" name="audioSetup" value="speaker" required><span data-copy="speaker">Phone speaker</span></label><label><input type="radio" name="audioSetup" value="headphones"><span data-copy="headphones">Headphones</span></label></div>
+        </fieldset>
+        <label class="consent-field"><input type="checkbox" name="consent" required><span data-copy="consent">I am 18 or older, I understand this is an experimental wellness product rather than a crisis or medical service, and I can stop at any time.</span></label>
+      </section>
+
+      <section class="form-step" data-step="1" data-step-name="onboarding">
+        <div class="step-heading"><span>02</span><div><h2 data-copy="onboardingTitle">Getting started</h2><p data-copy="onboardingLead">Think about the moments before the practice began.</p></div></div>
+        <fieldset><legend data-copy="firstSession">Was this your first Emerge session?</legend><div class="choice-row"><label><input type="radio" name="firstSession" value="yes" required><span data-copy="yes">Yes</span></label><label><input type="radio" name="firstSession" value="no"><span data-copy="no">No</span></label></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="understood"><legend data-copy="understood">Before starting, I understood what the practice asked me to do.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="startEase"><legend data-copy="startEase">Starting the session felt easy.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="veryDifficult">Very difficult</span><span data-copy="veryEasy">Very easy</span></div></fieldset>
+        <label><span data-copy="unclear">What, if anything, was unclear before you started?</span><textarea name="onboardingUnclear" rows="4"></textarea></label>
+      </section>
+
+      <section class="form-step" data-step="2" data-step-name="voice">
+        <div class="step-heading"><span>03</span><div><h2 data-copy="voiceTitle">The voice loop</h2><p data-copy="voiceLead">Focus on what the app heard and repeated, not on the content of what you said.</p></div></div>
+        <label><span data-copy="duration">How long was your session?</span><select name="sessionDuration" required><option value="" data-copy="choose">Choose</option><option value="test">10-second test</option><option value="15">15 min</option><option value="custom">Custom</option></select></label>
+        <fieldset class="scale-field" data-scale-name="recognition"><legend data-copy="recognition">The app correctly recognised my words.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="never">Never</span><span data-copy="consistently">Consistently</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="pronouns"><legend data-copy="pronouns">The app changed pronouns correctly when repeating my words.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="never">Never</span><span data-copy="consistently">Consistently</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="speed"><legend data-copy="speed">The repetition arrived quickly enough to keep the flow.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="naturalVoice"><legend data-copy="naturalVoice">The repeating voice felt natural and comfortable to hear.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <label><span data-copy="interruptions">Did the voice loop stop or fail?</span><select name="interruptions" required><option value="" data-copy="choose">Choose</option><option value="none" data-copy="none">No</option><option value="once" data-copy="once">Once, then it recovered</option><option value="several" data-copy="several">Several times</option><option value="blocked" data-copy="blocked">Yes, I could not continue</option></select></label>
+        <label><span data-copy="technicalDetails">Describe any recognition, pronoun, delay or audio problem.</span><textarea name="technicalDetails" rows="4"></textarea></label>
+      </section>
+
+      <section class="form-step" data-step="3" data-step-name="control">
+        <div class="step-heading"><span>04</span><div><h2 data-copy="controlTitle">Control and support</h2><p data-copy="controlLead">We want the app to remain clear even during an intense moment.</p></div></div>
+        <fieldset class="scale-field" data-scale-name="controlClarity"><legend data-copy="controlClarity">I knew how to review instructions, get support or end the session.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <label><span data-copy="usedSupport">Did you use the support flow?</span><select name="usedSupport" id="used-support" required><option value="" data-copy="choose">Choose</option><option value="no" data-copy="supportNo">No</option><option value="opened" data-copy="supportOpened">I opened it briefly</option><option value="completed" data-copy="supportCompleted">I completed the guidance</option><option value="accidental" data-copy="supportAccidental">I opened it accidentally</option></select></label>
+        <fieldset class="scale-field conditional-field" id="support-rating" data-scale-name="supportCalm"><legend data-copy="supportCalm">The support experience felt calm and easy to follow.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="closing"><legend data-copy="closing">The closing felt smooth and gave me enough time to transition out.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <fieldset><legend data-copy="lessControl">At any point, did the app make you feel less in control?</legend><div class="choice-row"><label><input type="radio" name="lessControl" value="yes" required><span data-copy="yes">Yes</span></label><label><input type="radio" name="lessControl" value="no"><span data-copy="no">No</span></label><label><input type="radio" name="lessControl" value="prefer-not"><span data-copy="preferNot">Prefer not to say</span></label></div></fieldset>
+        <label><span data-copy="controlDetails">Tell us what happened, without sharing anything private.</span><textarea name="controlDetails" rows="4"></textarea></label>
+      </section>
+
+      <section class="form-step" data-step="4" data-step-name="value">
+        <div class="step-heading"><span>05</span><div><h2 data-copy="valueTitle">Value and next use</h2><p data-copy="valueLead">There is no expected emotional outcome. We want your honest experience.</p></div></div>
+        <fieldset class="scale-field" data-scale-name="contact"><legend data-copy="contact">The practice helped me stay in contact with what I was feeling.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="reuse"><legend data-copy="reuse">I can imagine using Emerge on my own again.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="stronglyDisagree">Strongly disagree</span><span data-copy="stronglyAgree">Strongly agree</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="privacyConfidence"><legend data-copy="privacyConfidence">I felt confident about how my voice and notes were handled.</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="notConfident">Not confident</span><span data-copy="veryConfident">Very confident</span></div></fieldset>
+        <fieldset class="scale-field" data-scale-name="overallEase"><legend data-copy="overallEase">Overall, how easy or difficult was this session?</legend><div class="scale-options"></div><div class="scale-labels"><span data-copy="veryDifficult">Very difficult</span><span data-copy="veryEasy">Very easy</span></div></fieldset>
+        <label><span data-copy="useMoment">In what kind of moment could you imagine reaching for Emerge?</span><textarea name="useMoment" rows="3"></textarea></label>
+        <label><span data-copy="mostUseful">What felt most useful?</span><textarea name="mostUseful" rows="3"></textarea></label>
+        <label><span data-copy="mostDifficult">What felt most frustrating, awkward or difficult?</span><textarea name="mostDifficult" rows="3"></textarea></label>
+        <label><span data-copy="oneChange">If you could change one thing before your next session, what would it be?</span><textarea name="oneChange" rows="3" required></textarea></label>
+        <fieldset><legend data-copy="testAgain">Would you be willing to test another version?</legend><div class="choice-row"><label><input type="radio" name="testAgain" value="yes" required><span data-copy="yes">Yes</span></label><label><input type="radio" name="testAgain" value="maybe"><span data-copy="maybe">Maybe</span></label><label><input type="radio" name="testAgain" value="no"><span data-copy="no">No</span></label></div></fieldset>
+      </section>
+
+      <div class="form-navigation">
+        <button class="secondary-button" id="previous-step" type="button" data-copy="back">Back</button>
+        <button class="primary-button" id="next-step" type="button" data-copy="next">Continue</button>
+        <button class="primary-button" id="submit-questionnaire" type="submit" data-copy="finish">Finish</button>
+      </div>
+    </form>
+
+    <section class="completion-panel" id="completion-panel" hidden>
+      <p class="section-kicker" data-copy="completeEyebrow">Response complete</p>
+      <h2 data-copy="completeTitle">Thank you for being honest.</h2>
+      <p data-copy="completeBody">Your response is ready. Download it or copy it, then send it to the person who invited you to test.</p>
+      <div class="completion-actions"><button class="primary-button" id="download-response" type="button" data-copy="download">Download response</button><button class="secondary-button" id="copy-response" type="button" data-copy="copy">Copy response</button></div>
+      <p class="copy-status" id="copy-status" aria-live="polite"></p>
+    </section>
+  </main>
+  <script type="module" src="./questionnaire.js"></script>
+</body>
+</html>

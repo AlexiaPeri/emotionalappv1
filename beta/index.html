@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emerge — Espace bêta</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="workspace-body">
+  <header class="workspace-header">
+    <a class="wordmark" href="../">EMERGE</a>
+    <span class="private-label">Espace privé</span>
+    <a class="header-action" href="./questionnaire.html">Voir le questionnaire</a>
+  </header>
+
+  <div class="workspace-layout">
+    <aside class="workspace-sidebar" aria-label="Navigation de l'espace bêta">
+      <p class="sidebar-eyebrow">Beta research</p>
+      <h1>Tester pour décider.</h1>
+      <p>Un cadre simple pour observer l'expérience réelle, repérer les risques et décider quoi améliorer.</p>
+      <nav>
+        <a href="#objectifs">Objectifs</a>
+        <a href="#preparation">Préparation</a>
+        <a href="#protocole">Protocole</a>
+        <a href="#sessions">Sessions</a>
+        <a href="#decisions">Décisions</a>
+      </nav>
+    </aside>
+
+    <main class="workspace-main">
+      <section class="workspace-section" id="objectifs">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">01 · Direction</p>
+            <h2>Ce que la bêta doit nous apprendre</h2>
+          </div>
+          <span class="status-pill">Recherche formative</span>
+        </div>
+
+        <div class="research-goals">
+          <article>
+            <span>Compréhension</span>
+            <h3>Une personne peut-elle commencer seule ?</h3>
+            <p>Le Guide doit suffire, sans explication supplémentaire de la fondatrice.</p>
+          </article>
+          <article>
+            <span>Boucle vocale</span>
+            <h3>La répétition reste-t-elle fluide ?</h3>
+            <p>Mesurer reconnaissance, pronoms, vitesse, naturel et interruptions sur une vraie session.</p>
+          </article>
+          <article>
+            <span>Contrôle</span>
+            <h3>La personne sait-elle quoi faire à tout moment ?</h3>
+            <p>Commencer, revoir les instructions, terminer ou demander du soutien doit rester évident.</p>
+          </article>
+          <article>
+            <span>Valeur</span>
+            <h3>Existe-t-il une raison de revenir ?</h3>
+            <p>Évaluer l'utilité perçue sans supposer que la personne doit se sentir mieux après la session.</p>
+          </article>
+        </div>
+
+        <div class="success-band">
+          <h3>Signaux recherchés avant d'élargir la bêta</h3>
+          <ul>
+            <li>La grande majorité démarre sans aide et comprend la répétition.</li>
+            <li>Aucun problème de sécurité, d'audio persistant ou de sortie bloquée.</li>
+            <li>La reconnaissance et les pronoms fonctionnent pendant toute la session.</li>
+            <li>Les testeurs décrivent spontanément une situation dans laquelle ils réutiliseraient l'app.</li>
+          </ul>
+          <p>Ces signaux orientent les décisions ; une petite bêta ne prouve pas une efficacité clinique.</p>
+        </div>
+      </section>
+
+      <section class="workspace-section" id="preparation">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">02 · Readiness</p>
+            <h2>Avant d'inviter un testeur</h2>
+          </div>
+          <strong class="check-progress" id="check-progress">0 / 8</strong>
+        </div>
+        <div class="readiness-list" id="readiness-list">
+          <label><input type="checkbox" data-check="copy"> <span>Textes essentiels FR/EN relus et validés</span></label>
+          <label><input type="checkbox" data-check="audio"> <span>Opening, closing et guidance d'aide enregistrés</span></label>
+          <label><input type="checkbox" data-check="voice"> <span>Boucle vocale testée au moins 30 minutes sur l'iPhone cible</span></label>
+          <label><input type="checkbox" data-check="safety"> <span>Safety stop, closing et sorties testés sans audio résiduel</span></label>
+          <label><input type="checkbox" data-check="privacy"> <span>Explication simple des données vocales et de leur traitement</span></label>
+          <label><input type="checkbox" data-check="build"> <span>Numéro de build et appareils compatibles communiqués</span></label>
+          <label><input type="checkbox" data-check="invite"> <span>Invitation, consentement et limites de la bêta envoyés</span></label>
+          <label><input type="checkbox" data-check="support"> <span>Canal clair pour signaler un blocage ou un problème urgent</span></label>
+        </div>
+      </section>
+
+      <section class="workspace-section" id="protocole">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">03 · Session</p>
+            <h2>Protocole de test</h2>
+          </div>
+          <span class="status-pill neutral">35 à 45 min</span>
+        </div>
+
+        <ol class="protocol-list">
+          <li>
+            <span>5 min</span>
+            <div><h3>Accueil et consentement</h3><p>Rappeler que c'est un produit en développement, que la personne peut arrêter à tout moment et qu'elle n'a pas à raconter le contenu de ses émotions.</p></div>
+          </li>
+          <li>
+            <span>5 min</span>
+            <div><h3>Contexte</h3><p>Noter l'appareil, la version iOS, la langue, les écouteurs et l'environnement. Utiliser un code participant, pas son nom.</p></div>
+          </li>
+          <li>
+            <span>15 min</span>
+            <div><h3>Session autonome</h3><p>Demander : « Ouvre l'app et utilise-la comme tu le ferais seul·e. » Ne pas expliquer l'interface. Observer les hésitations avant d'aider.</p></div>
+          </li>
+          <li>
+            <span>8 min</span>
+            <div><h3>Questionnaire immédiat</h3><p>Le remplir juste après la session, avant la discussion, afin de limiter l'influence de l'intervieweur.</p></div>
+          </li>
+          <li>
+            <span>10 min</span>
+            <div><h3>Entretien</h3><p>Approfondir les surprises, les moments de rupture, le sentiment de contrôle et les situations réelles où l'app pourrait être utile.</p></div>
+          </li>
+        </ol>
+
+        <div class="moderator-note">
+          <h3>Posture de recherche</h3>
+          <p>Ne défends pas le produit et ne complète pas les phrases du testeur. Demande « Qu'est-ce qui t'a fait penser cela ? » et « Qu'attendais-tu à ce moment-là ? ». Un comportement observé compte davantage qu'un compliment général.</p>
+        </div>
+      </section>
+
+      <section class="workspace-section" id="sessions">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">04 · Journal</p>
+            <h2>Consigner une session</h2>
+          </div>
+          <button class="quiet-button" id="export-sessions" type="button">Exporter</button>
+        </div>
+
+        <form class="session-form" id="session-form">
+          <label>Code participant<input name="participant" required placeholder="Ex. B07" autocomplete="off"></label>
+          <label>Date<input name="date" type="date" required></label>
+          <label>Appareil<input name="device" required placeholder="Ex. iPhone 15 Pro"></label>
+          <label>Build<input name="build" placeholder="Ex. 0.3.2 (18)"></label>
+          <label>Langue<select name="language"><option value="EN">EN</option><option value="FR">FR</option></select></label>
+          <label>Type<select name="mode"><option value="Modéré">Modéré</option><option value="À distance">À distance</option></select></label>
+          <label class="wide-field">Faits observés<textarea name="observations" rows="4" placeholder="Actions, hésitations, erreurs. Évite les interprétations."></textarea></label>
+          <label class="wide-field">Problème principal<textarea name="issue" rows="3" placeholder="Décris un seul problème prioritaire et son impact."></textarea></label>
+          <label class="wide-field">Citation utile<textarea name="quote" rows="2" placeholder="Uniquement avec l'accord du participant."></textarea></label>
+          <button class="primary-button" type="submit">Enregistrer la session</button>
+        </form>
+        <div class="session-log" id="session-log" aria-live="polite"></div>
+      </section>
+
+      <section class="workspace-section" id="decisions">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">05 · Synthesis</p>
+            <h2>Transformer les retours en décisions</h2>
+          </div>
+          <span class="autosave-label" id="autosave-label">Sauvegarde locale</span>
+        </div>
+
+        <div class="severity-grid">
+          <div><strong>S0</strong><span>Sécurité</span><p>Détresse aggravée, sortie impossible, guidance incorrecte. Bloque immédiatement la bêta.</p></div>
+          <div><strong>S1</strong><span>Bloquant</span><p>Impossible de commencer, poursuivre ou terminer une session.</p></div>
+          <div><strong>S2</strong><span>Friction</span><p>La tâche reste possible, mais demande un effort ou crée une hésitation importante.</p></div>
+          <div><strong>S3</strong><span>Polish</span><p>Détail visuel ou rédactionnel sans impact majeur sur le parcours.</p></div>
+        </div>
+
+        <label class="research-notes">Ce que nous apprenons<textarea id="learning-notes" rows="6" placeholder="Regroupe les motifs récurrents, pas chaque opinion isolée."></textarea></label>
+        <label class="research-notes">Décisions prises<textarea id="decision-notes" rows="6" placeholder="Décision, raison, date et signal qui permettra de la réévaluer."></textarea></label>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./workspace.js"></script>
+</body>
+</html>
