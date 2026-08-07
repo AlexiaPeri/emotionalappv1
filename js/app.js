@@ -735,8 +735,8 @@ function playBreathingTone(isInhale) {
   const voiceLevels = [0.56, 0.28, 0.16];
 
   masterGain.gain.setValueAtTime(0.0001, start);
-  masterGain.gain.exponentialRampToValueAtTime(0.032, start + 0.45);
-  masterGain.gain.exponentialRampToValueAtTime(0.019, start + 1.55);
+  masterGain.gain.exponentialRampToValueAtTime(0.12, start + 0.45);
+  masterGain.gain.exponentialRampToValueAtTime(0.072, start + 1.55);
   masterGain.gain.exponentialRampToValueAtTime(0.0001, end);
   masterGain.connect(context.destination);
 
