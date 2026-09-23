@@ -11,7 +11,7 @@
 - Le nom Emerge.
 - Le principe de pratique vocale.
 - Les deux variantes documentées du home doivent rester disponibles.
-- Le français et l’anglais.
+- L'anglais pour la première version ; le français reste conservé pour plus tard.
 
 ## Ce qui doit être traité séparément
 - Le design du home.
@@ -38,15 +38,16 @@
 - L'app finale sera native en SwiftUI ; Capacitor n'est plus la stratégie cible.
 - Cible de la première bêta : iPhone 15 ou plus récent avec iOS 26 ou plus récent.
 - La première bêta demande une connexion internet afin de garder Deepgram disponible pendant l'évaluation.
+- Les quatre guidances anglaises V1 sont : première session, retour, closing et grounding. L'audio-guide séparé a été supprimé pour accélérer et simplifier le premier parcours.
 - Apple SpeechAnalyzer et Deepgram Flux sont les deux candidats pour la reconnaissance vocale.
 - Le choix final sera fait après deux prototypes identiques et un test d'endurance de 60 minutes.
-- L'app vérifiera dynamiquement `SpeechTranscriber.isAvailable` et les locales FR/EN.
+- L'app vérifiera dynamiquement `SpeechTranscriber.isAvailable` et la locale anglaise.
 - La répétition utilisera AVSpeechSynthesizer avec une voix iPhone Enhanced ou Premium.
 - Les guidances utiliseront la voix préenregistrée d'Alexia.
 - La transformation des pronoms restera locale et déterministe, sans LLM.
 - Si Deepgram est retenu, la clé restera sur un backend et l'app recevra uniquement un jeton temporaire.
 - La source de vérité technique est `docs/ios-voice-strategy.md`.
-- Le studio privé `writing.html` centralise les 26 ensembles de textes FR/EN, leurs objectifs, leurs statuts et leur export.
+- Le studio privé `writing.html` centralise les 25 ensembles de textes, leurs objectifs, leurs statuts et leur export. L'anglais est la source de vérité de la V1.
 - L'inventaire éditorial de référence se trouve dans `docs/content-inventory.md`.
 - Les brouillons du studio restent dans le navigateur et doivent être exportés régulièrement ; ils ne sont pas ajoutés automatiquement à Git.
 - Le site public consacré uniquement à l'app se trouve dans `site/` et s'ouvre localement sur `/site/`.
@@ -63,13 +64,13 @@
 - L'espace privé de pilotage des bêta-tests se trouve dans `beta/index.html` et le questionnaire bilingue dans `beta/questionnaire.html`. Les brouillons et réponses restent locaux jusqu'à leur export et ne doivent pas être commités.
 
 ## À faire ensuite
-1. Rédiger et valider les textes et audios FR/EN dans le studio d'écriture.
-2. Créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer.
+1. Enregistrer les quatre guidances anglaises validées.
+2. Installer Xcode et créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer.
 3. Créer le même prototype avec Deepgram Flux.
 4. Tester sur iPhone 15/15 Plus, iPhone 15 Pro/Pro Max et iPhone 16+.
 5. Comparer latence, précision, pauses émotionnelles et stabilité pendant 60 minutes.
 6. Choisir le moteur STT principal et décider si un fallback est nécessaire.
-7. Finaliser et enregistrer les guidances.
+7. Intégrer et ajuster les guidances enregistrées.
 8. Construire l'app native complète puis préparer TestFlight.
 
 ## Notes

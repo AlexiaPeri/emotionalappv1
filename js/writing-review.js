@@ -94,22 +94,6 @@ export const WRITING_COPYEDITS = {
       ["Ca t'aidera", "Ça t'aidera"],
     ],
   },
-  "audio-first-guide": {
-    en: [
-      ["Listen to the app repeating, then repeat again.", "Listen to the app repeat it, then repeat it again."],
-      [
-        "For example: you say “I’m sad” app: “You’re sad” you: “I’m sad” app: “You’re sad” etc",
-        "For example: you say, “I’m sad.” The app says, “You’re sad.” You say, “I’m sad.” The app says, “You’re sad,” and so on.",
-      ],
-      [
-        "Do not try to change, let change happen, if it does happen.",
-        "Do not try to change; let change happen, if it happens.",
-      ],
-    ],
-    fr: [
-      ["N'essaie pas de faire parfaitement.", "N'essaie pas de tout faire parfaitement."],
-    ],
-  },
   "audio-returning-opening": {
     en: [
       ["Take a deep breath in, exhale through the mouth.", "Take a deep breath in, then exhale through your mouth."],
@@ -149,8 +133,7 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "first-launch-written": {
     en: [
-      "La version française est plus directe et naturelle que l'anglais actuel.",
-      "À tester : “Welcome to Emerge. Before your first session, take a moment to read the guide.” Le ton reste ferme sans paraître administratif.",
+      "La formulation est maintenant directe, naturelle et suffisamment chaleureuse.",
       "Éviter d'ajouter davantage d'explications sur cet écran : sa fonction est seulement d'accueillir et d'orienter.",
     ],
     fr: [
@@ -161,10 +144,9 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "written-guide": {
     en: [
-      "Ajouter explicitement que l'app change les pronoms lorsqu'elle répète la phrase : c'est une partie distinctive de l'expérience.",
-      "La version française contient un rappel utile sur l'erreur consistant à expliquer l'émotion ; l'intégrer en anglais, mais avec un ton moins impératif que “Never explain”.",
-      "Remplacer à terme “Do not retain anything” par “Do not hold anything back”, plus idiomatique.",
-      "Envisager d'adoucir “be courageous, face things” : cela peut donner à une personne vulnérable l'impression qu'elle doit forcer. Une permission à avancer à son rythme serait plus sûre.",
+      "Le changement de pronoms est maintenant expliqué explicitement avec un exemple complet.",
+      "La différence entre nommer une émotion et l'expliquer est claire sans employer un ton impératif.",
+      "Le droit de garder les yeux ouverts, de rester immobile et d'arrêter est maintenant visible dans le guide.",
     ],
     fr: [
       "Le français explique mieux que l'anglais la différence entre ressentir et expliquer ; c'est une vraie force à conserver.",
@@ -175,10 +157,9 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   faq: {
     en: [
-      "La FAQ complète bien le guide et la question sur les erreurs fréquentes mérite d'être conservée.",
-      "Raccourcir certaines réponses pour qu'elles se lisent rapidement sur iPhone, surtout les réponses 3 et 7.",
-      "Ajouter avant la bêta : “How often can I practise?”, “What happens to my voice data?” et “What if I cannot find any words?”",
-      "Dans la réponse 9, éviter “You should”. Une invitation comme “You may find it useful when…” respecte mieux l'autonomie de l'utilisateur.",
+      "Les réponses ont été raccourcies et la question sur les erreurs fréquentes est conservée.",
+      "Les formulations absolues sur le changement émotionnel ont été retirées.",
+      "Le traitement de la voix est couvert dans l'écran de permission et devra être détaillé dans la politique de confidentialité avant une bêta externe.",
     ],
     fr: [
       "La version française est globalement plus nuancée et plus incarnée que l'anglais.",
@@ -189,30 +170,15 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "audio-first-welcome": {
     en: [
-      "Ce texte contient actuellement l'accueil et presque tout le guide. Puisqu'un audio Guide séparé existe, conserver ici seulement 20 à 30 secondes d'accueil.",
-      "Retirer “I promise that… you will find true release” et “You will get to the other side” : ces promesses sont trop certaines pour une expérience émotionnelle variable.",
-      "Garder l'idée la plus forte : liberté, absence de jugement et attention tournée vers l'intérieur.",
-      "Proposition de structure : bienvenue, permission de prendre son temps, confiance sans promesse de résultat, puis transition vers le guide.",
+      "Cet audio remplace désormais l'accueil et l'audio-guide séparés.",
+      "Il explique la répétition, le changement de pronoms, le mouvement, le soutien et le droit d'arrêter, sans promesse de résultat.",
+      "Le script d'enregistrement avec les silences se trouve dans docs/english-v1-recording-scripts.md.",
     ],
     fr: [
       "Deux versions complètes sont actuellement présentes l'une après l'autre : en choisir une et supprimer le doublon.",
       "Comme en anglais, déplacer toutes les instructions détaillées vers l'audio Guide et garder ici un véritable sas d'accueil.",
       "La seconde version est plus fluide et plus aboutie ; elle constitue la meilleure base, mais la promesse de « véritable libération » doit être rendue moins absolue.",
       "« Sas de décompression » est concret mais un peu technique ; « retour au calme » ou « guidance de soutien » serait plus doux à l'oral.",
-    ],
-  },
-  "audio-first-guide": {
-    en: [
-      "Le contenu est complet, mais sa forme numérotée sonnera comme une notice si elle est lue telle quelle.",
-      "Transformer les étapes en phrases parlées, avec de vrais silences indiqués dans le script d'enregistrement.",
-      "Préciser le changement de pronoms et terminer par une transition directe vers la première respiration.",
-      "La version française offre une meilleure cadence pour l'oral ; s'en inspirer sans traduire mot à mot.",
-    ],
-    fr: [
-      "Le fond est clair, mais le script doit encore être adapté à la voix : phrases plus courtes, respirations et silences.",
-      "Ajouter le changement de pronoms, qui aide à comprendre l'aller-retour avec l'app.",
-      "Adoucir l'accumulation finale d'impératifs afin qu'elle donne de l'élan sans mettre de pression.",
-      "Éviter de répéter tout ce qui a déjà été dit dans l'accueil : chaque audio doit avoir une fonction distincte.",
     ],
   },
   "audio-returning-opening": {
@@ -229,10 +195,9 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "audio-closing": {
     en: [
-      "La base est douce, mais elle est beaucoup plus courte que la cible de 60 à 120 secondes.",
-      "La version française formule mieux l'intégration : reprendre “Let your body integrate what it has just experienced.”",
-      "Ajouter progressivement les points de contact, les sons de la pièce, un petit mouvement et la réouverture des yeux.",
-      "Éviter d'imposer une interprétation positive de la session ; accompagner simplement le retour.",
+      "Le closing suit maintenant une progression complète : appuis, respiration, sons, petits mouvements et réouverture des yeux.",
+      "Les silences du script portent la durée cible à environ 70–90 secondes.",
+      "Aucune interprétation positive de la session n'est imposée.",
     ],
     fr: [
       "« Laisse ton corps intégrer ce qu'il vient de vivre » est une excellente phrase centrale.",
@@ -243,10 +208,9 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "audio-grounding": {
     en: [
-      "Le ton est concret et non alarmant, ce qui convient très bien à une personne dépassée.",
-      "Rendre la main sur la poitrine optionnelle : “If it feels comfortable, place a hand on your chest.”",
-      "Ajouter une orientation douce vers la pièce et les pieds, présente dans le français mais absente de l'anglais.",
-      "Terminer en annonçant clairement que deux choix apparaîtront, sans diriger automatiquement la personne ailleurs.",
+      "Le ton reste concret et non alarmant ; la main sur la poitrine et le mouvement sont facultatifs.",
+      "La progression oriente doucement vers les appuis, la pièce et de petits mouvements.",
+      "La dernière phrase prépare explicitement les deux choix affichés après la guidance.",
     ],
     fr: [
       "Le début est très apaisant et plus complet que la version anglaise.",
@@ -282,7 +246,7 @@ export const WRITING_EDITORIAL_NOTES = {
   "live-practice": {
     en: [
       "La phrase centrale est juste et mérite de rester très visible sans attirer durablement le regard.",
-      "Les trois boutons correspondent à trois besoins différents, mais leurs libellés sont longs pour un iPhone : les tester sur le plus petit écran pris en charge.",
+      "Les trois libellés ont été raccourcis pour l'iPhone : Review instructions, End session et I need support.",
       "Vérifier que le bouton de soutien reste distinct sans utiliser une couleur alarmante.",
     ],
     fr: [
@@ -293,7 +257,7 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "closing-interface": {
     en: [
-      "“integration” peut rester discret, mais “Continue the practice instead” est plus long et moins naturel que “Continue practising”.",
+      "Les actions ont été simplifiées en Continue the session et Finish the session.",
       "Reflect doit apparaître avant End tout en gardant End légèrement plus affirmé, comme prévu dans le parcours.",
       "Uniformiser les capitales et décider si le cœur final est ♡ dans toutes les représentations textuelles.",
     ],
@@ -307,7 +271,7 @@ export const WRITING_EDITORIAL_NOTES = {
     en: [
       "Les deux choix de fin sont clairs et ne forcent pas la personne à reprendre la pratique.",
       "“Calming down…” doit rester très discret sur l'image, comme un état et non comme un troisième bouton.",
-      "Tester “I feel a little better” : cela peut être plus accessible qu'une affirmation absolue.",
+      "I feel a little better remplace l'affirmation plus absolue utilisée auparavant.",
     ],
     fr: [
       "La version française doit traduire les deux boutons avant la bêta.",
@@ -342,7 +306,7 @@ export const WRITING_EDITORIAL_NOTES = {
   "reflection-notes": {
     en: [
       "“What emerged?” est une excellente question : ouverte, courte et cohérente avec l'identité du produit.",
-      "Ajouter une assurance discrète sur la confidentialité et l'emplacement de sauvegarde des notes.",
+      "Une assurance précise maintenant que les notes restent sur l'iPhone.",
       "“Write here…” peut rester neutre ; ne pas guider le contenu au risque de transformer la réflexion en questionnaire.",
     ],
     fr: [
@@ -353,9 +317,9 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "permissions-errors": {
     en: [
-      "“Giving it back.” est humain mais peut être mystérieux avant que la personne comprenne le mécanisme ; tester “Repeating it back.”",
-      "Ajouter des messages pour la perte de réseau, l'échec de reconnaissance vocale et la possibilité de réessayer.",
-      "Expliquer au premier accès ce qui est fait de la voix, pas seulement pourquoi le microphone est nécessaire.",
+      "Repeating it back remplace le statut moins explicite Giving it back.",
+      "Les états de perte de réseau, d'échec de reconnaissance et de nouvelle tentative sont maintenant prévus.",
+      "Le premier accès explique pourquoi le microphone est utilisé.",
     ],
     fr: [
       "« Je te le renvoie » est chaleureux, mais vérifier qu'il reste compréhensible sans contexte.",
@@ -365,9 +329,9 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "safety-boundaries": {
     en: [
-      "À rédiger impérativement avant la bêta.",
-      "Inclure : ce que l'app est et n'est pas, possibilité d'arrêter, recours au soutien, situations de crise, âge minimal et avis médical si nécessaire.",
-      "Employer un ton calme et humain, séparé des conditions juridiques longues.",
+      "Une version courte et une version complète sont maintenant prêtes pour la bêta anglaise.",
+      "Le texte couvre le droit d'arrêter, les situations de crise, la conduite, le recours à un professionnel et la limite d'âge de 18 ans.",
+      "Une validation juridique restera nécessaire avant une diffusion publique large.",
     ],
     fr: [
       "À rédiger impérativement avant la bêta.",
@@ -377,8 +341,8 @@ export const WRITING_EDITORIAL_NOTES = {
   },
   "contact-support": {
     en: [
-      "Formulation plus idiomatique : “Can't find your question here?” ou “Didn't find your answer?”",
-      "Ajouter le délai de réponse attendu et préciser que ce contact n'est pas un service d'urgence.",
+      "La formulation est maintenant idiomatique : Didn’t find your answer?",
+      "Le texte précise que ce contact n'est pas un service d'urgence.",
       "“Write to Alexia” est personnel et chaleureux ; le conserver tant que le support est réellement assuré par toi.",
     ],
     fr: [

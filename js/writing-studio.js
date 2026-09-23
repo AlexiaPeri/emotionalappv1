@@ -1,5 +1,7 @@
 import {
   WRITING_CATEGORIES,
+  WRITING_EN_FINAL_REVISION,
+  WRITING_EN_FINAL_TEXTS,
   WRITING_FR_TRANSLATIONS,
   WRITING_FR_TRANSLATION_REVISION,
   WRITING_ITEMS,
@@ -82,7 +84,25 @@ function loadState() {
 
   applyFrenchTranslations(loadedState);
   applyCopyedits(loadedState);
+  applyFinalEnglishCopy(loadedState);
   return loadedState;
+}
+
+function applyFinalEnglishCopy(targetState) {
+  if ((targetState.englishFinalRevision || 0) >= WRITING_EN_FINAL_REVISION) return;
+
+  Object.entries(WRITING_EN_FINAL_TEXTS).forEach(([itemId, text]) => {
+    targetState.drafts[itemId] ||= {};
+    targetState.drafts[itemId].en = text;
+    targetState.statuses[itemId] ||= {};
+    targetState.statuses[itemId].en = "final";
+  });
+
+  targetState.englishFinalRevision = WRITING_EN_FINAL_REVISION;
+  targetState.language = "en";
+  if (!WRITING_ITEMS.some((item) => item.id === targetState.activeItemId)) {
+    targetState.activeItemId = WRITING_ITEMS[0].id;
+  }
 }
 
 function applyFrenchTranslations(targetState) {
@@ -191,19 +211,18 @@ function filteredItems() {
 }
 
 function updateProgress() {
-  const total = WRITING_ITEMS.length * 2;
-  const finalCount = WRITING_ITEMS.reduce((count, item) => (
-    count
-      + Number(itemStatus(item, "fr") === "final")
-      + Number(itemStatus(item, "en") === "final")
-  ), 0);
+  const total = WRITING_ITEMS.length;
+  const finalCount = WRITING_ITEMS.reduce(
+    (count, item) => count + Number(itemStatus(item, "en") === "final"),
+    0,
+  );
   const percentage = total ? Math.round((finalCount / total) * 100) : 0;
 
   dom.progressValue.textContent = `${finalCount} / ${total}`;
   dom.progressBar.style.width = `${percentage}%`;
   dom.progressDetail.textContent = finalCount
-    ? `${percentage}% des versions FR et EN sont validées`
-    : "Aucun texte validé pour le moment";
+    ? `${percentage}% des textes anglais V1 sont validés`
+    : "Aucun texte anglais validé pour le moment";
 }
 
 function renderList() {
@@ -252,9 +271,11 @@ function renderList() {
 
       const languageProgress = document.createElement("span");
       languageProgress.className = "language-progress";
-      const finalLanguages = ["fr", "en"].filter((lang) => itemStatus(item, lang) === "final").length;
-      languageProgress.textContent = `${finalLanguages}/2`;
-      languageProgress.title = `${finalLanguages} langue${finalLanguages > 1 ? "s" : ""} validée${finalLanguages > 1 ? "s" : ""}`;
+      const englishIsFinal = itemStatus(item, "en") === "final";
+      languageProgress.textContent = englishIsFinal ? "EN ✓" : "EN";
+      languageProgress.title = englishIsFinal
+        ? "Version anglaise validée"
+        : "Version anglaise à finaliser";
 
       copy.append(title, detail);
       button.append(mark, copy, languageProgress);

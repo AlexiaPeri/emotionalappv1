@@ -25,7 +25,7 @@ Quel que soit le moteur de reconnaissance retenu :
 
 - L'interface sera native en SwiftUI.
 - AVAudioSession et AVAudioEngine géreront le microphone et le cycle audio.
-- La transformation FR/EN restera locale, déterministe et couverte par des tests.
+- La transformation anglaise restera locale, déterministe et couverte par des tests. Le français sera ajouté ultérieurement.
 - AVSpeechSynthesizer utilisera une voix iPhone Enhanced ou Premium pour la répétition.
 - Les openings, closings et guidances de support utiliseront la voix préenregistrée d'Alexia.
 - La machine d'état sera explicite : écoute → fin de tour → transformation → répétition → reprise.
@@ -46,7 +46,7 @@ Points forts :
 Points à vérifier :
 
 - disponibilité réelle sur chaque modèle d'iPhone ;
-- disponibilité et qualité des modèles français et anglais ;
+- disponibilité et qualité du modèle anglais ;
 - qualité du découpage après des silences émotionnels ;
 - stabilité et consommation pendant 60 minutes.
 
@@ -62,7 +62,7 @@ SpeechTranscriber.supportedLocales
 Points forts :
 
 - modèle pensé pour les interactions vocales en temps réel ;
-- français et anglais pris en charge par Flux Multilingual ;
+- anglais pris en charge, avec le français conservé comme possibilité ultérieure ;
 - détection native et configurable de début, reprise et fin de tour ;
 - seuils adaptables aux utilisateurs qui parlent avec des pauses longues.
 
@@ -83,9 +83,9 @@ Si Deepgram est retenu :
 
 ## Pourquoi ne pas utiliser un LLM
 
-La transformation `je → tu` / `I → you` ne doit pas reformuler, expliquer ou atténuer ce que l'utilisateur vient de dire. Un moteur déterministe est plus rapide, testable et prévisible.
+La transformation `I → you` ne doit pas reformuler, expliquer ou atténuer ce que l'utilisateur vient de dire. Un moteur déterministe est plus rapide, testable et prévisible.
 
-Le guide demande déjà des phrases simples. Le moteur doit donc couvrir précisément les constructions fréquentes en français et en anglais, puis être enrichi à partir d'un corpus de tests réaliste.
+Le guide demande déjà des phrases simples. Le moteur doit donc couvrir précisément les constructions fréquentes en anglais, puis être enrichi à partir d'un corpus de tests réaliste.
 
 ## Protocole de comparaison
 
@@ -93,7 +93,7 @@ Les deux prototypes doivent avoir la même interface, le même moteur de pronoms
 
 Tester au minimum :
 
-- 50 phrases françaises et 50 phrases anglaises ;
+- au moins 100 phrases anglaises couvrant les constructions et pronoms fréquents ;
 - parole lente, rapide, basse et chargée émotionnellement ;
 - pauses courtes et longues au milieu des phrases ;
 - haut-parleur, écouteurs filaires et Bluetooth ;
@@ -117,7 +117,7 @@ La solution retenue doit avoir zéro arrêt silencieux pendant le test d'enduran
 
 - iPhone 15 ou plus récent.
 - iOS 26 ou plus récent.
-- Français et anglais.
+- Anglais uniquement pour la première version. Le français sera ajouté ultérieurement.
 - Internet requis pendant la première bêta.
 - Vérification dynamique de la disponibilité d'Apple SpeechTranscriber.
 

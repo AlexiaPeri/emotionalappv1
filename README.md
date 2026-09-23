@@ -83,9 +83,9 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 
 - **Appareil minimum visé** : iPhone 15.
 - **Système minimum visé** : iOS 26.
-- **Langues initiales** : français et anglais.
+- **Langue de la première version** : anglais uniquement. Le français reste conservé pour une version ultérieure.
 - **Connexion internet** : requise pendant la première bêta afin de conserver Deepgram comme candidat ou solution de repli.
-- **Contrôle au démarrage** : vérifier `SpeechTranscriber.isAvailable` et la présence de la locale FR ou EN avant d'activer Apple SpeechAnalyzer.
+- **Contrôle au démarrage** : vérifier `SpeechTranscriber.isAvailable` et la présence de la locale anglaise avant d'activer Apple SpeechAnalyzer.
 - **Échantillon alpha minimum** : un iPhone 15/15 Plus, un iPhone 15 Pro/Pro Max et un iPhone 16 ou plus récent.
 
 ---
@@ -113,8 +113,8 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 
 Ouvrir `http://127.0.0.1:5173/writing.html` lorsque le serveur Vite est lancé.
 
-- 26 ensembles de textes organisés par priorité.
-- Versions française et anglaise indépendantes.
+- 25 ensembles de textes organisés par priorité.
+- L'anglais est la source de vérité de la V1 ; les brouillons français restent conservés pour plus tard.
 - Objectif éditorial et questions de réflexion pour chaque texte.
 - Sauvegarde automatique dans le navigateur.
 - Statuts `À écrire`, `À revoir`, `Brouillon` et `Validé`.
@@ -213,19 +213,19 @@ python3 -m http.server 8000
 - [ ] Stabiliser la reco / voix pour les tests de 15 min
 - [ ] Redesign visuel terracotta (Emerge: Let it out)
 - [ ] Flow d'accueil : premier écran → bouton unique → session
-- [ ] Intro vocale (15s pour first-timer, rien pour les suivants)
-- [ ] Outro vocale (atterrissage doux en fin de session)
+- [x] Scripts anglais V1 finalisés : première session, retour, closing et grounding
+- [ ] Enregistrer et intégrer les quatre guidances avec la voix d'Alexia
 - [ ] Bouton grounding discret (pause d'urgence)
 - [x] Respiration guidée 5 minutes (5 secondes d'inspiration / 5 secondes d'expiration)
 
 ### v3 — iPhone natif
-- [ ] Créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer
+- [ ] Installer Xcode et créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer
 - [ ] Créer le même prototype avec Deepgram Flux
 - [ ] Comparer latence, précision, découpage des silences et stabilité pendant 60 minutes
 - [ ] Choisir le moteur principal et décider si un fallback est nécessaire
 - [ ] Reprendre le core portable dans l'app iPhone
 - [ ] Utiliser AVSpeechSynthesizer pour la répétition
-- [ ] Intégrer les guidances préenregistrées
+- [ ] Intégrer les quatre guidances préenregistrées
 - [ ] Valider le ressenti vocal sur iPhone 15, 15 Pro et 16+
 
 ### v4 — Futur

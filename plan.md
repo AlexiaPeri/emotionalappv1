@@ -34,10 +34,10 @@ Quand un visuel, un texte ou un flux est confirmé, il devient la référence.
 
 - App native en SwiftUI.
 - Cible bêta : iPhone 15 ou plus récent, iOS 26 ou plus récent.
-- Français et anglais au lancement.
+- Anglais uniquement pour la première version. Le français est reporté à une version ultérieure.
 - Apple SpeechAnalyzer et Deepgram Flux restent les deux candidats STT jusqu'au test comparatif.
 - AVSpeechSynthesizer et les voix iPhone servent à la répétition.
-- La voix préenregistrée d'Alexia sert aux openings, closings et guidances de support.
+- La voix préenregistrée d'Alexia sert aux quatre guidances anglaises V1 : première session, retour, closing et grounding.
 - La transformation des pronoms reste locale, déterministe et testée.
 - Deepgram, s'il est retenu, utilise des jetons temporaires ; aucune clé secrète dans l'app.
 

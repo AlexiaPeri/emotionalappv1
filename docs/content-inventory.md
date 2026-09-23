@@ -10,11 +10,10 @@ Les brouillons du studio sont stockés dans le navigateur de l'utilisateur et ne
 2. Premier lancement : accueil écrit
 3. Guide écrit complet
 4. Questions fréquentes
-5. Audio : accueil première fois
-6. Audio : guide première session
-7. Audio : ouverture habituelle
-8. Audio : closing et intégration
-9. Audio : aide et grounding
+5. Audio : première session (accueil + explication courte)
+6. Audio : ouverture habituelle
+7. Audio : closing et intégration
+8. Audio : aide et grounding
 
 ## À finaliser avant la bêta
 
@@ -41,10 +40,12 @@ Les brouillons du studio sont stockés dans le navigateur de l'utilisateur et ne
 
 ## Principes communs
 
-- Chaque texte existe en français et en anglais.
+- L'anglais est la seule langue de la première version. Les textes français existants sont conservés pour une version ultérieure mais ne bloquent pas la V1.
 - La version orale peut être adaptée ; elle ne doit pas être une lecture mécanique de la version écrite.
 - La pratique ne promet pas de résultat médical ou thérapeutique.
 - Les mots de l'utilisateur ne doivent jamais être reformulés par un LLM pendant la répétition.
 - Les boutons et messages système doivent toujours indiquer une action claire.
 - Les textes de soutien doivent rester simples, concrets et non alarmants.
 - Toute modification validée doit ensuite être reportée dans `js/app-config.js` ou dans les futurs fichiers audio de l'app native.
+
+Les quatre scripts d'enregistrement anglais validés se trouvent dans [`english-v1-recording-scripts.md`](english-v1-recording-scripts.md).

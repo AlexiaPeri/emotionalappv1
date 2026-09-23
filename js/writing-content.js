@@ -22,6 +22,116 @@ function supportList(lang) {
   );
 }
 
+const EN_FIRST_SESSION_AUDIO = `Welcome to your first session of Emerge.
+
+The most important thing is to let yourself be as you are. Do not try to change or push what you feel. If you become bored, self-conscious, or uncomfortable, notice that too. There is no need to judge yourself or perform. Keep bringing your attention back to what you feel.
+
+Let your body take part. As you express yourself with your voice, allow yourself to move in whatever way feels natural.
+
+The practice is simple. Say a short sentence about how you feel. The app changes “I” to “you” where needed and repeats the sentence back to you. Then say it again. Stay with the sentence until another one arises naturally as your feelings change.
+
+If it becomes too intense, tap “I need support.” You can stop at any time.
+
+Now, let’s begin.
+
+Close your eyes if that feels comfortable. Take a slow breath in, then breathe out through your mouth. Bring your attention inward. What do you feel?`;
+
+const EN_RETURNING_SESSION_AUDIO = `Close your eyes if that feels comfortable. Take a slow breath in, then breathe out through your mouth. Bring your attention inward. What do you feel?`;
+
+export const WRITING_EN_FINAL_REVISION = 1;
+
+// Canonical English V1 copy. This migrates the browser-only studio draft into
+// the reviewed source of truth after the 23 September 2026 export.
+export const WRITING_EN_FINAL_TEXTS = {
+  "brand-home": lines(
+    `Name: ${I18N.en.title}`,
+    `Main line: ${I18N.en.homeTagline}`,
+    `Button: ${I18N.en.homeCta}`,
+    `Secondary line: ${I18N.en.homeSecondary}`,
+  ),
+  "first-launch-written": lines(
+    I18N.en.firstWelcome,
+    I18N.en.firstGuidePrompt,
+    `Button: ${I18N.en.firstGuideCta}`,
+  ),
+  "written-guide": guide("en"),
+  faq: faq("en"),
+  "audio-first-welcome": EN_FIRST_SESSION_AUDIO,
+  "audio-returning-opening": EN_RETURNING_SESSION_AUDIO,
+  "audio-closing": I18N.en.closingAudioText,
+  "audio-grounding": I18N.en.groundText,
+  "navigation-common": lines(
+    `Navigation: ${I18N.en.navStart} · ${I18N.en.navGuide} · ${I18N.en.navFaq} · ${I18N.en.navNotes}`,
+    `Home: ${I18N.en.homeCta}`,
+    `End: ${I18N.en.sessionEndCta}`,
+  ),
+  "duration-setup": lines(
+    I18N.en.durationPrompt,
+    `${I18N.en.durationRecommendedValue} · ${I18N.en.durationRecommendedLabel}`,
+    `${I18N.en.durationCustomLabel} · 12–60 min`,
+    `Error: ${I18N.en.durationError}`,
+  ),
+  "live-practice": lines(
+    I18N.en.practiceLiveCopy,
+    I18N.en.remindPracticeCta,
+    I18N.en.completePracticeCta,
+    I18N.en.safetyStopCta,
+  ),
+  "closing-interface": lines(
+    I18N.en.closingCopy,
+    I18N.en.sessionContinuePracticeCta,
+    I18N.en.sessionClosePracticeCta,
+    I18N.en.sessionWriteCta,
+    I18N.en.sessionEndCta,
+    I18N.en.endMessage,
+  ),
+  "grounding-interface": lines(
+    I18N.en.groundGuidanceLabel,
+    I18N.en.groundEndGuidanceCta,
+    I18N.en.groundBetterCta,
+    I18N.en.groundMoreCta,
+  ),
+  "support-list": supportList("en"),
+  "breathing-interface": lines(
+    I18N.en.breathingIn,
+    I18N.en.breathingOut,
+    I18N.en.breathingEndCta,
+  ),
+  "reflection-notes": lines(
+    I18N.en.reflectTitle,
+    I18N.en.reflectPlaceholder,
+    I18N.en.reflectSendLabel,
+    I18N.en.reflectSaved,
+    I18N.en.notesAddTodayCta,
+    I18N.en.notesReadCta,
+    I18N.en.notesEmpty,
+    I18N.en.notesPrivacy,
+  ),
+  "permissions-errors": lines(
+    I18N.en.listening,
+    I18N.en.speaking,
+    I18N.en.noMic,
+    I18N.en.microphoneDisclosure,
+    I18N.en.recognitionError,
+    I18N.en.networkError,
+    I18N.en.retryCta,
+    I18N.en.durationError,
+    I18N.en.reflectEmptyStatus,
+  ),
+  "safety-boundaries": lines(
+    "SHORT VERSION",
+    I18N.en.safetyShort,
+    "",
+    "FULL VERSION",
+    I18N.en.safetyFull,
+  ),
+  "contact-support": lines(
+    I18N.en.contactTitle,
+    I18N.en.contactCta,
+    I18N.en.contactBoundary,
+  ),
+};
+
 function originalWebsiteCopy() {
   return lines(
     "ORIGINAL WEBSITE COPY · ARCHIVED 1 AUGUST 2026",
@@ -156,27 +266,6 @@ Par exemple : tu dis « Je suis triste », l'app dit « Tu es triste », tu rép
 Pendant toute la pratique, invite ton corps à bouger. Ne retiens rien. Exprime-toi pleinement, dis ce que tu as envie de dire, concentre-toi, répète, avance avec courage, fais face à ce qui se présente, lâche prise, sois toi-même !
 
 La pratique t'invite à ressentir toutes les émotions, y compris les plus difficiles. Si tu restes avec elles suffisamment longtemps, elles finiront probablement par évoluer. Mais si tout devient trop intense et que tu as besoin de t'arrêter et de t'ancrer, appuie sur le bouton d'aide : une guidance t'accompagnera dans un retour en douceur.`,
-  "audio-first-guide": `Exprime tes émotions sans les expliquer, afin qu'elles puissent circuler facilement et en profondeur.
-
-Voici comment faire :
-
-1. Porte ton attention sur ton corps.
-
-2. Dis une phrase simple qui exprime ce que tu ressens, sans donner d'explication.
-
-3. Écoute l'app te la répéter, puis répète-la à ton tour.
-
-Par exemple : tu dis « Je suis triste », l'app dit « Tu es triste », tu répètes « Je suis triste », l'app dit « Tu es triste », etc.
-
-4. Continue à répéter. Bouge ton corps. Lâche prise.
-
-5. Lorsque tes émotions changent, tu peux changer ce que tu dis pour que ta phrase corresponde à ton nouvel état. Ne cherche pas à changer : laisse le changement se produire, s'il se produit. Accepte de rester un moment avec la même émotion.
-
-6. Répète ou change de phrase autant de fois que tu le souhaites. N'essaie pas de faire parfaitement. Ce qui compte, c'est que ce que tu dis t'aide à lâcher prise, même si cela ne correspond pas exactement à ce que tu ressens.
-
-Pendant toute la pratique, invite ton corps à bouger. Ne retiens rien. Exprime-toi pleinement, dis ce que tu as envie de dire, concentre-toi, répète, avance avec courage, fais face à ce qui se présente, lâche prise, sois toi-même !
-
-La pratique t'invite à ressentir toutes les émotions, y compris les plus difficiles. Si tu restes avec elles suffisamment longtemps, elles finiront probablement par évoluer. Mais si tout devient trop intense et que tu as besoin de t'arrêter et de t'ancrer, appuie sur le bouton d'aide : une guidance t'accompagnera dans un retour en douceur.`,
   "audio-first-welcome": `Bienvenue dans ta première session de Miur.
 Fais confiance au processus, même si, au début, tu ressens simplement de l'ennui. Je te promets que si tu traverses patiemment ce moment, tu trouveras une véritable libération. Il te faudra aussi du courage. Tu auras peut-être besoin de faire face à des choses difficiles. Dans ce cas, là encore, fais confiance au processus. Tu finiras par traverser ce qui se présente. Surtout, sois libre. Ne juge pas tes émotions. Tourne ton attention vers l'intérieur et ressens.
 Voici comment cela fonctionne. Écoute ce qui se passe à l'intérieur de toi. Dis une phrase qui exprime ce que tu ressens. Cela peut être n'importe quoi, de « Je me sens triste » à « J'ai envie d'exploser », « Je me sens grandir » ou « Je suis enthousiaste ». Juste après ta phrase, la voix de l'app te la répétera. Répète-la à ton tour, puis continue cet aller-retour.
@@ -282,34 +371,15 @@ export const WRITING_ITEMS = [
     priority: "now",
     kind: "Audio",
     title: "Audio · accueil première fois",
-    objective: "Créer une entrée courte, chaleureuse et rassurante avant l’explication complète.",
-    formatHint: "Durée cible · 15 à 30 secondes",
+    objective: "Accueillir, expliquer brièvement la pratique et conduire directement à la première phrase sans audio-guide séparé.",
+    formatHint: "Durée cible · 60 à 90 secondes",
     prompts: [
       "La personne sent-elle immédiatement qu’elle peut ralentir ?",
-      "L’audio prépare-t-il l’attention sans déjà tout expliquer ?",
-      "Les premières secondes donnent-elles envie de rester ?",
+      "La personne comprend-elle la répétition et le changement de pronoms ?",
+      "La fin conduit-elle naturellement à la première phrase ?",
     ],
-    initialStatus: "write",
-    initial: { fr: "", en: "" },
-  },
-  {
-    id: "audio-first-guide",
-    category: "audio",
-    priority: "now",
-    kind: "Audio",
-    title: "Audio · guide première session",
-    objective: "Expliquer toute la pratique à l’oral avec un rythme naturel, des respirations et une progression facile à suivre.",
-    formatHint: "Durée cible · 2 à 4 minutes",
-    prompts: [
-      "Le texte sonne-t-il comme une présence plutôt que comme une notice ?",
-      "Où faut-il laisser de vrais silences ?",
-      "La personne sait-elle exactement quoi faire à la fin de l’audio ?",
-    ],
-    initialStatus: "write",
-    initial: {
-      fr: guide("fr"),
-      en: guide("en"),
-    },
+    initialStatus: "review",
+    initial: { fr: "", en: EN_FIRST_SESSION_AUDIO },
   },
   {
     id: "audio-returning-opening",
@@ -324,8 +394,8 @@ export const WRITING_ITEMS = [
       "La dernière phrase ouvre-t-elle naturellement l’écoute ?",
       "Le rythme laisse-t-il le temps de fermer les yeux ou de bouger ?",
     ],
-    initialStatus: "write",
-    initial: { fr: "", en: "" },
+    initialStatus: "review",
+    initial: { fr: "", en: EN_RETURNING_SESSION_AUDIO },
   },
   {
     id: "audio-closing",
@@ -626,7 +696,7 @@ export const WRITING_ITEMS = [
       "Où ce texte doit-il apparaître pour être réellement vu ?",
     ],
     initialStatus: "write",
-    initial: { fr: "", en: "" },
+    initial: { fr: "", en: WRITING_EN_FINAL_TEXTS["safety-boundaries"] },
   },
   {
     id: "contact-support",
