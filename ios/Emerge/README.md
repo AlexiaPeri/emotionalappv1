@@ -4,14 +4,16 @@ This is the native English-only Emerge prototype for iPhone. It targets iOS 26 a
 
 ## What works now
 
-- Native SwiftUI practice screen using the Emerge palette.
+- Native SwiftUI home, duration, and live-practice screens based on the approved Home 1 web design.
 - Apple SpeechAnalyzer and SpeechTranscriber for on-device English transcription.
 - Explicit listening → reflecting → speaking → listening loop.
 - Local deterministic English pronoun transformation.
-- AVSpeechSynthesizer repetition using the best installed English Enhanced or Premium voice.
+- AVSpeechSynthesizer repetition with a listener-controlled choice of the English voices installed on the iPhone.
+- A 0.7-second end-of-speech threshold and normal-speed spoken-audio playback.
+- Silence, punctuation-only results, and standalone punctuation commands are ignored.
 - The microphone is stopped before repetition, so the app does not transcribe its own voice.
-- Seven unit tests cover the initial pronoun rules.
-- A hidden technical voice-preview sheet is available from the tools button.
+- Ten unit tests cover the initial pronoun rules and false punctuation triggers.
+- A voice and pace preview is available from the gear button on the duration screen.
 
 The four prerecorded guidance tracks are intentionally not present yet. They will be added only after Alexia records and sends the original files.
 
@@ -47,4 +49,4 @@ xcodebuild test \
 
 ## Next validation
 
-On a physical iPhone, check the English model download, transcription accuracy, pause threshold, repetition latency, and preferred installed voice. The current end-of-turn delay is 1.25 seconds and is deliberately isolated in `VoiceLoopController` so it can be tuned after the first real-device session.
+On a physical iPhone, check the English model download, transcription accuracy, pause threshold, repetition latency, and preferred installed voice. The current end-of-turn delay is 0.7 seconds and is deliberately isolated in `VoiceLoopController` so it can be tuned during real-device sessions. Punctuation-only recognition results are ignored so silence cannot trigger a spoken “full stop.”

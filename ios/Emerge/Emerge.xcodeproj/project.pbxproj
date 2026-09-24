@@ -17,6 +17,8 @@
 		110000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000008 /* Assets.xcassets */; };
 		110000000000000000000009 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000009 /* Preview Assets.xcassets */; };
 		11000000000000000000000A /* PronounTransformerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000A /* PronounTransformerTests.swift */; };
+		11000000000000000000000B /* home1-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000D /* home1-bg.png */; };
+		11000000000000000000000C /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000E /* logo.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +44,8 @@
 		12000000000000000000000A /* PronounTransformerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PronounTransformerTests.swift; sourceTree = "<group>"; };
 		12000000000000000000000B /* Emerge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Emerge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		12000000000000000000000C /* EmergeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmergeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		12000000000000000000000D /* home1-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "home1-bg.png"; path = "../../assets/home1-bg.png"; sourceTree = SOURCE_ROOT; };
+		12000000000000000000000E /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "logo.png"; path = "../../assets/logo.png"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 				150000000000000000000004 /* Voice */,
 				150000000000000000000005 /* Design */,
 				120000000000000000000008 /* Assets.xcassets */,
+				12000000000000000000000D /* home1-bg.png */,
+				12000000000000000000000E /* logo.png */,
 				150000000000000000000006 /* Preview Content */,
 			);
 			path = Emerge;
@@ -219,6 +225,8 @@
 			files = (
 				110000000000000000000008 /* Assets.xcassets in Resources */,
 				110000000000000000000009 /* Preview Assets.xcassets in Resources */,
+				11000000000000000000000B /* home1-bg.png in Resources */,
+				11000000000000000000000C /* logo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

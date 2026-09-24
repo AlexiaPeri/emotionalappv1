@@ -90,7 +90,7 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 
 ### Prototype natif actuel
 
-Le premier prototype SwiftUI se trouve dans [`ios/Emerge`](ios/Emerge). Il compile avec Xcode 27 pour iOS 26 et utilise déjà Apple SpeechAnalyzer, la transformation anglaise locale et AVSpeechSynthesizer. Les guidances préenregistrées ne sont volontairement pas incluses avant la réception des enregistrements d'Alexia.
+Le premier prototype SwiftUI se trouve dans [`ios/Emerge`](ios/Emerge). Il compile avec Xcode 27 pour iOS 26 et utilise déjà Apple SpeechAnalyzer, la transformation anglaise locale et AVSpeechSynthesizer. Les écrans natifs reprennent la Home 1, le choix de durée et l'écran de pratique validés dans le prototype web. Les guidances préenregistrées ne sont volontairement pas incluses avant la réception des enregistrements d'Alexia.
 
 ---
 
@@ -216,8 +216,8 @@ python3 -m http.server 8000
 ### v2 — Base portable en cours
 - [x] Copy, voix et conversion de texte séparées du shell web
 - [ ] Stabiliser la reco / voix pour les tests de 15 min
-- [ ] Redesign visuel terracotta (Emerge: Let it out)
-- [ ] Flow d'accueil : premier écran → bouton unique → session
+- [x] Redesign visuel terracotta (Emerge: Let it out)
+- [x] Flow d'accueil : premier écran → bouton unique → session
 - [x] Scripts anglais V1 finalisés : première session, retour, closing et grounding
 - [ ] Enregistrer et intégrer les quatre guidances avec la voix d'Alexia
 - [ ] Bouton grounding discret (pause d'urgence)

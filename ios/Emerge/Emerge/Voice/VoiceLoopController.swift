@@ -32,6 +32,9 @@ final class VoiceLoopController {
     private(set) var isSessionActive = false
     private(set) var turnCount = 0
     private(set) var lastRepeatedPhrase = ""
+    private(set) var selectedVoiceIdentifier: String
+    private(set) var speechRate: Float
+    private(set) var voiceOptions: [SpeechVoiceOption] = []
 
     var detailText: String {
         switch phase {
@@ -53,7 +56,7 @@ final class VoiceLoopController {
     }
 
     private let audioEngine = AVAudioEngine()
-    private let speaker = SpeechSpeaker()
+    private let speaker: SpeechSpeaker
     private var analyzer: SpeechAnalyzer?
     private var inputContinuation: AsyncStream<AnalyzerInput>.Continuation?
     private var resultTask: Task<Void, Never>?
@@ -61,7 +64,14 @@ final class VoiceLoopController {
     private var finalizedText = ""
     private var volatileText = ""
     private var didPrepareSpeechModel = false
-    private let endpointDelay: Duration = .milliseconds(1_250)
+    private let endpointDelay: Duration = .milliseconds(700)
+
+    init() {
+        let speaker = SpeechSpeaker()
+        self.speaker = speaker
+        selectedVoiceIdentifier = speaker.selectedVoiceIdentifier
+        speechRate = speaker.speechRate
+    }
 
     func toggleSession() {
         if isSessionActive {
@@ -84,7 +94,7 @@ final class VoiceLoopController {
         }
 
         do {
-            try configureAudioSession()
+            try configureRecordingAudioSession()
             isSessionActive = true
             try await startListening()
         } catch {
@@ -119,7 +129,7 @@ final class VoiceLoopController {
         guard !reflected.isEmpty else { return }
 
         Task {
-            try? configureAudioSession()
+            try? configureSpeechPlaybackAudioSession()
             lastRepeatedPhrase = reflected
             phase = .speaking
             await speaker.speak(reflected)
@@ -133,10 +143,32 @@ final class VoiceLoopController {
         }
     }
 
+    func selectVoice(_ identifier: String) {
+        speaker.selectVoice(identifier: identifier)
+        selectedVoiceIdentifier = speaker.selectedVoiceIdentifier
+    }
+
+    func loadVoiceOptions() {
+        guard voiceOptions.isEmpty else { return }
+        voiceOptions = speaker.loadAvailableEnglishVoices()
+        selectedVoiceIdentifier = speaker.selectedVoiceIdentifier
+    }
+
+    func setSpeechRate(_ rate: Float) {
+        speaker.setSpeechRate(rate)
+        speechRate = speaker.speechRate
+    }
+
+    func previewVoice(_ identifier: String, phrase: String) {
+        selectVoice(identifier)
+        repeatPreview(phrase)
+    }
+
     private func startListening() async throws {
         guard isSessionActive else { return }
 
         phase = .preparing
+        try configureRecordingAudioSession()
         let transcriber = try await makeEnglishTranscriber()
         let modules: [any SpeechModule] = [transcriber]
 
@@ -199,7 +231,7 @@ final class VoiceLoopController {
 
     private func receive(_ result: SpeechTranscriber.Result) {
         let text = String(result.text.characters)
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard Self.isMeaningfulTranscript(text) else { return }
 
         if result.isFinal {
             finalizedText = [finalizedText, text]
@@ -214,7 +246,7 @@ final class VoiceLoopController {
         endpointTask?.cancel()
         endpointTask = Task { [weak self] in
             do {
-                try await Task.sleep(for: self?.endpointDelay ?? .milliseconds(1_250))
+                try await Task.sleep(for: self?.endpointDelay ?? .milliseconds(700))
                 guard !Task.isCancelled else { return }
                 await self?.completeTurn()
             } catch {
@@ -227,7 +259,7 @@ final class VoiceLoopController {
         guard isSessionActive, phase == .listening else { return }
 
         let firstDraft = currentTranscript
-        guard !firstDraft.isEmpty else { return }
+        guard Self.isMeaningfulTranscript(firstDraft) else { return }
 
         phase = .processing
         endpointTask = nil
@@ -240,6 +272,14 @@ final class VoiceLoopController {
         resultTask = nil
 
         let finalPhrase = currentTranscript.isEmpty ? firstDraft : currentTranscript
+        guard Self.isMeaningfulTranscript(finalPhrase) else {
+            do {
+                try await startListening()
+            } catch {
+                await fail(error)
+            }
+            return
+        }
         let reflected = PronounTransformer.transform(finalPhrase)
         guard !reflected.isEmpty else {
             do {
@@ -253,6 +293,7 @@ final class VoiceLoopController {
         lastRepeatedPhrase = reflected
         turnCount += 1
         phase = .speaking
+        try? configureSpeechPlaybackAudioSession()
         await speaker.speak(reflected)
 
         guard isSessionActive else { return }
@@ -332,7 +373,7 @@ final class VoiceLoopController {
         }
     }
 
-    private func configureAudioSession() throws {
+    private func configureRecordingAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(
             .playAndRecord,
@@ -340,6 +381,35 @@ final class VoiceLoopController {
             options: [.defaultToSpeaker, .allowBluetoothHFP]
         )
         try session.setActive(true)
+    }
+
+    private func configureSpeechPlaybackAudioSession() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.playback, mode: .spokenAudio)
+        try session.setActive(true)
+    }
+
+    nonisolated static func isMeaningfulTranscript(_ text: String) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.unicodeScalars.contains(where: CharacterSet.alphanumerics.contains) else {
+            return false
+        }
+
+        let spokenPunctuationCommands: Set<String> = [
+            "full stop",
+            "period",
+            "comma",
+            "question mark",
+            "exclamation mark",
+            "exclamation point",
+            "ellipsis"
+        ]
+        let normalizedWords = trimmed
+            .lowercased()
+            .components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+        return !spokenPunctuationCommands.contains(normalizedWords)
     }
 
     private func fail(_ error: Error) async {

@@ -40,4 +40,21 @@ final class PronounTransformerTests: XCTestCase {
     func testTextWithoutTargetPronounsIsNotRewritten() {
         XCTAssertEqual(PronounTransformer.transform("This feels heavy"), "This feels heavy")
     }
+
+    func testEmptyAndPunctuationOnlyTranscriptsAreIgnored() {
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript(""))
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("..."))
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("?!"))
+    }
+
+    func testSpokenPunctuationCommandsAreIgnored() {
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("full stop"))
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("Period."))
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("question mark"))
+    }
+
+    func testRealSpeechContainingPunctuationWordsIsKept() {
+        XCTAssertTrue(VoiceLoopController.isMeaningfulTranscript("I have reached a full stop"))
+        XCTAssertTrue(VoiceLoopController.isMeaningfulTranscript("I am angry."))
+    }
 }
