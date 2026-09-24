@@ -1,0 +1,507 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		110000000000000000000001 /* EmergeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000001 /* EmergeApp.swift */; };
+		110000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000002 /* ContentView.swift */; };
+		110000000000000000000003 /* EmergeTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000003 /* EmergeTheme.swift */; };
+		110000000000000000000004 /* PronounTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000004 /* PronounTransformer.swift */; };
+		110000000000000000000005 /* SpeechSpeaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000005 /* SpeechSpeaker.swift */; };
+		110000000000000000000006 /* AudioBufferConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000006 /* AudioBufferConverter.swift */; };
+		110000000000000000000007 /* VoiceLoopController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000007 /* VoiceLoopController.swift */; };
+		110000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000008 /* Assets.xcassets */; };
+		110000000000000000000009 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000009 /* Preview Assets.xcassets */; };
+		11000000000000000000000A /* PronounTransformerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000A /* PronounTransformerTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		130000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 180000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 170000000000000000000001;
+			remoteInfo = Emerge;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		120000000000000000000001 /* EmergeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergeApp.swift; sourceTree = "<group>"; };
+		120000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		120000000000000000000003 /* EmergeTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergeTheme.swift; sourceTree = "<group>"; };
+		120000000000000000000004 /* PronounTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PronounTransformer.swift; sourceTree = "<group>"; };
+		120000000000000000000005 /* SpeechSpeaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechSpeaker.swift; sourceTree = "<group>"; };
+		120000000000000000000006 /* AudioBufferConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioBufferConverter.swift; sourceTree = "<group>"; };
+		120000000000000000000007 /* VoiceLoopController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceLoopController.swift; sourceTree = "<group>"; };
+		120000000000000000000008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		120000000000000000000009 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		12000000000000000000000A /* PronounTransformerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PronounTransformerTests.swift; sourceTree = "<group>"; };
+		12000000000000000000000B /* Emerge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Emerge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		12000000000000000000000C /* EmergeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmergeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		140000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		140000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		150000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				150000000000000000000002 /* Emerge */,
+				150000000000000000000008 /* EmergeTests */,
+				150000000000000000000009 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		150000000000000000000002 /* Emerge */ = {
+			isa = PBXGroup;
+			children = (
+				150000000000000000000003 /* App */,
+				150000000000000000000004 /* Voice */,
+				150000000000000000000005 /* Design */,
+				120000000000000000000008 /* Assets.xcassets */,
+				150000000000000000000006 /* Preview Content */,
+			);
+			path = Emerge;
+			sourceTree = "<group>";
+		};
+		150000000000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				120000000000000000000001 /* EmergeApp.swift */,
+				120000000000000000000002 /* ContentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		150000000000000000000004 /* Voice */ = {
+			isa = PBXGroup;
+			children = (
+				120000000000000000000004 /* PronounTransformer.swift */,
+				120000000000000000000005 /* SpeechSpeaker.swift */,
+				120000000000000000000006 /* AudioBufferConverter.swift */,
+				120000000000000000000007 /* VoiceLoopController.swift */,
+			);
+			path = Voice;
+			sourceTree = "<group>";
+		};
+		150000000000000000000005 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				120000000000000000000003 /* EmergeTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		150000000000000000000006 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				120000000000000000000009 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		150000000000000000000008 /* EmergeTests */ = {
+			isa = PBXGroup;
+			children = (
+				12000000000000000000000A /* PronounTransformerTests.swift */,
+			);
+			path = EmergeTests;
+			sourceTree = "<group>";
+		};
+		150000000000000000000009 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				12000000000000000000000B /* Emerge.app */,
+				12000000000000000000000C /* EmergeTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		170000000000000000000001 /* Emerge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A0000000000000000000002 /* Build configuration list for PBXNativeTarget "Emerge" */;
+			buildPhases = (
+				160000000000000000000001 /* Sources */,
+				140000000000000000000001 /* Frameworks */,
+				190000000000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Emerge;
+			productName = Emerge;
+			productReference = 12000000000000000000000B /* Emerge.app */;
+			productType = "com.apple.product-type.application";
+		};
+		170000000000000000000002 /* EmergeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A0000000000000000000003 /* Build configuration list for PBXNativeTarget "EmergeTests" */;
+			buildPhases = (
+				160000000000000000000002 /* Sources */,
+				140000000000000000000002 /* Frameworks */,
+				190000000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1B0000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = EmergeTests;
+			productName = EmergeTests;
+			productReference = 12000000000000000000000C /* EmergeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		180000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					170000000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					170000000000000000000002 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 170000000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = 1A0000000000000000000001 /* Build configuration list for PBXProject "Emerge" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 150000000000000000000001;
+			productRefGroup = 150000000000000000000009 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				170000000000000000000001 /* Emerge */,
+				170000000000000000000002 /* EmergeTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		190000000000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				110000000000000000000008 /* Assets.xcassets in Resources */,
+				110000000000000000000009 /* Preview Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		190000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		160000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				110000000000000000000001 /* EmergeApp.swift in Sources */,
+				110000000000000000000002 /* ContentView.swift in Sources */,
+				110000000000000000000003 /* EmergeTheme.swift in Sources */,
+				110000000000000000000004 /* PronounTransformer.swift in Sources */,
+				110000000000000000000005 /* SpeechSpeaker.swift in Sources */,
+				110000000000000000000006 /* AudioBufferConverter.swift in Sources */,
+				110000000000000000000007 /* VoiceLoopController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		160000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11000000000000000000000A /* PronounTransformerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1B0000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 170000000000000000000001 /* Emerge */;
+			targetProxy = 130000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1C0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1C0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1C0000000000000000000011 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Emerge/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Emerge;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Emerge uses the microphone to hear the sentence you want reflected back to you.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Emerge uses on-device speech recognition to reflect your words back to you.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexiaperineau.emerge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		1C0000000000000000000012 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Emerge;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Emerge uses the microphone to hear the sentence you want reflected back to you.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Emerge uses on-device speech recognition to reflect your words back to you.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexiaperineau.emerge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		1C0000000000000000000021 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexiaperineau.emerge.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Emerge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Emerge";
+			};
+			name = Debug;
+		};
+		1C0000000000000000000022 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alexiaperineau.emerge.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Emerge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Emerge";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A0000000000000000000001 /* Build configuration list for PBXProject "Emerge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C0000000000000000000001 /* Debug */,
+				1C0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A0000000000000000000002 /* Build configuration list for PBXNativeTarget "Emerge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C0000000000000000000011 /* Debug */,
+				1C0000000000000000000012 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A0000000000000000000003 /* Build configuration list for PBXNativeTarget "EmergeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C0000000000000000000021 /* Debug */,
+				1C0000000000000000000022 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 180000000000000000000001 /* Project object */;
+}

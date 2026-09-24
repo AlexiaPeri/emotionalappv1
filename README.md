@@ -88,6 +88,10 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 - **Contrôle au démarrage** : vérifier `SpeechTranscriber.isAvailable` et la présence de la locale anglaise avant d'activer Apple SpeechAnalyzer.
 - **Échantillon alpha minimum** : un iPhone 15/15 Plus, un iPhone 15 Pro/Pro Max et un iPhone 16 ou plus récent.
 
+### Prototype natif actuel
+
+Le premier prototype SwiftUI se trouve dans [`ios/Emerge`](ios/Emerge). Il compile avec Xcode 27 pour iOS 26 et utilise déjà Apple SpeechAnalyzer, la transformation anglaise locale et AVSpeechSynthesizer. Les guidances préenregistrées ne sont volontairement pas incluses avant la réception des enregistrements d'Alexia.
+
 ---
 
 ## Structure
@@ -106,6 +110,7 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 ├── docs/
 │   ├── content-inventory.md ← Inventaire éditorial
 │   └── site-archive/        ← Sauvegarde complète du premier site Emerge
+├── ios/Emerge/          ← App iPhone native SwiftUI
 └── README.md
 ```
 
@@ -219,12 +224,12 @@ python3 -m http.server 8000
 - [x] Respiration guidée 5 minutes (5 secondes d'inspiration / 5 secondes d'expiration)
 
 ### v3 — iPhone natif
-- [ ] Installer Xcode et créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer
+- [x] Installer Xcode et créer un prototype SwiftUI minimal avec Apple SpeechAnalyzer
 - [ ] Créer le même prototype avec Deepgram Flux
 - [ ] Comparer latence, précision, découpage des silences et stabilité pendant 60 minutes
 - [ ] Choisir le moteur principal et décider si un fallback est nécessaire
-- [ ] Reprendre le core portable dans l'app iPhone
-- [ ] Utiliser AVSpeechSynthesizer pour la répétition
+- [x] Reprendre le core portable dans l'app iPhone
+- [x] Utiliser AVSpeechSynthesizer pour la répétition
 - [ ] Intégrer les quatre guidances préenregistrées
 - [ ] Valider le ressenti vocal sur iPhone 15, 15 Pro et 16+
 
