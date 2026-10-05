@@ -92,7 +92,7 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 
 La V1 SwiftUI se trouve dans [`ios/Emerge`](ios/Emerge). Elle compile avec Xcode 27 pour iOS 26 et utilise Apple SpeechAnalyzer, la transformation anglaise locale et AVSpeechSynthesizer.
 
-Le parcours anglais est implémenté de bout en bout : sécurité au premier lancement, choix de durée, opening première session ou retour, répétition vocale, rappel du guide, fin anticipée, closing, reprise libre, grounding, aide complémentaire, respiration guidée, réflexion, notes locales, écran de fin et FAQ. Les quatre guidances utilisent les enregistrements d'Alexia ; aucune voix synthétique ne remplace ces passages statiques.
+Le parcours anglais est implémenté de bout en bout : invitation à lire le guide au premier lancement, choix de durée, opening première session ou retour, répétition vocale, rappel du guide, fin anticipée, closing, reprise libre, grounding, aide complémentaire, respiration guidée avec accompagnement sonore, réflexion, notes locales, écran de fin et FAQ. Les quatre guidances utilisent les enregistrements d'Alexia ; aucune voix synthétique ne remplace ces passages statiques.
 
 ---
 

@@ -6,6 +6,12 @@ import Speech
 @MainActor
 @Observable
 final class VoiceLoopController {
+    private struct PreparedCapture {
+        let naturalFormat: AVAudioFormat
+        let converter: AudioBufferConverter
+        let continuation: AsyncStream<AnalyzerInput>.Continuation
+    }
+
     enum Phase: Equatable {
         case idle
         case preparing
@@ -61,9 +67,11 @@ final class VoiceLoopController {
     private var inputContinuation: AsyncStream<AnalyzerInput>.Continuation?
     private var resultTask: Task<Void, Never>?
     private var endpointTask: Task<Void, Never>?
+    private var pipelinePreparationTask: Task<PreparedCapture, Error>?
     private var finalizedText = ""
     private var volatileText = ""
     private var didPrepareSpeechModel = false
+    private var sessionGeneration = 0
     private let endpointDelay: Duration = .milliseconds(700)
 
     init() {
@@ -84,38 +92,48 @@ final class VoiceLoopController {
     func startSession() async {
         guard !isSessionActive else { return }
 
+        sessionGeneration &+= 1
+        let generation = sessionGeneration
+        isSessionActive = true
         phase = .preparing
         turnCount = 0
         lastRepeatedPhrase = ""
 
         guard await requestMicrophonePermission() else {
-            phase = .failed("Microphone access is required. Enable it in Settings, then try again.")
+            if generation == sessionGeneration {
+                isSessionActive = false
+                phase = .failed("Microphone access is required. Enable it in Settings, then try again.")
+            }
             return
         }
 
-        guard !Task.isCancelled else {
+        guard isCurrentSession(generation), !Task.isCancelled else {
             phase = .stopped
             return
         }
 
         do {
             try configureRecordingAudioSession()
-            guard !Task.isCancelled else {
+            guard isCurrentSession(generation), !Task.isCancelled else {
                 phase = .stopped
                 return
             }
-            isSessionActive = true
-            try await startListening()
+            try await startListening(generation: generation)
+        } catch is CancellationError {
+            return
         } catch {
-            await fail(error)
+            await fail(error, generation: generation)
         }
     }
 
     func stopSession() {
         guard isSessionActive || phase != .idle else { return }
+        sessionGeneration &+= 1
         isSessionActive = false
         endpointTask?.cancel()
         endpointTask = nil
+        pipelinePreparationTask?.cancel()
+        pipelinePreparationTask = nil
         speaker.stop()
         stopAudioCapture()
         resultTask?.cancel()
@@ -173,18 +191,26 @@ final class VoiceLoopController {
         repeatPreview(phrase)
     }
 
-    private func startListening() async throws {
-        guard isSessionActive else { return }
+    private func startListening(generation: Int) async throws {
+        guard isCurrentSession(generation) else { throw CancellationError() }
+        let preparedCapture = try await prepareListeningPipeline(generation: generation)
+        try beginAudioCapture(preparedCapture, generation: generation)
+    }
 
-        phase = .preparing
+    private func prepareListeningPipeline(generation: Int) async throws -> PreparedCapture {
+        guard isCurrentSession(generation), !Task.isCancelled else { throw CancellationError() }
         try configureRecordingAudioSession()
         let transcriber = try await makeEnglishTranscriber()
         let modules: [any SpeechModule] = [transcriber]
+
+        guard isCurrentSession(generation), !Task.isCancelled else { throw CancellationError() }
 
         if !didPrepareSpeechModel {
             try await ensureModelIsInstalled(for: modules, locale: transcriber.selectedLocales[0])
             didPrepareSpeechModel = true
         }
+
+        guard isCurrentSession(generation), !Task.isCancelled else { throw CancellationError() }
 
         let inputNode = audioEngine.inputNode
         let naturalFormat = inputNode.outputFormat(forBus: 0)
@@ -204,6 +230,11 @@ final class VoiceLoopController {
         self.analyzer = analyzer
         try await analyzer.prepareToAnalyze(in: analysisFormat)
 
+        guard isCurrentSession(generation), !Task.isCancelled else {
+            await analyzer.cancelAndFinishNow()
+            throw CancellationError()
+        }
+
         let (inputStream, continuation) = AsyncStream.makeStream(of: AnalyzerInput.self)
         inputContinuation = continuation
 
@@ -211,25 +242,42 @@ final class VoiceLoopController {
             do {
                 for try await result in transcriber.results {
                     guard !Task.isCancelled else { return }
-                    self?.receive(result)
+                    guard let self, self.isCurrentSession(generation) else { return }
+                    self.receive(result, generation: generation)
                 }
             } catch is CancellationError {
                 return
             } catch {
-                guard let self, self.isSessionActive else { return }
-                await self.fail(error)
+                guard let self, self.isCurrentSession(generation) else { return }
+                await self.fail(error, generation: generation)
             }
         }
 
         try await analyzer.start(inputSequence: inputStream)
 
+        guard isCurrentSession(generation), !Task.isCancelled else {
+            await analyzer.cancelAndFinishNow()
+            throw CancellationError()
+        }
+
+        return PreparedCapture(
+            naturalFormat: naturalFormat,
+            converter: converter,
+            continuation: continuation
+        )
+    }
+
+    private func beginAudioCapture(_ preparedCapture: PreparedCapture, generation: Int) throws {
+        guard isCurrentSession(generation) else { throw CancellationError() }
+
+        let inputNode = audioEngine.inputNode
         inputNode.removeTap(onBus: 0)
         inputNode.installTap(
             onBus: 0,
             bufferSize: 1_024,
-            format: naturalFormat
-        ) { [continuation] buffer, _ in
-            guard let converted = converter.convert(buffer) else { return }
+            format: preparedCapture.naturalFormat
+        ) { [continuation = preparedCapture.continuation] buffer, _ in
+            guard let converted = preparedCapture.converter.convert(buffer) else { return }
             continuation.yield(AnalyzerInput(buffer: converted))
         }
 
@@ -238,7 +286,8 @@ final class VoiceLoopController {
         phase = .listening
     }
 
-    private func receive(_ result: SpeechTranscriber.Result) {
+    private func receive(_ result: SpeechTranscriber.Result, generation: Int) {
+        guard isCurrentSession(generation) else { return }
         let text = String(result.text.characters)
         guard Self.isMeaningfulTranscript(text) else { return }
 
@@ -257,15 +306,15 @@ final class VoiceLoopController {
             do {
                 try await Task.sleep(for: self?.endpointDelay ?? .milliseconds(700))
                 guard !Task.isCancelled else { return }
-                await self?.completeTurn()
+                await self?.completeTurn(generation: generation)
             } catch {
                 return
             }
         }
     }
 
-    private func completeTurn() async {
-        guard isSessionActive, phase == .listening else { return }
+    private func completeTurn(generation: Int) async {
+        guard isCurrentSession(generation), phase == .listening else { return }
 
         let firstDraft = currentTranscript
         guard Self.isMeaningfulTranscript(firstDraft) else { return }
@@ -279,22 +328,31 @@ final class VoiceLoopController {
         }
         await resultTask?.value
         resultTask = nil
+        analyzer = nil
+
+        guard isCurrentSession(generation) else { return }
 
         let finalPhrase = currentTranscript.isEmpty ? firstDraft : currentTranscript
         guard Self.isMeaningfulTranscript(finalPhrase) else {
             do {
-                try await startListening()
+                phase = .preparing
+                try await startListening(generation: generation)
+            } catch is CancellationError {
+                return
             } catch {
-                await fail(error)
+                await fail(error, generation: generation)
             }
             return
         }
         let reflected = PronounTransformer.transform(finalPhrase)
         guard !reflected.isEmpty else {
             do {
-                try await startListening()
+                phase = .preparing
+                try await startListening(generation: generation)
+            } catch is CancellationError {
+                return
             } catch {
-                await fail(error)
+                await fail(error, generation: generation)
             }
             return
         }
@@ -302,14 +360,26 @@ final class VoiceLoopController {
         lastRepeatedPhrase = reflected
         turnCount += 1
         phase = .speaking
-        try? configureSpeechPlaybackAudioSession()
+
+        let preparationTask = Task { @MainActor [weak self] () throws -> PreparedCapture in
+            guard let self else { throw CancellationError() }
+            return try await self.prepareListeningPipeline(generation: generation)
+        }
+        pipelinePreparationTask = preparationTask
         await speaker.speak(reflected)
 
-        guard isSessionActive else { return }
+        guard isCurrentSession(generation) else {
+            preparationTask.cancel()
+            return
+        }
         do {
-            try await startListening()
+            let preparedCapture = try await preparationTask.value
+            pipelinePreparationTask = nil
+            try beginAudioCapture(preparedCapture, generation: generation)
+        } catch is CancellationError {
+            return
         } catch {
-            await fail(error)
+            await fail(error, generation: generation)
         }
     }
 
@@ -421,9 +491,17 @@ final class VoiceLoopController {
         return !spokenPunctuationCommands.contains(normalizedWords)
     }
 
-    private func fail(_ error: Error) async {
+    private func isCurrentSession(_ generation: Int) -> Bool {
+        isSessionActive && generation == sessionGeneration
+    }
+
+    private func fail(_ error: Error, generation: Int) async {
+        guard generation == sessionGeneration else { return }
+        sessionGeneration &+= 1
         isSessionActive = false
         endpointTask?.cancel()
+        pipelinePreparationTask?.cancel()
+        pipelinePreparationTask = nil
         stopAudioCapture()
         resultTask?.cancel()
         resultTask = nil

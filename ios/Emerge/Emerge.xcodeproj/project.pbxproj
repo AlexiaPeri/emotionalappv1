@@ -28,6 +28,7 @@
 		110000000000000000000013 /* 02-returning-session.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000015 /* 02-returning-session.m4a */; };
 		110000000000000000000014 /* 03-closing.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000016 /* 03-closing.m4a */; };
 		110000000000000000000015 /* 04-grounding.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000017 /* 04-grounding.m4a */; };
+		110000000000000000000016 /* BreathingTonePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000018 /* BreathingTonePlayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		120000000000000000000015 /* 02-returning-session.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "02-returning-session.m4a"; sourceTree = "<group>"; };
 		120000000000000000000016 /* 03-closing.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "03-closing.m4a"; sourceTree = "<group>"; };
 		120000000000000000000017 /* 04-grounding.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "04-grounding.m4a"; sourceTree = "<group>"; };
+		120000000000000000000018 /* BreathingTonePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingTonePlayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				120000000000000000000006 /* AudioBufferConverter.swift */,
 				120000000000000000000007 /* VoiceLoopController.swift */,
 				120000000000000000000011 /* GuidanceAudioPlayer.swift */,
+				120000000000000000000018 /* BreathingTonePlayer.swift */,
 			);
 			path = Voice;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				11000000000000000000000D /* EmergeContent.swift in Sources */,
 				11000000000000000000000E /* ReflectionStore.swift in Sources */,
 				11000000000000000000000F /* GuidanceAudioPlayer.swift in Sources */,
+				110000000000000000000016 /* BreathingTonePlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

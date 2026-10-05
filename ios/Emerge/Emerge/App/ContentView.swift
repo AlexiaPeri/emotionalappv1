@@ -4,7 +4,7 @@ import UIKit
 struct ContentView: View {
     private enum Screen: Hashable {
         case home
-        case safety
+        case firstLaunch
         case setup
         case opening
         case live
@@ -23,6 +23,7 @@ struct ContentView: View {
 
     @State private var controller = VoiceLoopController()
     @State private var audioPlayer = GuidanceAudioPlayer()
+    @State private var breathingTonePlayer = BreathingTonePlayer()
     @State private var reflectionStore = ReflectionStore()
     @State private var screen: Screen = .home
     @State private var customMinutes = "20"
@@ -45,7 +46,8 @@ struct ContentView: View {
     @State private var breathingIn = true
     @State private var breathingExpanded = false
     @State private var breathingSecondsRemaining = 300
-    @AppStorage("emerge.safety-accepted.v1") private var hasAcceptedSafety = false
+    @State private var guideIsFirstLaunch = false
+    @AppStorage("emerge.guide-read.v1") private var hasReadGuide = false
     @AppStorage("emerge.first-session-complete.v1") private var hasCompletedFirstSession = false
 
     var body: some View {
@@ -53,8 +55,8 @@ struct ContentView: View {
             switch screen {
             case .home:
                 homeScreen
-            case .safety:
-                safetyScreen
+            case .firstLaunch:
+                firstLaunchScreen
             case .setup:
                 setupScreen
             case .opening:
@@ -154,7 +156,7 @@ struct ContentView: View {
                         .padding(.top, 40)
 
                     Button {
-                        screen = hasAcceptedSafety ? .setup : .safety
+                        screen = hasReadGuide ? .setup : .firstLaunch
                     } label: {
                         Text("ENTER")
                             .font(.system(size: 13, weight: .bold))
@@ -187,45 +189,37 @@ struct ContentView: View {
         }
     }
 
-    private var safetyScreen: some View {
+    private var firstLaunchScreen: some View {
         practiceBackground {
-            VStack(spacing: 0) {
-                HStack {
-                    Button("Back") { screen = .home }
-                        .foregroundStyle(EmergeTheme.gold)
-                    Spacer()
-                }
-                .padding(.horizontal, 24)
-                .padding(.top, 14)
+            VStack(spacing: 22) {
+                Spacer()
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 22) {
-                        Text("Before you begin")
-                            .font(.system(size: 28, weight: .light, design: .serif))
-                            .foregroundStyle(EmergeTheme.gold)
+                BundledImage(name: "logo")
+                    .scaledToFit()
+                    .frame(width: 104, height: 112)
+                    .opacity(0.52)
 
-                        Text(EmergeContent.safetyShort)
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundStyle(EmergeTheme.text)
-                            .lineSpacing(5)
+                Text("Welcome to Emerge.")
+                    .font(.system(size: 28, weight: .light, design: .serif))
+                    .foregroundStyle(EmergeTheme.gold)
 
-                        Divider().overlay(EmergeTheme.gold.opacity(0.2))
+                Text("Before your first session, it is important that you read the guide!")
+                    .font(.system(size: 16))
+                    .foregroundStyle(EmergeTheme.text.opacity(0.82))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(5)
+                    .padding(.horizontal, 18)
 
-                        Text(EmergeContent.safetyFull)
-                            .font(.system(size: 15))
-                            .foregroundStyle(EmergeTheme.text.opacity(0.76))
-                            .lineSpacing(5)
+                Spacer()
 
-                        PrimaryButton(title: "I understand and want to continue") {
-                            hasAcceptedSafety = true
-                            screen = .setup
-                        }
-                        .padding(.top, 10)
-                    }
-                    .padding(.horizontal, 28)
-                    .padding(.vertical, 32)
+                PrimaryButton(title: "Guide") {
+                    guideIsFirstLaunch = true
+                    guideReturnsToPractice = false
+                    screen = .guide
                 }
             }
+            .padding(.horizontal, 38)
+            .padding(.vertical, 42)
         }
     }
 
@@ -246,11 +240,7 @@ struct ContentView: View {
 
                     HStack(spacing: 8) {
                         DurationChoice(value: "15 min", label: "Recommended", isSelected: true) {
-                            prepareSession(seconds: 15 * 60, isTest: false)
-                        }
-
-                        DurationChoice(value: "10 sec", label: "Test", widthScale: 0.78) {
-                            prepareSession(seconds: 10, isTest: true)
+                            prepareSession(seconds: 15 * 60)
                         }
 
                         customDurationChoice
@@ -271,6 +261,7 @@ struct ContentView: View {
                 navigateTo(.setup)
             }
             NavPill(title: "GUIDE", selected: screen == .guide) {
+                guideIsFirstLaunch = false
                 guideReturnsToPractice = false
                 navigateTo(.guide)
             }
@@ -327,7 +318,7 @@ struct ContentView: View {
         .overlay { RoundedRectangle(cornerRadius: 8).stroke(EmergeTheme.gold.opacity(0.18), lineWidth: 1) }
         .onTapGesture {
             guard let minutes = Int(customMinutes), (12...60).contains(minutes) else { return }
-            prepareSession(seconds: TimeInterval(minutes * 60), isTest: false)
+            prepareSession(seconds: TimeInterval(minutes * 60))
         }
         .accessibilityHint("Enter 12 to 60 minutes, then tap the card to begin")
     }
@@ -469,6 +460,13 @@ struct ContentView: View {
                         if guideReturnsToPractice {
                             PrimaryButton(title: "Go back to the practice") {
                                 resumeFromGuide()
+                            }
+                            .padding(.top, 18)
+                        } else if guideIsFirstLaunch {
+                            PrimaryButton(title: "Continue") {
+                                hasReadGuide = true
+                                guideIsFirstLaunch = false
+                                screen = .setup
                             }
                             .padding(.top, 18)
                         }
@@ -656,6 +654,7 @@ struct ContentView: View {
                 QuietButton(title: "End breathing") {
                     breathingTask?.cancel()
                     breathingTask = nil
+                    breathingTonePlayer.stop()
                     screen = .support
                 }
             }
@@ -838,7 +837,7 @@ struct ContentView: View {
                 Spacer()
                 HStack(spacing: 12) {
                     QuietButton(title: "FAQ") { screen = .faq }
-                    PrimaryButton(title: "Back to home") { screen = .home }
+                    PrimaryButton(title: "Back to Emerge") { screen = .setup }
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 32)
@@ -885,14 +884,9 @@ struct ContentView: View {
         }
     }
 
-    private func prepareSession(seconds: TimeInterval?, isTest: Bool) {
+    private func prepareSession(seconds: TimeInterval?) {
         stopAllActivity()
         pendingSessionSeconds = seconds
-
-        if isTest {
-            startPractice(seconds: seconds)
-            return
-        }
 
         openingTrack = hasCompletedFirstSession ? .returningSession : .firstSession
         guidanceRecordingMissing = false
@@ -1013,6 +1007,7 @@ struct ContentView: View {
                 guard !Task.isCancelled else { return }
                 await MainActor.run {
                     breathingIn = step.isMultiple(of: 2)
+                    breathingTonePlayer.play(isInhale: breathingIn)
                     withAnimation(.easeInOut(duration: 5)) {
                         breathingExpanded = breathingIn
                     }
@@ -1031,6 +1026,7 @@ struct ContentView: View {
 
             guard !Task.isCancelled else { return }
             await MainActor.run {
+                breathingTonePlayer.stop()
                 breathingTask = nil
                 screen = .support
             }
@@ -1056,6 +1052,7 @@ struct ContentView: View {
         audioPlayer.stop()
         if destination != .guide {
             guideReturnsToPractice = false
+            guideIsFirstLaunch = false
         }
         screen = destination
     }
@@ -1065,6 +1062,7 @@ struct ContentView: View {
         sessionTimerTask = nil
         breathingTask?.cancel()
         breathingTask = nil
+        breathingTonePlayer.stop()
         voiceStartTask?.cancel()
         voiceStartTask = nil
         controller.stopSession()

@@ -848,7 +848,7 @@ body[data-home-version="home2"] .home-screen {
 .duration-options {
   display: grid;
   width: 100%;
-  grid-template-columns: 1fr 0.78fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 0.46rem;
 }
 
