@@ -1,6 +1,6 @@
 # Emerge: Let it out
 
-**Prototype web d'une future app iPhone de libération émotionnelle guidée par la voix**
+**App iPhone native de libération émotionnelle guidée par la voix, avec son prototype web conservé comme référence**
 
 Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emerge, tu nommes simplement ce que tu ressens et l'app te le répète. Cette boucle vocale aide à rester au contact du ressenti plutôt que de repartir dans l'analyse.
 
@@ -84,13 +84,15 @@ La décision détaillée et le protocole de comparaison sont documentés dans [d
 - **Appareil minimum visé** : iPhone 15.
 - **Système minimum visé** : iOS 26.
 - **Langue de la première version** : anglais uniquement. Le français reste conservé pour une version ultérieure.
-- **Connexion internet** : requise pendant la première bêta afin de conserver Deepgram comme candidat ou solution de repli.
+- **Connexion internet** : non requise par l'implémentation Apple actuelle ; elle ne deviendrait nécessaire que si Deepgram était retenu ultérieurement.
 - **Contrôle au démarrage** : vérifier `SpeechTranscriber.isAvailable` et la présence de la locale anglaise avant d'activer Apple SpeechAnalyzer.
 - **Échantillon alpha minimum** : un iPhone 15/15 Plus, un iPhone 15 Pro/Pro Max et un iPhone 16 ou plus récent.
 
-### Prototype natif actuel
+### App native actuelle
 
-Le premier prototype SwiftUI se trouve dans [`ios/Emerge`](ios/Emerge). Il compile avec Xcode 27 pour iOS 26 et utilise déjà Apple SpeechAnalyzer, la transformation anglaise locale et AVSpeechSynthesizer. Les écrans natifs reprennent la Home 1, le choix de durée et l'écran de pratique validés dans le prototype web. Les guidances préenregistrées ne sont volontairement pas incluses avant la réception des enregistrements d'Alexia.
+La V1 SwiftUI se trouve dans [`ios/Emerge`](ios/Emerge). Elle compile avec Xcode 27 pour iOS 26 et utilise Apple SpeechAnalyzer, la transformation anglaise locale et AVSpeechSynthesizer.
+
+Le parcours anglais est implémenté de bout en bout : sécurité au premier lancement, choix de durée, opening première session ou retour, répétition vocale, rappel du guide, fin anticipée, closing, reprise libre, grounding, aide complémentaire, respiration guidée, réflexion, notes locales, écran de fin et FAQ. Les quatre guidances utilisent les enregistrements d'Alexia ; aucune voix synthétique ne remplace ces passages statiques.
 
 ---
 
@@ -219,8 +221,8 @@ python3 -m http.server 8000
 - [x] Redesign visuel terracotta (Emerge: Let it out)
 - [x] Flow d'accueil : premier écran → bouton unique → session
 - [x] Scripts anglais V1 finalisés : première session, retour, closing et grounding
-- [ ] Enregistrer et intégrer les quatre guidances avec la voix d'Alexia
-- [ ] Bouton grounding discret (pause d'urgence)
+- [x] Enregistrer et intégrer les quatre guidances avec la voix d'Alexia
+- [x] Bouton grounding discret (pause d'urgence)
 - [x] Respiration guidée 5 minutes (5 secondes d'inspiration / 5 secondes d'expiration)
 
 ### v3 — iPhone natif
@@ -230,13 +232,14 @@ python3 -m http.server 8000
 - [ ] Choisir le moteur principal et décider si un fallback est nécessaire
 - [x] Reprendre le core portable dans l'app iPhone
 - [x] Utiliser AVSpeechSynthesizer pour la répétition
-- [ ] Intégrer les quatre guidances préenregistrées
+- [x] Implémenter le parcours anglais complet, le support, la réflexion et les notes locales
+- [x] Intégrer les quatre guidances préenregistrées
 - [ ] Valider le ressenti vocal sur iPhone 15, 15 Pro et 16+
 
 ### v4 — Futur
 - [ ] Mode Rewire : choisir une énergie → posture guidée → affirmations × 3
 - [ ] PWA (manifest.json + icônes, installable sur téléphone)
-- [ ] Bêta TestFlight puis publication App Store
+- [ ] Activer l'adhésion Apple Developer, créer la bêta TestFlight puis préparer la publication App Store
 - [ ] Prompts vocaux subtils pendant la session (×1-2 max)
 
 ---

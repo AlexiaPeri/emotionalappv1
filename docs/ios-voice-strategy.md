@@ -4,7 +4,7 @@
 
 Cette page est la source de vérité pour l'architecture vocale de l'app iPhone.
 
-La décision finale entre Apple SpeechAnalyzer et Deepgram Flux n'est pas encore prise. Elle doit venir d'un test comparatif sur de vrais iPhone, pas d'une préférence théorique.
+Apple SpeechAnalyzer est l'implémentation retenue pour terminer rapidement la première bêta native : elle fonctionne localement et évite un backend. Une comparaison avec Deepgram Flux reste prévue si les tests réels montrent que la précision, la fin de tour ou la stabilité ne sont pas suffisantes.
 
 ## Besoin produit
 
@@ -118,7 +118,7 @@ La solution retenue doit avoir zéro arrêt silencieux pendant le test d'enduran
 - iPhone 15 ou plus récent.
 - iOS 26 ou plus récent.
 - Anglais uniquement pour la première version. Le français sera ajouté ultérieurement.
-- Internet requis pendant la première bêta.
+- L'implémentation Apple actuelle fonctionne sans connexion internet après disponibilité du modèle sur l'appareil.
 - Vérification dynamique de la disponibilité d'Apple SpeechTranscriber.
 
 L'alpha technique doit inclure :

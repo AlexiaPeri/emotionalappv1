@@ -93,8 +93,17 @@ final class VoiceLoopController {
             return
         }
 
+        guard !Task.isCancelled else {
+            phase = .stopped
+            return
+        }
+
         do {
             try configureRecordingAudioSession()
+            guard !Task.isCancelled else {
+                phase = .stopped
+                return
+            }
             isSessionActive = true
             try await startListening()
         } catch {

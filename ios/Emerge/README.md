@@ -1,10 +1,11 @@
 # Emerge for iPhone
 
-This is the native English-only Emerge prototype for iPhone. It targets iOS 26 and uses Apple frameworks throughout the first implementation.
+This is the native English-only Emerge app for iPhone. It targets iOS 26 and uses Apple frameworks throughout the first beta implementation.
 
 ## What works now
 
-- Native SwiftUI home, duration, and live-practice screens based on the approved Home 1 web design.
+- The complete native journey: first-use safety, duration, first/returning opening, live practice, guide review, timed or early completion, closing, grounding, extra support, five-minute breathing, reflection, private notes, FAQ, and the final screen.
+- Native SwiftUI visuals based on the approved Home 1 and support/end artwork.
 - Apple SpeechAnalyzer and SpeechTranscriber for on-device English transcription.
 - Explicit listening → reflecting → speaking → listening loop.
 - Local deterministic English pronoun transformation.
@@ -14,8 +15,10 @@ This is the native English-only Emerge prototype for iPhone. It targets iOS 26 a
 - The microphone is stopped before repetition, so the app does not transcribe its own voice.
 - Ten unit tests cover the initial pronoun rules and false punctuation triggers.
 - A voice and pace preview is available from the gear button on the duration screen.
+- Reflection notes are stored only in local iPhone preferences.
+- Guidance playback is wired for `01-first-session`, `02-returning-session`, `03-closing`, and `04-grounding` in WAV, M4A, or MP3 format.
 
-The four prerecorded guidance tracks are intentionally not present yet. They will be added only after Alexia records and sends the original files.
+The four prerecorded guidance tracks use Alexia's original mono 48 kHz M4A recordings. The text fallback remains available only as a development safeguard if a bundled track is ever missing. The app never synthesizes those static guidances.
 
 ## Open and run
 
@@ -47,6 +50,17 @@ xcodebuild test \
   -only-testing:EmergeTests
 ```
 
+## Guidance recordings
+
+The app target's Copy Bundle Resources phase contains these exact files:
+
+- `01-first-session.wav`
+- `02-returning-session.wav`
+- `03-closing.wav`
+- `04-grounding.wav`
+
+The player also accepts WAV or MP3 with the same base names. The canonical scripts and recording directions are in [`docs/english-v1-recording-scripts.md`](../../docs/english-v1-recording-scripts.md).
+
 ## Next validation
 
-On a physical iPhone, check the English model download, transcription accuracy, pause threshold, repetition latency, and preferred installed voice. The current end-of-turn delay is 0.7 seconds and is deliberately isolated in `VoiceLoopController` so it can be tuned during real-device sessions. Punctuation-only recognition results are ignored so silence cannot trigger a spoken “full stop.”
+On a physical iPhone, check every branch of the journey, the English model download, transcription accuracy, pause threshold, repetition latency, and preferred installed voice. The current end-of-turn delay is 0.7 seconds and is deliberately isolated in `VoiceLoopController` so it can be tuned during real-device sessions. Punctuation-only recognition results are ignored so silence cannot trigger a spoken “full stop.”

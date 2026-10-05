@@ -2,54 +2,96 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
-    private enum Screen {
+    private enum Screen: Hashable {
         case home
+        case safety
         case setup
+        case opening
         case live
+        case guide
+        case closing
+        case afterSession
+        case grounding
+        case support
+        case breathing
+        case reflection
+        case notesHome
+        case notesList
+        case faq
+        case end
     }
 
     @State private var controller = VoiceLoopController()
+    @State private var audioPlayer = GuidanceAudioPlayer()
+    @State private var reflectionStore = ReflectionStore()
     @State private var screen: Screen = .home
     @State private var customMinutes = "20"
     @State private var showsVoiceSettings = false
-    @State private var showsGuide = false
-    @State private var showsSafetySupport = false
+    @State private var voiceStartTask: Task<Void, Never>?
     @State private var sessionTimerTask: Task<Void, Never>?
+    @State private var breathingTask: Task<Void, Never>?
+    @State private var pendingSessionSeconds: TimeInterval?
+    @State private var sessionDeadline: Date?
+    @State private var pausedSessionSeconds: TimeInterval?
+    @State private var openingTrack: GuidanceTrack = .firstSession
+    @State private var guidanceRecordingMissing = false
+    @State private var guideReturnsToPractice = false
+    @State private var closingComplete = false
+    @State private var groundingComplete = false
+    @State private var reflectionText = ""
+    @State private var reflectionFromSession = false
+    @State private var noteSaved = false
+    @State private var expandedFAQID: UUID?
+    @State private var breathingIn = true
+    @State private var breathingExpanded = false
+    @State private var breathingSecondsRemaining = 300
+    @AppStorage("emerge.safety-accepted.v1") private var hasAcceptedSafety = false
+    @AppStorage("emerge.first-session-complete.v1") private var hasCompletedFirstSession = false
 
     var body: some View {
         ZStack {
             switch screen {
             case .home:
                 homeScreen
-                    .transition(.opacity)
+            case .safety:
+                safetyScreen
             case .setup:
                 setupScreen
-                    .transition(.opacity)
+            case .opening:
+                openingScreen
             case .live:
                 liveScreen
-                    .transition(.opacity)
+            case .guide:
+                guideScreen
+            case .closing:
+                closingScreen
+            case .afterSession:
+                afterSessionScreen
+            case .grounding:
+                groundingScreen
+            case .support:
+                supportScreen
+            case .breathing:
+                breathingScreen
+            case .reflection:
+                reflectionScreen
+            case .notesHome:
+                notesHomeScreen
+            case .notesList:
+                notesListScreen
+            case .faq:
+                faqScreen
+            case .end:
+                endScreen
             }
         }
-        .animation(.easeInOut(duration: 0.35), value: screen)
+        .animation(.easeInOut(duration: 0.32), value: screen)
         .preferredColorScheme(.dark)
         .sheet(isPresented: $showsVoiceSettings) {
             VoiceSettingsView(controller: controller)
         }
-        .sheet(isPresented: $showsGuide) {
-            PracticeGuideView {
-                showsGuide = false
-                beginSession(minutes: nil)
-            }
-        }
-        .sheet(isPresented: $showsSafetySupport) {
-            SafetySupportView {
-                showsSafetySupport = false
-                screen = .setup
-            }
-        }
         .onDisappear {
-            sessionTimerTask?.cancel()
-            controller.stopSession()
+            stopAllActivity()
         }
     }
 
@@ -77,7 +119,7 @@ struct ContentView: View {
                         .shadow(color: .black.opacity(0.5), radius: 14, y: 12)
 
                     Text("EMERGE")
-                        .font(.system(size: 34, weight: .light, design: .default))
+                        .font(.system(size: 34, weight: .light))
                         .tracking(10)
                         .foregroundStyle(
                             LinearGradient(
@@ -112,7 +154,7 @@ struct ContentView: View {
                         .padding(.top, 40)
 
                     Button {
-                        screen = .setup
+                        screen = hasAcceptedSafety ? .setup : .safety
                     } label: {
                         Text("ENTER")
                             .font(.system(size: 13, weight: .bold))
@@ -145,11 +187,53 @@ struct ContentView: View {
         }
     }
 
+    private var safetyScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                HStack {
+                    Button("Back") { screen = .home }
+                        .foregroundStyle(EmergeTheme.gold)
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 14)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 22) {
+                        Text("Before you begin")
+                            .font(.system(size: 28, weight: .light, design: .serif))
+                            .foregroundStyle(EmergeTheme.gold)
+
+                        Text(EmergeContent.safetyShort)
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(EmergeTheme.text)
+                            .lineSpacing(5)
+
+                        Divider().overlay(EmergeTheme.gold.opacity(0.2))
+
+                        Text(EmergeContent.safetyFull)
+                            .font(.system(size: 15))
+                            .foregroundStyle(EmergeTheme.text.opacity(0.76))
+                            .lineSpacing(5)
+
+                        PrimaryButton(title: "I understand and want to continue") {
+                            hasAcceptedSafety = true
+                            screen = .setup
+                        }
+                        .padding(.top, 10)
+                    }
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 32)
+                }
+            }
+        }
+    }
+
     private var setupScreen: some View {
         practiceBackground {
             VStack(spacing: 0) {
-                setupHeader
-                    .padding(.horizontal, 21)
+                appHeader
+                    .padding(.horizontal, 14)
                     .padding(.top, 12)
 
                 Spacer()
@@ -161,27 +245,19 @@ struct ContentView: View {
                         .foregroundStyle(EmergeTheme.text.opacity(0.86))
 
                     HStack(spacing: 8) {
-                        DurationChoice(
-                            value: "15 min",
-                            label: "Recommended",
-                            isSelected: true
-                        ) {
-                            beginSession(minutes: 15)
+                        DurationChoice(value: "15 min", label: "Recommended", isSelected: true) {
+                            prepareSession(seconds: 15 * 60, isTest: false)
                         }
 
-                        DurationChoice(
-                            value: "10 sec",
-                            label: "Test",
-                            widthScale: 0.78
-                        ) {
-                            beginSession(seconds: 10)
+                        DurationChoice(value: "10 sec", label: "Test", widthScale: 0.78) {
+                            prepareSession(seconds: 10, isTest: true)
                         }
 
                         customDurationChoice
                     }
                     .padding(.top, 72)
                 }
-                .padding(.horizontal, 32)
+                .padding(.horizontal, 28)
 
                 Spacer()
                 Spacer()
@@ -189,46 +265,43 @@ struct ContentView: View {
         }
     }
 
-    private var setupHeader: some View {
-        HStack {
-            Button {
-                screen = .home
-            } label: {
-                Text("EMERGE")
-                    .font(.system(size: 11, weight: .semibold, design: .serif))
-                    .tracking(0.8)
-                    .foregroundStyle(EmergeTheme.text.opacity(0.88))
-                    .frame(width: 86, height: 32)
-                    .background(Color(red: 0.53, green: 0.24, blue: 0.15).opacity(0.9), in: Capsule())
-                    .overlay {
-                        Capsule().stroke(EmergeTheme.gold.opacity(0.42), lineWidth: 1)
-                    }
+    private var appHeader: some View {
+        HStack(spacing: 6) {
+            NavPill(title: "EMERGE", selected: screen == .setup) {
+                navigateTo(.setup)
             }
-            .buttonStyle(.plain)
+            NavPill(title: "GUIDE", selected: screen == .guide) {
+                guideReturnsToPractice = false
+                navigateTo(.guide)
+            }
+            NavPill(title: "FAQ", selected: screen == .faq) {
+                navigateTo(.faq)
+            }
+            NavPill(title: "MY NOTES", selected: screen == .notesHome || screen == .notesList || screen == .reflection) {
+                navigateTo(.notesHome)
+            }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             Button {
                 showsVoiceSettings = true
             } label: {
                 Image(systemName: "gearshape.fill")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(EmergeTheme.gold.opacity(0.7))
-                    .frame(width: 36, height: 36)
-                    .background(Color.black.opacity(0.34), in: Circle())
-                    .overlay {
-                        Circle().stroke(EmergeTheme.gold.opacity(0.28), lineWidth: 1)
-                    }
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(EmergeTheme.gold.opacity(0.76))
+                    .frame(width: 31, height: 31)
+                    .background(Color.black.opacity(0.32), in: Circle())
+                    .overlay { Circle().stroke(EmergeTheme.gold.opacity(0.24), lineWidth: 1) }
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Voice settings")
+            .accessibilityLabel("Repetition voice settings")
         }
     }
 
     private var customDurationChoice: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Custom")
-                .font(.system(size: 16, weight: .regular))
+                .font(.system(size: 16))
                 .foregroundStyle(EmergeTheme.text)
 
             HStack(spacing: 4) {
@@ -237,32 +310,64 @@ struct ContentView: View {
                     .multilineTextAlignment(.center)
                     .font(.system(size: 13))
                     .foregroundStyle(EmergeTheme.text)
-                    .frame(width: 48, height: 32)
+                    .frame(width: 45, height: 32)
                     .background(Color.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 5))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1)
-                    }
+                    .overlay { RoundedRectangle(cornerRadius: 5).stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1) }
 
                 Text("MIN")
-                    .font(.system(size: 11, weight: .bold))
-                    .tracking(1.5)
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(1.2)
                     .foregroundStyle(EmergeTheme.gold.opacity(0.7))
             }
         }
         .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
-        .padding(.horizontal, 11)
+        .padding(.horizontal, 10)
         .contentShape(Rectangle())
         .background(Color(red: 0.10, green: 0.065, blue: 0.045).opacity(0.55), in: RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(EmergeTheme.gold.opacity(0.18), lineWidth: 1)
-        }
+        .overlay { RoundedRectangle(cornerRadius: 8).stroke(EmergeTheme.gold.opacity(0.18), lineWidth: 1) }
         .onTapGesture {
             guard let minutes = Int(customMinutes), (12...60).contains(minutes) else { return }
-            beginSession(minutes: minutes)
+            prepareSession(seconds: TimeInterval(minutes * 60), isTest: false)
         }
         .accessibilityHint("Enter 12 to 60 minutes, then tap the card to begin")
+    }
+
+    private var openingScreen: some View {
+        practiceBackground {
+            VStack(spacing: 24) {
+                Spacer(minLength: 32)
+
+                BundledImage(name: "logo")
+                    .scaledToFit()
+                    .frame(width: 105, height: 114)
+                    .opacity(0.5)
+
+                Text(openingTrack == .firstSession ? "Your first session" : "Take a moment")
+                    .font(.system(size: 24, weight: .light, design: .serif))
+                    .foregroundStyle(EmergeTheme.gold)
+
+                if guidanceRecordingMissing {
+                    MissingRecordingPanel(track: openingTrack)
+                } else {
+                    GuidancePulse(label: "Preparing to begin…")
+                }
+
+                Spacer()
+
+                if guidanceRecordingMissing {
+                    PrimaryButton(title: "Begin practice") {
+                        completeOpeningGuidance()
+                    }
+                } else {
+                    QuietButton(title: "Skip guidance") {
+                        audioPlayer.stop()
+                        completeOpeningGuidance()
+                    }
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.vertical, 34)
+        }
     }
 
     private var liveScreen: some View {
@@ -277,7 +382,7 @@ struct ContentView: View {
                     .shadow(color: .black.opacity(0.4), radius: 18, y: 14)
 
                 Text("Everything you feel is welcome")
-                    .font(.system(size: 15, weight: .regular))
+                    .font(.system(size: 15))
                     .tracking(1.8)
                     .foregroundStyle(EmergeTheme.gold.opacity(0.72))
                     .padding(.top, 27)
@@ -305,7 +410,7 @@ struct ContentView: View {
                         title: "End session 😌",
                         colors: [Color(red: 0.36, green: 0.165, blue: 0.114), Color(red: 0.18, green: 0.086, blue: 0.067)]
                     ) {
-                        finishSession()
+                        beginClosing()
                     }
                     .padding(.top, 7)
 
@@ -313,7 +418,7 @@ struct ContentView: View {
                         title: "I need support 🛟",
                         colors: [Color(red: 0.20, green: 0.165, blue: 0.125), Color(red: 0.075, green: 0.063, blue: 0.055)]
                     ) {
-                        openSafetySupport()
+                        beginGrounding()
                     }
                     .padding(.top, 24)
                 }
@@ -330,9 +435,418 @@ struct ContentView: View {
         }
     }
 
-    private func practiceBackground<Content: View>(
-        @ViewBuilder content: () -> Content
-    ) -> some View {
+    private var guideScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                if guideReturnsToPractice {
+                    HStack {
+                        Button("Back to practice") { resumeFromGuide() }
+                            .foregroundStyle(EmergeTheme.gold)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 22)
+                    .padding(.top, 16)
+                } else {
+                    appHeader
+                        .padding(.horizontal, 14)
+                        .padding(.top, 12)
+                }
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("How the practice works")
+                            .font(.system(size: 28, weight: .light, design: .serif))
+                            .foregroundStyle(EmergeTheme.gold)
+                            .padding(.bottom, 12)
+
+                        ForEach(Array(EmergeContent.guideParagraphs.enumerated()), id: \.offset) { _, paragraph in
+                            Text(paragraph)
+                                .font(.system(size: 15))
+                                .foregroundStyle(EmergeTheme.text.opacity(0.82))
+                                .lineSpacing(5)
+                        }
+
+                        if guideReturnsToPractice {
+                            PrimaryButton(title: "Go back to the practice") {
+                                resumeFromGuide()
+                            }
+                            .padding(.top, 18)
+                        }
+                    }
+                    .padding(.horizontal, 27)
+                    .padding(.top, 42)
+                    .padding(.bottom, 44)
+                }
+            }
+        }
+    }
+
+    private var closingScreen: some View {
+        practiceBackground {
+            VStack(spacing: 25) {
+                Spacer()
+
+                BundledImage(name: "logo")
+                    .scaledToFit()
+                    .frame(width: 105, height: 114)
+                    .opacity(0.38)
+
+                Text("integration")
+                    .font(.system(size: 25, weight: .light, design: .serif))
+                    .tracking(4)
+                    .foregroundStyle(EmergeTheme.gold.opacity(0.85))
+
+                if guidanceRecordingMissing {
+                    MissingRecordingPanel(track: .closing)
+                } else if !closingComplete {
+                    GuidancePulse(label: "Closing guidance")
+                }
+
+                Spacer()
+
+                QuietButton(title: "Continue the session") {
+                    continueOpenEndedSession()
+                }
+
+                PrimaryButton(title: "Finish the session") {
+                    audioPlayer.stop()
+                    finishClosing()
+                }
+            }
+            .padding(.horizontal, 32)
+            .padding(.vertical, 36)
+        }
+    }
+
+    private var afterSessionScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                Spacer()
+
+                Text("Take all the time you need.")
+                    .font(.system(size: 19, weight: .light, design: .serif))
+                    .foregroundStyle(EmergeTheme.gold.opacity(0.86))
+
+                Spacer()
+
+                VStack(spacing: 74) {
+                    PrimaryButton(title: "REFLECT  ✍️") {
+                        openReflection(fromSession: true)
+                    }
+
+                    QuietButton(title: "END") {
+                        screen = .end
+                    }
+                }
+                .padding(.horizontal, 48)
+
+                Spacer()
+                Spacer()
+            }
+        }
+    }
+
+    private var groundingScreen: some View {
+        atmosphericBackground(name: "ground-bg-soft") {
+            VStack(spacing: 22) {
+                Spacer()
+
+                if groundingComplete {
+                    VStack(spacing: 16) {
+                        PrimaryButton(title: "I feel a little better") {
+                            screen = .afterSession
+                        }
+                        QuietButton(title: "I still need support") {
+                            screen = .support
+                        }
+                    }
+                    .padding(22)
+                    .background(Color(red: 0.35, green: 0.09, blue: 0.19).opacity(0.58), in: RoundedRectangle(cornerRadius: 26))
+                } else {
+                    if guidanceRecordingMissing {
+                        MissingRecordingPanel(track: .grounding)
+                    } else {
+                        GuidancePulse(label: "Calming down…")
+                    }
+
+                    Spacer()
+
+                    QuietButton(title: "End the guidance") {
+                        audioPlayer.stop()
+                        groundingComplete = true
+                    }
+                }
+            }
+            .padding(.horizontal, 30)
+            .padding(.vertical, 42)
+        }
+    }
+
+    private var supportScreen: some View {
+        atmosphericBackground(name: "ground-bg-soft") {
+            VStack(spacing: 0) {
+                Spacer()
+
+                VStack(alignment: .leading, spacing: 17) {
+                    Text("Here are a few things that often help:")
+                        .font(.system(size: 18, weight: .semibold, design: .serif))
+                        .foregroundStyle(Color(red: 0.25, green: 0.05, blue: 0.15))
+                        .padding(.bottom, 5)
+
+                    ForEach(Array(EmergeContent.supportTips.enumerated()), id: \.offset) { index, tip in
+                        if index == 0 {
+                            Button {
+                                startBreathing()
+                            } label: {
+                                HStack {
+                                    Text(tip)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .foregroundStyle(Color(red: 0.30, green: 0.06, blue: 0.17))
+                                .padding(11)
+                                .background(Color.white.opacity(0.22), in: RoundedRectangle(cornerRadius: 12))
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Text(tip)
+                                .font(.system(size: 15))
+                                .foregroundStyle(Color(red: 0.30, green: 0.06, blue: 0.17))
+                        }
+                    }
+                }
+                .padding(24)
+                .background(Color(red: 1.0, green: 0.68, blue: 0.77).opacity(0.60), in: RoundedRectangle(cornerRadius: 25))
+
+                Spacer()
+
+                PrimaryButton(title: "Continue") {
+                    screen = .afterSession
+                }
+            }
+            .padding(.horizontal, 27)
+            .padding(.vertical, 38)
+        }
+    }
+
+    private var breathingScreen: some View {
+        atmosphericBackground(name: "ground-bg-soft") {
+            VStack(spacing: 24) {
+                Spacer()
+
+                ZStack {
+                    Circle()
+                        .stroke(Color.white.opacity(0.35), lineWidth: 2)
+                        .frame(width: 158, height: 158)
+                        .scaleEffect(breathingExpanded ? 1.24 : 0.78)
+                        .shadow(color: Color.white.opacity(0.2), radius: 22)
+
+                    VStack(spacing: 8) {
+                        Text(breathingIn ? "Breathe in" : "Breathe out")
+                            .font(.system(size: 21, weight: .light, design: .serif))
+                            .foregroundStyle(.white)
+                        Text(timeString(breathingSecondsRemaining))
+                            .font(.system(size: 12, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.65))
+                    }
+                }
+
+                Spacer()
+
+                QuietButton(title: "End breathing") {
+                    breathingTask?.cancel()
+                    breathingTask = nil
+                    screen = .support
+                }
+            }
+            .padding(.horizontal, 34)
+            .padding(.vertical, 42)
+        }
+    }
+
+    private var reflectionScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                appHeader
+                    .padding(.horizontal, 14)
+                    .padding(.top, 12)
+
+                VStack(alignment: .leading, spacing: 18) {
+                    Text("What emerged?")
+                        .font(.system(size: 29, weight: .light, design: .serif))
+                        .foregroundStyle(EmergeTheme.gold)
+
+                    TextEditor(text: $reflectionText)
+                        .scrollContentBackground(.hidden)
+                        .font(.system(size: 16))
+                        .foregroundStyle(EmergeTheme.text)
+                        .padding(12)
+                        .frame(minHeight: 230)
+                        .background(Color.white.opacity(0.055), in: RoundedRectangle(cornerRadius: 16))
+                        .overlay { RoundedRectangle(cornerRadius: 16).stroke(EmergeTheme.gold.opacity(0.18), lineWidth: 1) }
+
+                    Text("Your notes stay on this iPhone.")
+                        .font(.system(size: 12))
+                        .foregroundStyle(EmergeTheme.mutedText)
+
+                    PrimaryButton(title: noteSaved ? "Saved" : "Save note") {
+                        saveReflection()
+                    }
+                    .disabled(reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .opacity(reflectionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.45 : 1)
+                }
+                .padding(.horizontal, 28)
+                .padding(.top, 45)
+
+                Spacer()
+            }
+        }
+    }
+
+    private var notesHomeScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                appHeader
+                    .padding(.horizontal, 14)
+                    .padding(.top, 12)
+
+                Spacer()
+
+                VStack(spacing: 28) {
+                    Text("My Notes")
+                        .font(.system(size: 29, weight: .light, design: .serif))
+                        .foregroundStyle(EmergeTheme.gold)
+
+                    PrimaryButton(title: "Add notes for today") {
+                        openReflection(fromSession: false)
+                    }
+
+                    QuietButton(title: "Read my notes") {
+                        screen = .notesList
+                    }
+
+                    Text("Your notes stay on this iPhone.")
+                        .font(.system(size: 12))
+                        .foregroundStyle(EmergeTheme.mutedText)
+                }
+                .padding(.horizontal, 42)
+
+                Spacer()
+                Spacer()
+            }
+        }
+    }
+
+    private var notesListScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                appHeader
+                    .padding(.horizontal, 14)
+                    .padding(.top, 12)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("My Notes")
+                            .font(.system(size: 29, weight: .light, design: .serif))
+                            .foregroundStyle(EmergeTheme.gold)
+                            .padding(.bottom, 10)
+
+                        if reflectionStore.notes.isEmpty {
+                            Text("No notes yet.")
+                                .foregroundStyle(EmergeTheme.mutedText)
+                                .padding(.top, 30)
+                        } else {
+                            ForEach(reflectionStore.notes) { note in
+                                VStack(alignment: .leading, spacing: 10) {
+                                    Text(note.updatedAt.formatted(date: .abbreviated, time: .shortened))
+                                        .font(.system(size: 11, weight: .bold))
+                                        .tracking(0.8)
+                                        .foregroundStyle(EmergeTheme.gold.opacity(0.75))
+                                    Text(note.body)
+                                        .font(.system(size: 15))
+                                        .foregroundStyle(EmergeTheme.text.opacity(0.85))
+                                        .lineSpacing(4)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(18)
+                                .background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 15))
+                                .overlay { RoundedRectangle(cornerRadius: 15).stroke(EmergeTheme.gold.opacity(0.14), lineWidth: 1) }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 27)
+                    .padding(.top, 42)
+                    .padding(.bottom, 50)
+                }
+            }
+        }
+    }
+
+    private var faqScreen: some View {
+        practiceBackground {
+            VStack(spacing: 0) {
+                appHeader
+                    .padding(.horizontal, 14)
+                    .padding(.top, 12)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Frequently asked questions")
+                            .font(.system(size: 28, weight: .light, design: .serif))
+                            .foregroundStyle(EmergeTheme.gold)
+                            .padding(.bottom, 4)
+
+                        Text("Keep exploring how to use Emerge")
+                            .font(.system(size: 14))
+                            .foregroundStyle(EmergeTheme.mutedText)
+                            .padding(.bottom, 18)
+
+                        ForEach(EmergeContent.faqItems) { item in
+                            DisclosureGroup(
+                                isExpanded: Binding(
+                                    get: { expandedFAQID == item.id },
+                                    set: { expandedFAQID = $0 ? item.id : nil }
+                                )
+                            ) {
+                                Text(item.answer)
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(EmergeTheme.text.opacity(0.72))
+                                    .lineSpacing(4)
+                                    .padding(.top, 12)
+                            } label: {
+                                Text(item.question)
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundStyle(EmergeTheme.text)
+                            }
+                            .tint(EmergeTheme.gold)
+                            .padding(17)
+                            .background(Color.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 14))
+                            .overlay { RoundedRectangle(cornerRadius: 14).stroke(EmergeTheme.gold.opacity(0.12), lineWidth: 1) }
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 40)
+                    .padding(.bottom, 55)
+                }
+            }
+        }
+    }
+
+    private var endScreen: some View {
+        atmosphericBackground(name: "end-bg-thank-you-v1") {
+            VStack {
+                Spacer()
+                HStack(spacing: 12) {
+                    QuietButton(title: "FAQ") { screen = .faq }
+                    PrimaryButton(title: "Back to home") { screen = .home }
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 32)
+            }
+        }
+    }
+
+    private func practiceBackground<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         ZStack {
             Color(red: 0.027, green: 0.023, blue: 0.020)
                 .ignoresSafeArea()
@@ -357,30 +871,65 @@ struct ContentView: View {
         }
     }
 
-    private func beginSession(minutes: Int?) {
-        if let minutes {
-            beginSession(seconds: minutes * 60)
-        } else {
-            beginSession(seconds: nil)
+    private func atmosphericBackground<Content: View>(name: String, @ViewBuilder content: @escaping () -> Content) -> some View {
+        GeometryReader { proxy in
+            ZStack {
+                BundledImage(name: name)
+                    .scaledToFill()
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    .clipped()
+                Color.black.opacity(0.08)
+                content()
+            }
+            .ignoresSafeArea()
         }
     }
 
-    private func beginSession(seconds: Int?) {
-        sessionTimerTask?.cancel()
-        screen = .live
+    private func prepareSession(seconds: TimeInterval?, isTest: Bool) {
+        stopAllActivity()
+        pendingSessionSeconds = seconds
 
-        Task {
-            await controller.startSession()
+        if isTest {
+            startPractice(seconds: seconds)
+            return
         }
 
+        openingTrack = hasCompletedFirstSession ? .returningSession : .firstSession
+        guidanceRecordingMissing = false
+        screen = .opening
+        let didStart = audioPlayer.play(openingTrack) {
+            completeOpeningGuidance()
+        }
+        guidanceRecordingMissing = !didStart
+    }
+
+    private func completeOpeningGuidance() {
+        audioPlayer.stop()
+        hasCompletedFirstSession = true
+        startPractice(seconds: pendingSessionSeconds)
+    }
+
+    private func startPractice(seconds: TimeInterval?) {
+        audioPlayer.stop()
+        guidanceRecordingMissing = false
+        screen = .live
+        scheduleSessionEnd(after: seconds)
+        voiceStartTask?.cancel()
+        voiceStartTask = Task { await controller.startSession() }
+    }
+
+    private func scheduleSessionEnd(after seconds: TimeInterval?) {
+        sessionTimerTask?.cancel()
+        sessionTimerTask = nil
+        sessionDeadline = nil
+
         guard let seconds else { return }
+        sessionDeadline = Date().addingTimeInterval(seconds)
         sessionTimerTask = Task {
             do {
                 try await Task.sleep(for: .seconds(seconds))
                 guard !Task.isCancelled else { return }
-                await MainActor.run {
-                    finishSession()
-                }
+                await MainActor.run { beginClosing() }
             } catch {
                 return
             }
@@ -388,22 +937,142 @@ struct ContentView: View {
     }
 
     private func pauseForGuide() {
-        sessionTimerTask?.cancel()
-        controller.stopSession()
-        showsGuide = true
-    }
-
-    private func openSafetySupport() {
-        sessionTimerTask?.cancel()
-        controller.stopSession()
-        showsSafetySupport = true
-    }
-
-    private func finishSession() {
+        if let sessionDeadline {
+            pausedSessionSeconds = max(0.25, sessionDeadline.timeIntervalSinceNow)
+        } else {
+            pausedSessionSeconds = nil
+        }
         sessionTimerTask?.cancel()
         sessionTimerTask = nil
+        voiceStartTask?.cancel()
+        voiceStartTask = nil
         controller.stopSession()
-        screen = .setup
+        guideReturnsToPractice = true
+        screen = .guide
+    }
+
+    private func resumeFromGuide() {
+        guideReturnsToPractice = false
+        startPractice(seconds: pausedSessionSeconds)
+        pausedSessionSeconds = nil
+    }
+
+    private func beginClosing() {
+        sessionTimerTask?.cancel()
+        sessionTimerTask = nil
+        sessionDeadline = nil
+        voiceStartTask?.cancel()
+        voiceStartTask = nil
+        controller.stopSession()
+        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        closingComplete = false
+        guidanceRecordingMissing = false
+        screen = .closing
+        let didStart = audioPlayer.play(.closing) {
+            finishClosing()
+        }
+        guidanceRecordingMissing = !didStart
+    }
+
+    private func finishClosing() {
+        audioPlayer.stop()
+        closingComplete = true
+        screen = .afterSession
+    }
+
+    private func continueOpenEndedSession() {
+        audioPlayer.stop()
+        startPractice(seconds: nil)
+    }
+
+    private func beginGrounding() {
+        sessionTimerTask?.cancel()
+        sessionTimerTask = nil
+        sessionDeadline = nil
+        voiceStartTask?.cancel()
+        voiceStartTask = nil
+        controller.stopSession()
+        groundingComplete = false
+        guidanceRecordingMissing = false
+        screen = .grounding
+        let didStart = audioPlayer.play(.grounding) {
+            groundingComplete = true
+        }
+        guidanceRecordingMissing = !didStart
+    }
+
+    private func startBreathing() {
+        breathingTask?.cancel()
+        breathingSecondsRemaining = 300
+        breathingIn = true
+        breathingExpanded = false
+        screen = .breathing
+
+        breathingTask = Task {
+            for step in 0..<60 {
+                guard !Task.isCancelled else { return }
+                await MainActor.run {
+                    breathingIn = step.isMultiple(of: 2)
+                    withAnimation(.easeInOut(duration: 5)) {
+                        breathingExpanded = breathingIn
+                    }
+                }
+
+                do {
+                    try await Task.sleep(for: .seconds(5))
+                } catch {
+                    return
+                }
+
+                await MainActor.run {
+                    breathingSecondsRemaining = max(0, 300 - ((step + 1) * 5))
+                }
+            }
+
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                breathingTask = nil
+                screen = .support
+            }
+        }
+    }
+
+    private func openReflection(fromSession: Bool) {
+        reflectionFromSession = fromSession
+        reflectionText = reflectionStore.todayNote?.body ?? ""
+        noteSaved = false
+        screen = .reflection
+    }
+
+    private func saveReflection() {
+        reflectionStore.saveToday(reflectionText)
+        noteSaved = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            screen = reflectionFromSession ? .end : .notesHome
+        }
+    }
+
+    private func navigateTo(_ destination: Screen) {
+        audioPlayer.stop()
+        if destination != .guide {
+            guideReturnsToPractice = false
+        }
+        screen = destination
+    }
+
+    private func stopAllActivity() {
+        sessionTimerTask?.cancel()
+        sessionTimerTask = nil
+        breathingTask?.cancel()
+        breathingTask = nil
+        voiceStartTask?.cancel()
+        voiceStartTask = nil
+        controller.stopSession()
+        audioPlayer.stop()
+    }
+
+    private func timeString(_ seconds: Int) -> String {
+        String(format: "%d:%02d", seconds / 60, seconds % 60)
     }
 }
 
@@ -421,6 +1090,31 @@ private struct BundledImage: View {
     }
 }
 
+private struct NavPill: View {
+    let title: String
+    let selected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 8, weight: .bold, design: .serif))
+                .tracking(0.45)
+                .foregroundStyle(EmergeTheme.text.opacity(selected ? 0.95 : 0.68))
+                .padding(.horizontal, title == "MY NOTES" ? 9 : 10)
+                .frame(height: 31)
+                .background(
+                    selected
+                        ? Color(red: 0.53, green: 0.24, blue: 0.15).opacity(0.9)
+                        : Color.black.opacity(0.25),
+                    in: Capsule()
+                )
+                .overlay { Capsule().stroke(EmergeTheme.gold.opacity(selected ? 0.42 : 0.18), lineWidth: 1) }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 private struct DurationChoice: View {
     let value: String
     let label: String
@@ -432,7 +1126,7 @@ private struct DurationChoice: View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 7) {
                 Text(value)
-                    .font(.system(size: 16, weight: .regular))
+                    .font(.system(size: 16))
                     .foregroundStyle(EmergeTheme.text)
 
                 Text(label.uppercased())
@@ -448,10 +1142,7 @@ private struct DurationChoice: View {
                     : Color(red: 0.10, green: 0.065, blue: 0.045).opacity(0.55),
                 in: RoundedRectangle(cornerRadius: 8)
             )
-            .overlay {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(EmergeTheme.gold.opacity(isSelected ? 0.42 : 0.18), lineWidth: 1)
-            }
+            .overlay { RoundedRectangle(cornerRadius: 8).stroke(EmergeTheme.gold.opacity(isSelected ? 0.42 : 0.18), lineWidth: 1) }
         }
         .buttonStyle(.plain)
         .layoutPriority(widthScale)
@@ -470,16 +1161,98 @@ private struct SupportButton: View {
                 .tracking(0.3)
                 .foregroundStyle(EmergeTheme.text.opacity(0.8))
                 .frame(maxWidth: .infinity, minHeight: 40)
-                .background(
-                    LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom),
-                    in: Capsule()
-                )
-                .overlay {
-                    Capsule().stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1)
-                }
+                .background(LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom), in: Capsule())
+                .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1) }
                 .shadow(color: .black.opacity(0.22), radius: 12, y: 8)
         }
         .buttonStyle(.plain)
+    }
+}
+
+private struct PrimaryButton: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 13, weight: .bold))
+                .tracking(0.7)
+                .foregroundStyle(EmergeTheme.text)
+                .frame(maxWidth: .infinity, minHeight: 49)
+                .background(
+                    LinearGradient(
+                        colors: [Color(red: 0.60, green: 0.25, blue: 0.15), Color(red: 0.35, green: 0.12, blue: 0.09)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    in: Capsule()
+                )
+                .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.34), lineWidth: 1) }
+                .shadow(color: .black.opacity(0.24), radius: 14, y: 8)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct QuietButton: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .tracking(0.5)
+                .foregroundStyle(EmergeTheme.text.opacity(0.86))
+                .frame(maxWidth: .infinity, minHeight: 47)
+                .background(Color.black.opacity(0.35), in: Capsule())
+                .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.25), lineWidth: 1) }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct GuidancePulse: View {
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 13) {
+            Image(systemName: "waveform")
+                .symbolEffect(.variableColor.iterative)
+                .foregroundStyle(EmergeTheme.gold)
+            Text(label)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundStyle(EmergeTheme.text.opacity(0.82))
+        }
+        .padding(.horizontal, 22)
+        .frame(minHeight: 54)
+        .background(Color(red: 0.34, green: 0.09, blue: 0.18).opacity(0.56), in: Capsule())
+        .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1) }
+    }
+}
+
+private struct MissingRecordingPanel: View {
+    let track: GuidanceTrack
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Voice recording to be added", systemImage: "waveform.badge.exclamationmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(EmergeTheme.gold)
+
+                Text(track.fallbackText)
+                    .font(.system(size: 14))
+                    .foregroundStyle(EmergeTheme.text.opacity(0.78))
+                    .lineSpacing(5)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(18)
+        }
+        .frame(maxHeight: 330)
+        .background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 16))
+        .overlay { RoundedRectangle(cornerRadius: 16).stroke(EmergeTheme.gold.opacity(0.15), lineWidth: 1) }
     }
 }
 
@@ -559,10 +1332,7 @@ private struct VoiceSettingsView: View {
                                     .background(Color.white.opacity(0.045), in: RoundedRectangle(cornerRadius: 12))
                                     .overlay {
                                         RoundedRectangle(cornerRadius: 12)
-                                            .stroke(
-                                                EmergeTheme.gold.opacity(controller.selectedVoiceIdentifier == voice.id ? 0.42 : 0.12),
-                                                lineWidth: 1
-                                            )
+                                            .stroke(EmergeTheme.gold.opacity(controller.selectedVoiceIdentifier == voice.id ? 0.42 : 0.12), lineWidth: 1)
                                     }
                                 }
                                 .buttonStyle(.plain)
@@ -582,84 +1352,7 @@ private struct VoiceSettingsView: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
-        .task {
-            controller.loadVoiceOptions()
-        }
-    }
-}
-
-private struct PracticeGuideView: View {
-    let returnToPractice: () -> Void
-
-    var body: some View {
-        GuidanceSheet(
-            title: "How the practice works",
-            paragraphs: [
-                "Say one short sentence about how you feel.",
-                "The app changes “I” to “you” where needed and repeats the sentence back to you.",
-                "Repeat it. Stay with the sentence until another one arises naturally."
-            ],
-            buttonTitle: "Return to the practice",
-            action: returnToPractice
-        )
-    }
-}
-
-private struct SafetySupportView: View {
-    let finish: () -> Void
-
-    var body: some View {
-        GuidanceSheet(
-            title: "Pause",
-            paragraphs: [
-                "The repetition has stopped.",
-                "Feel the support beneath your body. Notice your breathing without needing to change it.",
-                "Look around and notice three things you can see. Take all the time you need."
-            ],
-            buttonTitle: "Finish",
-            action: finish
-        )
-    }
-}
-
-private struct GuidanceSheet: View {
-    let title: String
-    let paragraphs: [String]
-    let buttonTitle: String
-    let action: () -> Void
-
-    var body: some View {
-        ZStack {
-            Color(red: 0.055, green: 0.035, blue: 0.025)
-                .ignoresSafeArea()
-
-            VStack(alignment: .leading, spacing: 20) {
-                Text(title)
-                    .font(.system(size: 25, weight: .light, design: .serif))
-                    .foregroundStyle(EmergeTheme.gold)
-
-                ForEach(paragraphs, id: \.self) { paragraph in
-                    Text(paragraph)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(EmergeTheme.text.opacity(0.84))
-                        .lineSpacing(5)
-                }
-
-                Spacer()
-
-                Button(action: action) {
-                    Text(buttonTitle)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(EmergeTheme.text)
-                        .frame(maxWidth: .infinity, minHeight: 50)
-                        .background(Color(red: 0.49, green: 0.19, blue: 0.11), in: Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(30)
-        }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
+        .task { controller.loadVoiceOptions() }
     }
 }
 

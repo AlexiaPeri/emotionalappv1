@@ -19,6 +19,15 @@
 		11000000000000000000000A /* PronounTransformerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000A /* PronounTransformerTests.swift */; };
 		11000000000000000000000B /* home1-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000D /* home1-bg.png */; };
 		11000000000000000000000C /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000E /* logo.png */; };
+		11000000000000000000000D /* EmergeContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12000000000000000000000F /* EmergeContent.swift */; };
+		11000000000000000000000E /* ReflectionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000010 /* ReflectionStore.swift */; };
+		11000000000000000000000F /* GuidanceAudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000011 /* GuidanceAudioPlayer.swift */; };
+		110000000000000000000010 /* ground-bg-soft.png in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000012 /* ground-bg-soft.png */; };
+		110000000000000000000011 /* end-bg-thank-you-v1.png in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000013 /* end-bg-thank-you-v1.png */; };
+		110000000000000000000012 /* 01-first-session.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000014 /* 01-first-session.m4a */; };
+		110000000000000000000013 /* 02-returning-session.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000015 /* 02-returning-session.m4a */; };
+		110000000000000000000014 /* 03-closing.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000016 /* 03-closing.m4a */; };
+		110000000000000000000015 /* 04-grounding.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 120000000000000000000017 /* 04-grounding.m4a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +55,15 @@
 		12000000000000000000000C /* EmergeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EmergeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		12000000000000000000000D /* home1-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "home1-bg.png"; path = "../../assets/home1-bg.png"; sourceTree = SOURCE_ROOT; };
 		12000000000000000000000E /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "logo.png"; path = "../../assets/logo.png"; sourceTree = SOURCE_ROOT; };
+		12000000000000000000000F /* EmergeContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmergeContent.swift; sourceTree = "<group>"; };
+		120000000000000000000010 /* ReflectionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionStore.swift; sourceTree = "<group>"; };
+		120000000000000000000011 /* GuidanceAudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidanceAudioPlayer.swift; sourceTree = "<group>"; };
+		120000000000000000000012 /* ground-bg-soft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ground-bg-soft.png"; path = "../../assets/ground-bg-soft.png"; sourceTree = SOURCE_ROOT; };
+		120000000000000000000013 /* end-bg-thank-you-v1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "end-bg-thank-you-v1.png"; path = "../../assets/end-bg-thank-you-v1.png"; sourceTree = SOURCE_ROOT; };
+		120000000000000000000014 /* 01-first-session.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "01-first-session.m4a"; sourceTree = "<group>"; };
+		120000000000000000000015 /* 02-returning-session.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "02-returning-session.m4a"; sourceTree = "<group>"; };
+		120000000000000000000016 /* 03-closing.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "03-closing.m4a"; sourceTree = "<group>"; };
+		120000000000000000000017 /* 04-grounding.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = "04-grounding.m4a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,9 +99,12 @@
 				150000000000000000000003 /* App */,
 				150000000000000000000004 /* Voice */,
 				150000000000000000000005 /* Design */,
+				15000000000000000000000A /* GuidanceAudio */,
 				120000000000000000000008 /* Assets.xcassets */,
 				12000000000000000000000D /* home1-bg.png */,
 				12000000000000000000000E /* logo.png */,
+				120000000000000000000012 /* ground-bg-soft.png */,
+				120000000000000000000013 /* end-bg-thank-you-v1.png */,
 				150000000000000000000006 /* Preview Content */,
 			);
 			path = Emerge;
@@ -94,6 +115,8 @@
 			children = (
 				120000000000000000000001 /* EmergeApp.swift */,
 				120000000000000000000002 /* ContentView.swift */,
+				12000000000000000000000F /* EmergeContent.swift */,
+				120000000000000000000010 /* ReflectionStore.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -105,6 +128,7 @@
 				120000000000000000000005 /* SpeechSpeaker.swift */,
 				120000000000000000000006 /* AudioBufferConverter.swift */,
 				120000000000000000000007 /* VoiceLoopController.swift */,
+				120000000000000000000011 /* GuidanceAudioPlayer.swift */,
 			);
 			path = Voice;
 			sourceTree = "<group>";
@@ -123,6 +147,17 @@
 				120000000000000000000009 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		15000000000000000000000A /* GuidanceAudio */ = {
+			isa = PBXGroup;
+			children = (
+				120000000000000000000014 /* 01-first-session.m4a */,
+				120000000000000000000015 /* 02-returning-session.m4a */,
+				120000000000000000000016 /* 03-closing.m4a */,
+				120000000000000000000017 /* 04-grounding.m4a */,
+			);
+			path = GuidanceAudio;
 			sourceTree = "<group>";
 		};
 		150000000000000000000008 /* EmergeTests */ = {
@@ -227,6 +262,12 @@
 				110000000000000000000009 /* Preview Assets.xcassets in Resources */,
 				11000000000000000000000B /* home1-bg.png in Resources */,
 				11000000000000000000000C /* logo.png in Resources */,
+				110000000000000000000010 /* ground-bg-soft.png in Resources */,
+				110000000000000000000011 /* end-bg-thank-you-v1.png in Resources */,
+				110000000000000000000012 /* 01-first-session.m4a in Resources */,
+				110000000000000000000013 /* 02-returning-session.m4a in Resources */,
+				110000000000000000000014 /* 03-closing.m4a in Resources */,
+				110000000000000000000015 /* 04-grounding.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +292,9 @@
 				110000000000000000000005 /* SpeechSpeaker.swift in Sources */,
 				110000000000000000000006 /* AudioBufferConverter.swift in Sources */,
 				110000000000000000000007 /* VoiceLoopController.swift in Sources */,
+				11000000000000000000000D /* EmergeContent.swift in Sources */,
+				11000000000000000000000E /* ReflectionStore.swift in Sources */,
+				11000000000000000000000F /* GuidanceAudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

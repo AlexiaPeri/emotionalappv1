@@ -57,4 +57,31 @@ final class PronounTransformerTests: XCTestCase {
         XCTAssertTrue(VoiceLoopController.isMeaningfulTranscript("I have reached a full stop"))
         XCTAssertTrue(VoiceLoopController.isMeaningfulTranscript("I am angry."))
     }
+
+    func testGuidanceTrackFilenamesMatchRecordingHandoff() {
+        XCTAssertEqual(GuidanceTrack.firstSession.rawValue, "01-first-session")
+        XCTAssertEqual(GuidanceTrack.returningSession.rawValue, "02-returning-session")
+        XCTAssertEqual(GuidanceTrack.closing.rawValue, "03-closing")
+        XCTAssertEqual(GuidanceTrack.grounding.rawValue, "04-grounding")
+    }
+
+    @MainActor
+    func testReflectionNotePersistsAndUpdatesOncePerDay() {
+        let suiteName = "ReflectionStoreTests.\(UUID().uuidString)"
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            XCTFail("Could not create isolated user defaults")
+            return
+        }
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = ReflectionStore(defaults: defaults)
+        store.saveToday("I felt something shift.")
+        store.saveToday("I feel calmer now.")
+
+        XCTAssertEqual(store.notes.count, 1)
+        XCTAssertEqual(store.todayNote?.body, "I feel calmer now.")
+
+        let restoredStore = ReflectionStore(defaults: defaults)
+        XCTAssertEqual(restoredStore.notes, store.notes)
+    }
 }
