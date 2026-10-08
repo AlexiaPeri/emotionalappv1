@@ -425,7 +425,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Emerge/Preview Content\"";
 				DEVELOPMENT_TEAM = H69T3V2S87;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Emerge/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Emerge;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Emerge uses the microphone to hear the sentence you want reflected back to you.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Emerge uses on-device speech recognition to reflect your words back to you.";
@@ -458,7 +459,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H69T3V2S87;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Emerge/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Emerge;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Emerge uses the microphone to hear the sentence you want reflected back to you.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Emerge uses on-device speech recognition to reflect your words back to you.";

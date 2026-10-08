@@ -26,8 +26,9 @@ struct ContentView: View {
     @State private var breathingTonePlayer = BreathingTonePlayer()
     @State private var reflectionStore = ReflectionStore()
     @State private var screen: Screen = .home
-    @State private var customMinutes = "20"
+    @State private var customMinutes = 20
     @State private var showsVoiceSettings = false
+    @State private var showsCustomDurationPicker = false
     @State private var voiceStartTask: Task<Void, Never>?
     @State private var sessionTimerTask: Task<Void, Never>?
     @State private var breathingTask: Task<Void, Never>?
@@ -91,6 +92,14 @@ struct ContentView: View {
         .preferredColorScheme(.dark)
         .sheet(isPresented: $showsVoiceSettings) {
             VoiceSettingsView(controller: controller)
+        }
+        .sheet(isPresented: $showsCustomDurationPicker) {
+            CustomDurationPicker(minutes: $customMinutes) {
+                showsCustomDurationPicker = false
+                prepareSession(seconds: TimeInterval(customMinutes * 60))
+            }
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
         }
         .onDisappear {
             stopAllActivity()
@@ -243,7 +252,9 @@ struct ContentView: View {
                             prepareSession(seconds: 15 * 60)
                         }
 
-                        customDurationChoice
+                        DurationChoice(value: "Custom", label: "11–60 min") {
+                            showsCustomDurationPicker = true
+                        }
                     }
                     .padding(.top, 72)
                 }
@@ -287,40 +298,6 @@ struct ContentView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Repetition voice settings")
         }
-    }
-
-    private var customDurationChoice: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Custom")
-                .font(.system(size: 16))
-                .foregroundStyle(EmergeTheme.text)
-
-            HStack(spacing: 4) {
-                TextField("12–60", text: $customMinutes)
-                    .keyboardType(.numberPad)
-                    .multilineTextAlignment(.center)
-                    .font(.system(size: 13))
-                    .foregroundStyle(EmergeTheme.text)
-                    .frame(width: 45, height: 32)
-                    .background(Color.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 5))
-                    .overlay { RoundedRectangle(cornerRadius: 5).stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1) }
-
-                Text("MIN")
-                    .font(.system(size: 10, weight: .bold))
-                    .tracking(1.2)
-                    .foregroundStyle(EmergeTheme.gold.opacity(0.7))
-            }
-        }
-        .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
-        .padding(.horizontal, 10)
-        .contentShape(Rectangle())
-        .background(Color(red: 0.10, green: 0.065, blue: 0.045).opacity(0.55), in: RoundedRectangle(cornerRadius: 8))
-        .overlay { RoundedRectangle(cornerRadius: 8).stroke(EmergeTheme.gold.opacity(0.18), lineWidth: 1) }
-        .onTapGesture {
-            guard let minutes = Int(customMinutes), (12...60).contains(minutes) else { return }
-            prepareSession(seconds: TimeInterval(minutes * 60))
-        }
-        .accessibilityHint("Enter 12 to 60 minutes, then tap the card to begin")
     }
 
     private var openingScreen: some View {
@@ -1117,7 +1094,6 @@ private struct DurationChoice: View {
     let value: String
     let label: String
     var isSelected = false
-    var widthScale = 1.0
     let action: () -> Void
 
     var body: some View {
@@ -1143,7 +1119,70 @@ private struct DurationChoice: View {
             .overlay { RoundedRectangle(cornerRadius: 8).stroke(EmergeTheme.gold.opacity(isSelected ? 0.42 : 0.18), lineWidth: 1) }
         }
         .buttonStyle(.plain)
-        .layoutPriority(widthScale)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct CustomDurationPicker: View {
+    @Binding var minutes: Int
+    let start: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack {
+            Color(red: 0.075, green: 0.047, blue: 0.035)
+                .ignoresSafeArea()
+
+            VStack(spacing: 12) {
+                Text("Choose your practice")
+                    .font(.system(size: 24, weight: .light, design: .serif))
+                    .foregroundStyle(EmergeTheme.gold)
+
+                Text("11 to 60 minutes")
+                    .font(.system(size: 13))
+                    .foregroundStyle(EmergeTheme.text.opacity(0.65))
+
+                Picker("Practice duration", selection: $minutes) {
+                    ForEach(11...60, id: \.self) { value in
+                        Text("\(value) min").tag(value)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(height: 140)
+                .colorScheme(.dark)
+
+                HStack(spacing: 12) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(EmergeTheme.text.opacity(0.75))
+                    .frame(maxWidth: .infinity, minHeight: 46)
+                    .background(Color.black.opacity(0.28), in: Capsule())
+                    .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1) }
+
+                    Button("Begin") {
+                        start()
+                    }
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(EmergeTheme.text)
+                    .frame(maxWidth: .infinity, minHeight: 46)
+                    .background(
+                        LinearGradient(
+                            colors: [Color(red: 0.60, green: 0.25, blue: 0.15), Color(red: 0.35, green: 0.12, blue: 0.09)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        in: Capsule()
+                    )
+                    .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.34), lineWidth: 1) }
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 24)
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

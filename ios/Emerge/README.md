@@ -15,6 +15,8 @@ This is the native English-only Emerge app for iPhone. It targets iOS 26 and use
 - The microphone is stopped before repetition, so the app does not transcribe its own voice.
 - Ten unit tests cover the initial pronoun rules and false punctuation triggers.
 - A voice and pace preview is available from the gear button on the duration screen.
+- The duration screen offers two equal choices: a recommended 15-minute practice and a custom 11-to-60-minute picker.
+- The live repetition session uses the iOS background-audio mode so listening and spoken repetition can continue while the screen is locked.
 - Reflection notes are stored only in local iPhone preferences.
 - Guidance playback is wired for `01-first-session`, `02-returning-session`, `03-closing`, and `04-grounding` in WAV, M4A, or MP3 format.
 
