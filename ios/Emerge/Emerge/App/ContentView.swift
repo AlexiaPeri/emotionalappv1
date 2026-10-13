@@ -1,6 +1,38 @@
 import SwiftUI
 import UIKit
 
+private enum OpeningOption: String, CaseIterable, Identifiable {
+    case quietArrival
+    case guidedRelease
+    case fullGuidance
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .quietArrival: "Quiet arrival"
+        case .guidedRelease: "Guided release"
+        case .fullGuidance: "Full guidance"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .quietArrival: "Short · simple and neutral"
+        case .guidedRelease: "Short · more energising"
+        case .fullGuidance: "Long · the original introduction"
+        }
+    }
+
+    var track: GuidanceTrack {
+        switch self {
+        case .quietArrival: .returningSession
+        case .guidedRelease: .guidedRelease
+        case .fullGuidance: .firstSession
+        }
+    }
+}
+
 struct ContentView: View {
     private enum Screen: Hashable {
         case home
@@ -27,6 +59,10 @@ struct ContentView: View {
     @State private var reflectionStore = ReflectionStore()
     @State private var screen: Screen = .home
     @State private var customMinutes = 20
+    @State private var usesCustomDuration = false
+    @State private var selectedOpening: OpeningOption = .quietArrival
+    @State private var movementRemindersEnabled = false
+    @State private var didSetInitialOpeningChoice = false
     @State private var showsVoiceSettings = false
     @State private var showsCustomDurationPicker = false
     @State private var voiceStartTask: Task<Void, Never>?
@@ -95,8 +131,8 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showsCustomDurationPicker) {
             CustomDurationPicker(minutes: $customMinutes) {
+                usesCustomDuration = true
                 showsCustomDurationPicker = false
-                prepareSession(seconds: TimeInterval(customMinutes * 60))
             }
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
@@ -239,30 +275,84 @@ struct ContentView: View {
                     .padding(.horizontal, 14)
                     .padding(.top, 12)
 
-                Spacer()
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Let's begin.")
+                            .font(.system(size: 29, weight: .light, design: .serif))
+                            .foregroundStyle(EmergeTheme.gold)
 
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Let's begin.")
-                        .font(.system(size: 19, weight: .light))
-                        .tracking(0.6)
-                        .foregroundStyle(EmergeTheme.text.opacity(0.86))
+                        Text("A few choices, then the space is yours.")
+                            .font(.system(size: 14))
+                            .foregroundStyle(EmergeTheme.text.opacity(0.66))
+                            .padding(.top, 8)
 
-                    HStack(spacing: 8) {
-                        DurationChoice(value: "15 min", label: "Recommended", isSelected: true) {
-                            prepareSession(seconds: 15 * 60)
+                        SetupSectionLabel(title: "Duration")
+                            .padding(.top, 29)
+
+                        HStack(spacing: 9) {
+                            DurationChoice(value: "15 min", label: "Suggested", isSelected: !usesCustomDuration) {
+                                usesCustomDuration = false
+                            }
+
+                            DurationChoice(value: "Custom", label: "3–60 min", isSelected: usesCustomDuration) {
+                                showsCustomDurationPicker = true
+                            }
                         }
+                        .padding(.top, 9)
 
-                        DurationChoice(value: "Custom", label: "11–60 min") {
-                            showsCustomDurationPicker = true
+                        SetupSectionLabel(title: "Opening")
+                            .padding(.top, 25)
+
+                        VStack(spacing: 8) {
+                            ForEach(OpeningOption.allCases) { option in
+                                OpeningChoice(
+                                    title: option.title,
+                                    detail: option.detail,
+                                    isSelected: selectedOpening == option
+                                ) {
+                                    selectedOpening = option
+                                }
+                            }
                         }
+                        .padding(.top, 9)
+
+                        Toggle(isOn: $movementRemindersEnabled) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Movement reminders")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundStyle(EmergeTheme.text)
+
+                                Text("Throughout the practice")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(EmergeTheme.mutedText)
+                            }
+                        }
+                        .tint(Color(red: 0.60, green: 0.25, blue: 0.15))
+                        .padding(.horizontal, 15)
+                        .frame(minHeight: 65)
+                        .background(Color.white.opacity(0.035), in: RoundedRectangle(cornerRadius: 14))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(EmergeTheme.gold.opacity(0.16), lineWidth: 1)
+                        }
+                        .padding(.top, 20)
+
+                        PrimaryButton(title: "Begin practice") {
+                            let minutes = usesCustomDuration ? customMinutes : 15
+                            prepareSession(seconds: TimeInterval(minutes * 60))
+                        }
+                        .padding(.top, 24)
                     }
-                    .padding(.top, 72)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 34)
+                    .padding(.bottom, 38)
                 }
-                .padding(.horizontal, 28)
-
-                Spacer()
-                Spacer()
             }
+        }
+        .onAppear {
+            guard !didSetInitialOpeningChoice else { return }
+            selectedOpening = hasCompletedFirstSession ? .quietArrival : .fullGuidance
+            didSetInitialOpeningChoice = true
         }
     }
 
@@ -310,7 +400,7 @@ struct ContentView: View {
                     .frame(width: 105, height: 114)
                     .opacity(0.5)
 
-                Text(openingTrack == .firstSession ? "Your first session" : "Take a moment")
+                Text(openingScreenTitle)
                     .font(.system(size: 24, weight: .light, design: .serif))
                     .foregroundStyle(EmergeTheme.gold)
 
@@ -865,7 +955,7 @@ struct ContentView: View {
         stopAllActivity()
         pendingSessionSeconds = seconds
 
-        openingTrack = hasCompletedFirstSession ? .returningSession : .firstSession
+        openingTrack = selectedOpening.track
         guidanceRecordingMissing = false
         screen = .opening
         let didStart = audioPlayer.play(openingTrack) {
@@ -878,6 +968,15 @@ struct ContentView: View {
         audioPlayer.stop()
         hasCompletedFirstSession = true
         startPractice(seconds: pendingSessionSeconds)
+    }
+
+    private var openingScreenTitle: String {
+        switch openingTrack {
+        case .firstSession: "Full guidance"
+        case .guidedRelease: "Guided release"
+        case .returningSession: "Take a moment"
+        case .closing, .grounding: "Take a moment"
+        }
     }
 
     private func startPractice(seconds: TimeInterval?) {
@@ -1098,28 +1197,88 @@ private struct DurationChoice: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 7) {
+            VStack(spacing: 5) {
                 Text(value)
-                    .font(.system(size: 16))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(EmergeTheme.text)
 
-                Text(label.uppercased())
-                    .font(.system(size: 9, weight: .bold))
-                    .tracking(1.1)
-                    .foregroundStyle(EmergeTheme.gold.opacity(0.72))
+                Text(label)
+                    .font(.system(size: 10))
+                    .foregroundStyle(EmergeTheme.mutedText)
             }
-            .frame(maxWidth: .infinity, minHeight: 88, alignment: .leading)
-            .padding(.horizontal, 11)
+            .frame(maxWidth: .infinity, minHeight: 68, alignment: .center)
+            .padding(.horizontal, 10)
             .background(
                 isSelected
-                    ? Color(red: 0.70, green: 0.32, blue: 0.19).opacity(0.13)
+                    ? Color(red: 0.70, green: 0.32, blue: 0.19).opacity(0.20)
                     : Color(red: 0.10, green: 0.065, blue: 0.045).opacity(0.55),
-                in: RoundedRectangle(cornerRadius: 8)
+                in: RoundedRectangle(cornerRadius: 13)
             )
-            .overlay { RoundedRectangle(cornerRadius: 8).stroke(EmergeTheme.gold.opacity(isSelected ? 0.42 : 0.18), lineWidth: 1) }
+            .overlay { RoundedRectangle(cornerRadius: 13).stroke(EmergeTheme.gold.opacity(isSelected ? 0.48 : 0.18), lineWidth: 1) }
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
+    }
+}
+
+private struct SetupSectionLabel: View {
+    let title: String
+
+    var body: some View {
+        Text(title.uppercased())
+            .font(.system(size: 10, weight: .bold))
+            .tracking(1.45)
+            .foregroundStyle(EmergeTheme.text.opacity(0.42))
+    }
+}
+
+private struct OpeningChoice: View {
+    let title: String
+    let detail: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .stroke(EmergeTheme.gold.opacity(isSelected ? 0.72 : 0.34), lineWidth: 1)
+                        .frame(width: 18, height: 18)
+
+                    if isSelected {
+                        Circle()
+                            .fill(Color(red: 0.87, green: 0.53, blue: 0.34))
+                            .frame(width: 9, height: 9)
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(EmergeTheme.text)
+
+                    Text(detail)
+                        .font(.system(size: 10.5))
+                        .foregroundStyle(EmergeTheme.mutedText)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 14)
+            .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+            .background(
+                isSelected
+                    ? Color(red: 0.70, green: 0.32, blue: 0.19).opacity(0.17)
+                    : Color.white.opacity(0.025),
+                in: RoundedRectangle(cornerRadius: 14)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(EmergeTheme.gold.opacity(isSelected ? 0.46 : 0.16), lineWidth: 1)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -1138,12 +1297,12 @@ private struct CustomDurationPicker: View {
                     .font(.system(size: 24, weight: .light, design: .serif))
                     .foregroundStyle(EmergeTheme.gold)
 
-                Text("11 to 60 minutes")
+                Text("3 to 60 minutes")
                     .font(.system(size: 13))
                     .foregroundStyle(EmergeTheme.text.opacity(0.65))
 
                 Picker("Practice duration", selection: $minutes) {
-                    ForEach(11...60, id: \.self) { value in
+                    ForEach(3...60, id: \.self) { value in
                         Text("\(value) min").tag(value)
                     }
                 }
@@ -1161,7 +1320,7 @@ private struct CustomDurationPicker: View {
                     .background(Color.black.opacity(0.28), in: Capsule())
                     .overlay { Capsule().stroke(EmergeTheme.gold.opacity(0.2), lineWidth: 1) }
 
-                    Button("Begin") {
+                    Button("Done") {
                         start()
                     }
                     .font(.system(size: 13, weight: .bold))

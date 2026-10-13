@@ -5,6 +5,7 @@ import Observation
 enum GuidanceTrack: String, CaseIterable {
     case firstSession = "01-first-session"
     case returningSession = "02-returning-session"
+    case guidedRelease = "05-guided-release"
     case closing = "03-closing"
     case grounding = "04-grounding"
 
@@ -26,6 +27,8 @@ enum GuidanceTrack: String, CaseIterable {
             """
         case .returningSession:
             "Close your eyes if that feels comfortable. Take a slow breath in, then breathe out through your mouth. Bring your attention inward. What do you feel?"
+        case .guidedRelease:
+            "The guided release recording has not been added yet."
         case .closing:
             """
             The practice is ending now. Keep your eyes closed if that feels comfortable. Let your body be supported by the position you are in. Notice your breathing without changing it. Feel your feet. Feel your hands. Notice where your body meets the floor, the chair, or the bed.
