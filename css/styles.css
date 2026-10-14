@@ -919,7 +919,7 @@ body[data-home-version="home2"] .home-screen {
 }
 
 .duration-custom {
-  cursor: text;
+  cursor: pointer;
 }
 
 .duration-input-wrap {
@@ -932,16 +932,31 @@ body[data-home-version="home2"] .home-screen {
   letter-spacing: 0;
 }
 
-.duration-input-wrap input {
-  width: 41px;
+.duration-input-wrap select {
+  width: 44px;
   height: 23px;
   border: 0;
   border-bottom: 1px solid rgba(218, 166, 98, 0.28);
   border-radius: 0;
+  appearance: none;
   background: transparent;
   color: var(--cream);
   font-size: 0.68rem;
   text-align: center;
+  text-align-last: center;
+  cursor: pointer;
+}
+
+.duration-input-wrap select:focus-visible {
+  border-bottom-color: rgba(218, 166, 98, 0.76);
+  outline: 0;
+}
+
+.duration-select-arrow {
+  margin-left: -0.15rem;
+  color: rgba(244, 229, 207, 0.58);
+  font-size: 0.72rem;
+  pointer-events: none;
 }
 
 .opening-options {
@@ -1081,6 +1096,14 @@ body[data-home-version="home2"] .home-screen {
   font-size: 0.69rem;
   line-height: 1.4;
   text-align: left;
+}
+
+.duration-error.is-visible {
+  padding: 0.58rem 0.68rem;
+  border: 1px solid rgba(231, 176, 92, 0.2);
+  border-radius: 9px;
+  background: rgba(231, 176, 92, 0.07);
+  color: rgba(245, 205, 143, 0.92);
 }
 
 .practice-begin-btn {
@@ -1832,7 +1855,7 @@ body[data-home-version="home2"] .home-screen {
 
 .page-notes .notes-actions {
   width: min(100%, 236px);
-  gap: 8.6rem;
+  gap: 1rem;
 }
 
 .notes-actions .page-cta,
@@ -1852,16 +1875,23 @@ body[data-home-version="home2"] .home-screen {
   text-indent: 0.17em;
 }
 
-.page-notes .notes-actions .page-cta,
-.page-notes .notes-actions .text-link {
+.page-notes .notes-actions .notes-add-btn {
   border-color: rgba(203, 139, 72, 0.9);
   background:
-    linear-gradient(180deg, rgba(20, 11, 8, 0.9) 0%, rgba(10, 7, 6, 0.94) 100%);
+    linear-gradient(180deg, rgba(171, 79, 48, 0.98) 0%, rgba(113, 45, 29, 0.98) 100%);
   box-shadow:
-    0 0 0 1px rgba(203, 139, 72, 0.18) inset,
+    inset 0 1px 0 rgba(255, 229, 196, 0.2),
     0 14px 30px rgba(0, 0, 0, 0.34),
-    0 0 34px rgba(151, 84, 36, 0.12);
-  color: rgba(246, 218, 169, 0.94);
+    0 0 34px rgba(151, 84, 36, 0.18);
+  color: #fff8f0;
+}
+
+.page-notes .notes-actions .notes-read-btn {
+  min-height: 42px;
+  border-color: rgba(203, 139, 72, 0.46);
+  background: rgba(13, 8, 6, 0.32);
+  box-shadow: inset 0 0 0 1px rgba(203, 139, 72, 0.06);
+  color: rgba(246, 218, 169, 0.82);
 }
 
 .notes-title {

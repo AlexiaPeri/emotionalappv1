@@ -133,8 +133,11 @@
               <label class="duration-choice duration-custom" for="duration-custom-input">
                 <span class="duration-value" id="duration-custom-label">Custom</span>
                 <span class="duration-input-wrap">
-                  <input id="duration-custom-input" type="number" min="3" max="60" step="1" inputmode="numeric" placeholder="3–60">
+                  <select id="duration-custom-input" aria-label="Custom practice duration">
+                    <option value="10">10</option>
+                  </select>
                   <span>min</span>
+                  <span class="duration-select-arrow" aria-hidden="true">⌄</span>
                 </span>
               </label>
             </div>
@@ -176,7 +179,7 @@
               <span class="setup-switch" aria-hidden="true"></span>
             </label>
 
-            <p class="duration-error" id="duration-error"></p>
+            <p class="duration-error" id="duration-error" role="status" aria-live="polite"></p>
 
             <button class="page-cta practice-begin-btn" id="practice-begin-btn" type="button">Begin practice</button>
           </div>

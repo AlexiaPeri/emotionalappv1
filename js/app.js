@@ -705,6 +705,31 @@ function getSelectedDurationMinutes() {
   return value;
 }
 
+function populateCustomDurationOptions() {
+  if (!dom.durationCustomInput) return;
+  const selectedValue = Number(dom.durationCustomInput.value) || 10;
+  dom.durationCustomInput.innerHTML = "";
+  for (let minutes = 3; minutes <= 60; minutes += 1) {
+    const option = document.createElement("option");
+    option.value = String(minutes);
+    option.textContent = String(minutes);
+    dom.durationCustomInput.appendChild(option);
+  }
+  dom.durationCustomInput.value = String(Math.min(60, Math.max(3, selectedValue)));
+}
+
+function showPracticeSetupError(message) {
+  if (!dom.durationError) return;
+  dom.durationError.textContent = message;
+  dom.durationError.classList.add("is-visible");
+}
+
+function clearPracticeSetupError() {
+  if (!dom.durationError) return;
+  dom.durationError.textContent = "";
+  dom.durationError.classList.remove("is-visible");
+}
+
 function updateDurationControls(showError = false) {
   const duration = getSelectedDurationMinutes();
   const isCustom = state.durationMode === "custom";
@@ -715,7 +740,11 @@ function updateDurationControls(showError = false) {
   dom.durationCustomInput?.closest(".duration-choice")?.classList.toggle("is-selected", isCustom);
 
   if (dom.durationError) {
-    dom.durationError.textContent = showError && hasInvalidCustom ? t("durationError") : "";
+    if (showError && hasInvalidCustom) {
+      showPracticeSetupError(t("durationError"));
+    } else if (!hasInvalidCustom) {
+      clearPracticeSetupError();
+    }
   }
 }
 
@@ -894,8 +923,12 @@ function showPracticeSetup(message = "") {
   document.body.classList.remove("session-active", "session-complete", "session-open");
   updateDurationControls();
   updateOpeningControls();
-  if (dom.practiceBeginButton) dom.practiceBeginButton.disabled = false;
-  if (dom.durationError) dom.durationError.textContent = message;
+  if (dom.practiceBeginButton) {
+    dom.practiceBeginButton.disabled = false;
+    dom.practiceBeginButton.textContent = t("practiceStart");
+  }
+  if (message) showPracticeSetupError(message);
+  else clearPracticeSetupError();
   updateButton();
 }
 
@@ -1274,8 +1307,10 @@ function startVoiceCapture() {
 }
 
 async function startTimedSession() {
+  clearPracticeSetupError();
   if (!state.speechAvailable) {
     setStatus(t("noChrome"));
+    showPracticeSetupError(t("speechUnavailableVisible"));
     return;
   }
   if (state.isActive || state.sessionPhase === "timed" || state.sessionPhase === "open") return;
@@ -1287,11 +1322,11 @@ async function startTimedSession() {
   }
 
   if (!GUIDANCE_AUDIO[state.openingMode]) {
-    if (dom.durationError) dom.durationError.textContent = t("guidedReleaseMissing");
+    showPracticeSetupError(t("guidedReleaseMissing"));
     return;
   }
   if (state.movementRemindersEnabled && MOVEMENT_REMINDER_AUDIO.length === 0) {
-    if (dom.durationError) dom.durationError.textContent = t("movementRemindersMissing");
+    showPracticeSetupError(t("movementRemindersMissing"));
     return;
   }
 
@@ -1300,8 +1335,11 @@ async function startTimedSession() {
   const openingCycleId = state.openingCycleId + 1;
   state.openingCycleId = openingCycleId;
   setSessionFocusMode(true);
-  if (dom.durationError) dom.durationError.textContent = "";
-  if (dom.practiceBeginButton) dom.practiceBeginButton.disabled = true;
+  clearPracticeSetupError();
+  if (dom.practiceBeginButton) {
+    dom.practiceBeginButton.disabled = true;
+    dom.practiceBeginButton.textContent = t("practiceStarting");
+  }
   showPracticeOpening();
 
   const openingFinished = await playGuidanceAudio(state.openingMode, t("openingPreparing"));
@@ -1732,6 +1770,7 @@ function initSettings() {
 }
 
 function initUi() {
+  populateCustomDurationOptions();
   dom.langButtons.forEach((button) => {
     button.addEventListener("click", () => setLang(button.dataset.lang));
   });
@@ -1759,16 +1798,9 @@ function initUi() {
   }
   if (dom.durationCustomInput) {
     dom.durationCustomInput.addEventListener("focus", () => setDurationMode("custom"));
-    dom.durationCustomInput.addEventListener("input", () => {
+    dom.durationCustomInput.addEventListener("change", () => {
       state.durationMode = "custom";
-      updateDurationControls(true);
-    });
-    dom.durationCustomInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        state.durationMode = "custom";
-        startTimedSession();
-      }
+      updateDurationControls();
     });
   }
   if (dom.durationCustomChoice) {
@@ -1786,14 +1818,14 @@ function initUi() {
   dom.openingChoices.forEach((button) => {
     button.addEventListener("click", () => {
       state.openingMode = button.dataset.opening;
-      if (dom.durationError) dom.durationError.textContent = "";
+      clearPracticeSetupError();
       updateOpeningControls();
     });
   });
   if (dom.movementRemindersInput) {
     dom.movementRemindersInput.addEventListener("change", () => {
       state.movementRemindersEnabled = dom.movementRemindersInput.checked;
-      if (dom.durationError) dom.durationError.textContent = "";
+      clearPracticeSetupError();
       updateOpeningControls();
     });
   }
