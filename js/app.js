@@ -149,11 +149,11 @@ const state = {
 const BREATHING_PHASE_MS = 5000;
 const BREATHING_PHASE_COUNT = 60;
 const GUIDANCE_AUDIO = {
-  quiet: "./audio/02-opening-quiet.m4a",
+  quiet: new URL("../audio/02-opening-quiet.m4a", import.meta.url).href,
   guided: null,
-  full: "./audio/01-opening-full.m4a",
-  closing: "./audio/03-closing.m4a",
-  grounding: "./audio/04-grounding.m4a",
+  full: new URL("../audio/01-opening-full.m4a", import.meta.url).href,
+  closing: new URL("../audio/03-closing.m4a", import.meta.url).href,
+  grounding: new URL("../audio/04-grounding.m4a", import.meta.url).href,
 };
 const MOVEMENT_REMINDER_AUDIO = [];
 
