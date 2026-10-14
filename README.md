@@ -25,6 +25,10 @@ Emerge rassemble plusieurs mécanismes étudiés séparément : mettre les émot
 ## Fonctionnement du prototype web actuel
 
 ```
+Choix de la durée, de l'opening et des rappels corporels
+       ↓
+Opening préenregistré avec la voix d'Alexia
+       ↓
 Utilisateur parle
        ↓
 Speech Recognition (Web Speech API, Chrome)
@@ -37,6 +41,8 @@ L'app répète vocalement
 ```
 
 **Pas de texte affiché pendant la session.** L'expérience de pratique reste vocale.
+
+La page de préparation web reprend le parcours de l'app native : 15 minutes ou 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, puis Movement reminders facultatifs et désactivés par défaut. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels restent volontairement indisponibles jusqu'à l'ajout de leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
 
 ---
 

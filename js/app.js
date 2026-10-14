@@ -21,6 +21,8 @@ const dom = {
   practiceSetup: document.getElementById("practice-setup"),
   practiceLive: document.getElementById("practice-live"),
   durationPrompt: document.getElementById("duration-prompt"),
+  setupSubtitle: document.getElementById("setup-subtitle"),
+  durationSectionLabel: document.getElementById("duration-section-label"),
   durationRecommendedButton: document.getElementById("duration-recommended-btn"),
   durationRecommendedValue: document.getElementById("duration-recommended-value"),
   durationRecommendedLabel: document.getElementById("duration-recommended-label"),
@@ -30,7 +32,21 @@ const dom = {
   durationCustomInput: document.getElementById("duration-custom-input"),
   durationCustomChoice: document.querySelector(".duration-custom"),
   durationCustomLabel: document.getElementById("duration-custom-label"),
+  openingSectionLabel: document.getElementById("opening-section-label"),
+  openingChoices: document.querySelectorAll(".opening-choice"),
+  openingQuietTitle: document.getElementById("opening-quiet-title"),
+  openingQuietDetail: document.getElementById("opening-quiet-detail"),
+  openingGuidedTitle: document.getElementById("opening-guided-title"),
+  openingGuidedDetail: document.getElementById("opening-guided-detail"),
+  openingFullTitle: document.getElementById("opening-full-title"),
+  openingFullDetail: document.getElementById("opening-full-detail"),
+  movementRemindersInput: document.getElementById("movement-reminders-input"),
+  movementRemindersTitle: document.getElementById("movement-reminders-title"),
+  movementRemindersDetail: document.getElementById("movement-reminders-detail"),
   durationError: document.getElementById("duration-error"),
+  practiceBeginButton: document.getElementById("practice-begin-btn"),
+  openingGuidanceStatus: document.getElementById("opening-guidance-status"),
+  openingGuidanceLabel: document.getElementById("opening-guidance-label"),
   practiceFocus: document.getElementById("practice-focus"),
   practiceLiveCopy: document.getElementById("practice-live-copy"),
   closingPanel: document.getElementById("closing-panel"),
@@ -104,8 +120,12 @@ const state = {
   recognitionCycleId: 0,
   recognitionHandledCycleId: -1,
   currentAudio: null,
+  recordedAudioResolve: null,
   durationMode: "recommended",
   selectedDurationMinutes: 15,
+  openingMode: localStorage.getItem(STORAGE_KEYS.firstSessionComplete) === "true" ? "quiet" : "full",
+  movementRemindersEnabled: false,
+  openingCycleId: 0,
   sessionPhase: "setup",
   sessionTimerId: null,
   sessionEndsAt: 0,
@@ -128,6 +148,14 @@ const state = {
 
 const BREATHING_PHASE_MS = 5000;
 const BREATHING_PHASE_COUNT = 60;
+const GUIDANCE_AUDIO = {
+  quiet: "./audio/02-opening-quiet.m4a",
+  guided: null,
+  full: "./audio/01-opening-full.m4a",
+  closing: "./audio/03-closing.m4a",
+  grounding: "./audio/04-grounding.m4a",
+};
+const MOVEMENT_REMINDER_AUDIO = [];
 
 function t(key) {
   return I18N[state.lang][key] || key;
@@ -270,11 +298,24 @@ function updatePageCopy() {
   if (dom.homeStartBtn) dom.homeStartBtn.textContent = t("homeCta");
   if (dom.introTitle) dom.introTitle.textContent = t("introTitle");
   if (dom.durationPrompt) dom.durationPrompt.textContent = t("durationPrompt");
+  if (dom.setupSubtitle) dom.setupSubtitle.textContent = t("setupSubtitle");
+  if (dom.durationSectionLabel) dom.durationSectionLabel.textContent = t("durationSectionLabel");
   if (dom.durationRecommendedValue) dom.durationRecommendedValue.textContent = t("durationRecommendedValue");
   if (dom.durationRecommendedLabel) dom.durationRecommendedLabel.textContent = t("durationRecommendedLabel");
   if (dom.durationTestValue) dom.durationTestValue.textContent = t("durationTestValue");
   if (dom.durationTestLabel) dom.durationTestLabel.textContent = t("durationTestLabel");
   if (dom.durationCustomLabel) dom.durationCustomLabel.textContent = t("durationCustomLabel");
+  if (dom.openingSectionLabel) dom.openingSectionLabel.textContent = t("openingSectionLabel");
+  if (dom.openingQuietTitle) dom.openingQuietTitle.textContent = t("openingQuietTitle");
+  if (dom.openingQuietDetail) dom.openingQuietDetail.textContent = t("openingQuietDetail");
+  if (dom.openingGuidedTitle) dom.openingGuidedTitle.textContent = t("openingGuidedTitle");
+  if (dom.openingGuidedDetail) dom.openingGuidedDetail.textContent = t("openingGuidedDetail");
+  if (dom.openingFullTitle) dom.openingFullTitle.textContent = t("openingFullTitle");
+  if (dom.openingFullDetail) dom.openingFullDetail.textContent = t("openingFullDetail");
+  if (dom.movementRemindersTitle) dom.movementRemindersTitle.textContent = t("movementRemindersTitle");
+  if (dom.movementRemindersDetail) dom.movementRemindersDetail.textContent = t("movementRemindersDetail");
+  if (dom.practiceBeginButton) dom.practiceBeginButton.textContent = t("practiceStart");
+  if (dom.openingGuidanceLabel) dom.openingGuidanceLabel.textContent = t("openingPreparing");
   if (dom.practiceLiveCopy) dom.practiceLiveCopy.textContent = t("practiceLiveCopy");
   if (dom.closingCopy) dom.closingCopy.textContent = t("closingCopy");
   if (dom.practiceKickoff) dom.practiceKickoff.textContent = t("practiceTitle");
@@ -313,6 +354,7 @@ function updatePageCopy() {
   if (dom.howTitle) dom.howTitle.textContent = t("howTitle");
   if (dom.howText) dom.howText.innerHTML = t("howText");
   updateDurationControls();
+  updateOpeningControls();
   renderIntro();
   renderFaq();
   renderSupportTips();
@@ -414,7 +456,18 @@ function cancelBreathingForNavigation(nextView) {
   clearBreathingGuidance();
 }
 
+function cancelOpeningForNavigation(nextView) {
+  if (state.sessionPhase !== "opening" || nextView === "practice") return;
+  state.openingCycleId += 1;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  state.sessionPhase = "setup";
+  setSessionFocusMode(false);
+  updateButton();
+}
+
 function cancelGuidanceForNavigation(nextView) {
+  cancelOpeningForNavigation(nextView);
   cancelClosingForNavigation(nextView);
   cancelGroundingForNavigation(nextView);
   cancelBreathingForNavigation(nextView);
@@ -648,7 +701,7 @@ function getSelectedDurationMinutes() {
   if (state.durationMode === "test") return 10 / 60;
   if (state.durationMode === "recommended") return 15;
   const value = Number(dom.durationCustomInput?.value);
-  if (!Number.isFinite(value) || value < 12 || value > 60) return null;
+  if (!Number.isFinite(value) || value < 3 || value > 60) return null;
   return value;
 }
 
@@ -663,6 +716,17 @@ function updateDurationControls(showError = false) {
 
   if (dom.durationError) {
     dom.durationError.textContent = showError && hasInvalidCustom ? t("durationError") : "";
+  }
+}
+
+function updateOpeningControls() {
+  dom.openingChoices.forEach((button) => {
+    const selected = button.dataset.opening === state.openingMode;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-checked", selected ? "true" : "false");
+  });
+  if (dom.movementRemindersInput) {
+    dom.movementRemindersInput.checked = state.movementRemindersEnabled;
   }
 }
 
@@ -820,6 +884,7 @@ function showPracticeSetup(message = "") {
   clearSessionTimer();
   if (dom.practiceSetup) dom.practiceSetup.hidden = false;
   if (dom.practiceLive) dom.practiceLive.hidden = true;
+  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = true;
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
   if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
@@ -828,6 +893,8 @@ function showPracticeSetup(message = "") {
   if (dom.groundButton) dom.groundButton.hidden = true;
   document.body.classList.remove("session-active", "session-complete", "session-open");
   updateDurationControls();
+  updateOpeningControls();
+  if (dom.practiceBeginButton) dom.practiceBeginButton.disabled = false;
   if (dom.durationError) dom.durationError.textContent = message;
   updateButton();
 }
@@ -835,12 +902,25 @@ function showPracticeSetup(message = "") {
 function showPracticeLive() {
   if (dom.practiceSetup) dom.practiceSetup.hidden = true;
   if (dom.practiceLive) dom.practiceLive.hidden = false;
+  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = true;
   if (dom.practiceFocus) dom.practiceFocus.hidden = false;
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
   if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = false;
   if (dom.groundButton) dom.groundButton.hidden = false;
+}
+
+function showPracticeOpening() {
+  if (dom.practiceSetup) dom.practiceSetup.hidden = true;
+  if (dom.practiceLive) dom.practiceLive.hidden = false;
+  if (dom.practiceFocus) dom.practiceFocus.hidden = false;
+  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = false;
+  if (dom.closingPanel) dom.closingPanel.hidden = true;
+  if (dom.postClosingActions) dom.postClosingActions.hidden = true;
+  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
+  if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
+  if (dom.groundButton) dom.groundButton.hidden = true;
 }
 
 function stopSpeechPlayback() {
@@ -854,6 +934,51 @@ function stopSpeechPlayback() {
     }
     state.currentAudio = null;
   }
+  if (state.recordedAudioResolve) {
+    const resolvePlayback = state.recordedAudioResolve;
+    state.recordedAudioResolve = null;
+    resolvePlayback(false);
+  }
+}
+
+function playRecordedAudio(source) {
+  stopSpeechPlayback();
+  if (!source) return Promise.resolve(false);
+
+  return new Promise((resolve) => {
+    const audio = new Audio(source);
+    let settled = false;
+
+    const finish = (completed) => {
+      if (settled) return;
+      settled = true;
+      audio.onended = null;
+      audio.onerror = null;
+      if (state.currentAudio === audio) state.currentAudio = null;
+      if (state.recordedAudioResolve === finish) state.recordedAudioResolve = null;
+      resolve(completed);
+    };
+
+    state.currentAudio = audio;
+    state.recordedAudioResolve = finish;
+    audio.preload = "auto";
+    audio.onended = () => finish(true);
+    audio.onerror = () => finish(false);
+    audio.play().catch(() => finish(false));
+  });
+}
+
+async function playGuidanceAudio(kind, statusMessage) {
+  const source = GUIDANCE_AUDIO[kind];
+  if (!source) return false;
+
+  state.isSpeaking = true;
+  updateButton();
+  setStatus(statusMessage);
+  const completed = await playRecordedAudio(source);
+  state.isSpeaking = false;
+  updateButton();
+  return completed;
 }
 
 function getModelId() {
@@ -1148,7 +1273,7 @@ function startVoiceCapture() {
   }
 }
 
-function startTimedSession() {
+async function startTimedSession() {
   if (!state.speechAvailable) {
     setStatus(t("noChrome"));
     return;
@@ -1161,7 +1286,37 @@ function startTimedSession() {
     return;
   }
 
+  if (!GUIDANCE_AUDIO[state.openingMode]) {
+    if (dom.durationError) dom.durationError.textContent = t("guidedReleaseMissing");
+    return;
+  }
+  if (state.movementRemindersEnabled && MOVEMENT_REMINDER_AUDIO.length === 0) {
+    if (dom.durationError) dom.durationError.textContent = t("movementRemindersMissing");
+    return;
+  }
+
   state.selectedDurationMinutes = duration;
+  state.sessionPhase = "opening";
+  const openingCycleId = state.openingCycleId + 1;
+  state.openingCycleId = openingCycleId;
+  setSessionFocusMode(true);
+  if (dom.durationError) dom.durationError.textContent = "";
+  if (dom.practiceBeginButton) dom.practiceBeginButton.disabled = true;
+  showPracticeOpening();
+
+  const openingFinished = await playGuidanceAudio(state.openingMode, t("openingPreparing"));
+  if (state.openingCycleId !== openingCycleId || state.sessionPhase !== "opening") return;
+  if (!openingFinished) {
+    showPracticeSetup(t("openingPlaybackError"));
+    return;
+  }
+
+  localStorage.setItem(STORAGE_KEYS.firstSessionComplete, "true");
+  state.openingMode = "quiet";
+  beginTimedPractice(duration);
+}
+
+function beginTimedPractice(duration) {
   state.sessionPhase = "timed";
   state.sessionEndsAt = Date.now() + duration * 60 * 1000;
   setSessionFocusMode(true);
@@ -1205,7 +1360,11 @@ async function beginClosingGuidance() {
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
   if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   setStatus(t("closingStatus"));
-  await speakText(t("closingAudioText"), t("closingStatus"));
+  const closingFinished = await playGuidanceAudio("closing", t("closingStatus"));
+  if (state.closingCancelled || state.sessionPhase !== "closing") return;
+  if (!closingFinished) {
+    await speakText(t("closingAudioText"), t("closingStatus"));
+  }
   if (state.closingCancelled || state.sessionPhase !== "closing") return;
   showPostClosingActions();
 }
@@ -1384,7 +1543,11 @@ async function triggerGrounding() {
   if (dom.groundActions) dom.groundActions.hidden = true;
   setView("ground");
   setStatus(t("groundStatus"));
-  await speakText(t("groundText"), t("groundStatus"));
+  const groundingFinished = await playGuidanceAudio("grounding", t("groundStatus"));
+  if (state.groundingCycleId !== groundingCycleId || state.view !== "ground") return;
+  if (!groundingFinished) {
+    await speakText(t("groundText"), t("groundStatus"));
+  }
   if (state.groundingCycleId !== groundingCycleId || state.view !== "ground") return;
   showSupportChoices();
 }
@@ -1586,7 +1749,6 @@ function initUi() {
   if (dom.durationRecommendedButton) {
     dom.durationRecommendedButton.addEventListener("click", () => {
       setDurationMode("recommended");
-      startTimedSession();
     });
   }
   if (dom.durationTestButton) {
@@ -1618,8 +1780,25 @@ function initUi() {
         updateDurationControls(true);
         return;
       }
-      startTimedSession();
+      updateDurationControls();
     });
+  }
+  dom.openingChoices.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.openingMode = button.dataset.opening;
+      if (dom.durationError) dom.durationError.textContent = "";
+      updateOpeningControls();
+    });
+  });
+  if (dom.movementRemindersInput) {
+    dom.movementRemindersInput.addEventListener("change", () => {
+      state.movementRemindersEnabled = dom.movementRemindersInput.checked;
+      if (dom.durationError) dom.durationError.textContent = "";
+      updateOpeningControls();
+    });
+  }
+  if (dom.practiceBeginButton) {
+    dom.practiceBeginButton.addEventListener("click", startTimedSession);
   }
   if (dom.groundButton) {
     dom.groundButton.addEventListener("click", triggerGrounding);

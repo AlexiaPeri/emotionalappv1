@@ -68,7 +68,7 @@ export const WRITING_EN_FINAL_TEXTS = {
   "duration-setup": lines(
     I18N.en.durationPrompt,
     `${I18N.en.durationRecommendedValue} · ${I18N.en.durationRecommendedLabel}`,
-    `${I18N.en.durationCustomLabel} · 12–60 min`,
+    `${I18N.en.durationCustomLabel} · 3–60 min`,
     `Error: ${I18N.en.durationError}`,
   ),
   "live-practice": lines(
@@ -478,13 +478,13 @@ export const WRITING_ITEMS = [
       fr: lines(
         I18N.fr.durationPrompt,
         `${I18N.fr.durationRecommendedValue} · ${I18N.fr.durationRecommendedLabel}`,
-        `${I18N.fr.durationCustomLabel} · 12–60 min`,
+        `${I18N.fr.durationCustomLabel} · 3–60 min`,
         `Erreur : ${I18N.fr.durationError}`,
       ),
       en: lines(
         I18N.en.durationPrompt,
         `${I18N.en.durationRecommendedValue} · ${I18N.en.durationRecommendedLabel}`,
-        `${I18N.en.durationCustomLabel} · 12–60 min`,
+        `${I18N.en.durationCustomLabel} · 3–60 min`,
         `Error: ${I18N.en.durationError}`,
       ),
     },

@@ -120,26 +120,73 @@
         <div class="page-card practice-card practice-chamber">
           <div class="practice-setup" id="practice-setup">
             <p class="duration-prompt" id="duration-prompt">Let's begin.</p>
+            <p class="setup-subtitle" id="setup-subtitle">A few choices, then the space is yours.</p>
 
-            <div class="duration-options" role="group" aria-label="Durée de session">
+            <p class="setup-section-label" id="duration-section-label">Duration</p>
+
+            <div class="duration-options" role="group" aria-label="Practice duration">
               <button class="duration-choice is-selected" id="duration-recommended-btn" type="button">
                 <span class="duration-value" id="duration-recommended-value">15 min</span>
-                <span class="duration-label" id="duration-recommended-label">Recommended</span>
+                <span class="duration-label" id="duration-recommended-label">Suggested</span>
               </button>
 
               <label class="duration-choice duration-custom" for="duration-custom-input">
                 <span class="duration-value" id="duration-custom-label">Custom</span>
                 <span class="duration-input-wrap">
-                  <input id="duration-custom-input" type="number" min="12" max="60" step="1" inputmode="numeric" placeholder="12-60">
+                  <input id="duration-custom-input" type="number" min="3" max="60" step="1" inputmode="numeric" placeholder="3–60">
                   <span>min</span>
                 </span>
               </label>
             </div>
 
+            <p class="setup-section-label opening-section-label" id="opening-section-label">Opening</p>
+
+            <div class="opening-options" role="radiogroup" aria-label="Opening guidance">
+              <button class="opening-choice" data-opening="quiet" role="radio" aria-checked="false" type="button">
+                <span class="opening-radio" aria-hidden="true"></span>
+                <span class="opening-copy">
+                  <strong id="opening-quiet-title">Quiet arrival</strong>
+                  <small id="opening-quiet-detail">Short · simple and neutral</small>
+                </span>
+              </button>
+
+              <button class="opening-choice" data-opening="guided" role="radio" aria-checked="false" type="button">
+                <span class="opening-radio" aria-hidden="true"></span>
+                <span class="opening-copy">
+                  <strong id="opening-guided-title">Guided release</strong>
+                  <small id="opening-guided-detail">Short · more energising</small>
+                </span>
+              </button>
+
+              <button class="opening-choice" data-opening="full" role="radio" aria-checked="true" type="button">
+                <span class="opening-radio" aria-hidden="true"></span>
+                <span class="opening-copy">
+                  <strong id="opening-full-title">Full guidance</strong>
+                  <small id="opening-full-detail">Long · the original introduction</small>
+                </span>
+              </button>
+            </div>
+
+            <label class="movement-reminders-choice" for="movement-reminders-input">
+              <span class="movement-reminders-copy">
+                <strong id="movement-reminders-title">Movement reminders</strong>
+                <small id="movement-reminders-detail">Throughout the practice</small>
+              </span>
+              <input id="movement-reminders-input" type="checkbox">
+              <span class="setup-switch" aria-hidden="true"></span>
+            </label>
+
             <p class="duration-error" id="duration-error"></p>
+
+            <button class="page-cta practice-begin-btn" id="practice-begin-btn" type="button">Begin practice</button>
           </div>
 
           <div class="practice-live" id="practice-live" hidden>
+            <div class="opening-guidance-status" id="opening-guidance-status" hidden>
+              <span class="opening-guidance-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              <span id="opening-guidance-label">Preparing to begin…</span>
+            </div>
+
             <div class="practice-focus" id="practice-focus">
               <img class="practice-focus-logo" src="./assets/logo.png" alt="">
               <p id="practice-live-copy">Tout ce que tu ressens est bienvenu</p>
