@@ -42,7 +42,7 @@ L'app répète vocalement
 
 **Pas de texte affiché pendant la session.** L'expérience de pratique reste vocale.
 
-La page de préparation web reprend le parcours de l'app native : 15 minutes ou 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, puis Movement reminders facultatifs et désactivés par défaut. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels restent volontairement indisponibles jusqu'à l'ajout de leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
+La page de préparation web reprend le parcours de l'app native : 15 minutes ou un picker personnalisé de 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, puis Movement reminders facultatifs et désactivés par défaut. Les écrans d'opening, de closing, de grounding, d'après-session et de fin reprennent aussi les mêmes contrôles que l'iPhone, notamment `Skip guidance`, `Continue the session`, `Finish the session` et `End the guidance`. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels attendent encore leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
 
 ---
 

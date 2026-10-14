@@ -32,6 +32,12 @@ const dom = {
   durationCustomInput: document.getElementById("duration-custom-input"),
   durationCustomChoice: document.querySelector(".duration-custom"),
   durationCustomLabel: document.getElementById("duration-custom-label"),
+  durationCustomDetail: document.getElementById("duration-custom-detail"),
+  customDurationModal: document.getElementById("custom-duration-modal"),
+  customDurationTitle: document.getElementById("custom-duration-title"),
+  customDurationRange: document.getElementById("custom-duration-range"),
+  customDurationCancel: document.getElementById("custom-duration-cancel"),
+  customDurationDone: document.getElementById("custom-duration-done"),
   openingSectionLabel: document.getElementById("opening-section-label"),
   openingChoices: document.querySelectorAll(".opening-choice"),
   openingQuietTitle: document.getElementById("opening-quiet-title"),
@@ -45,18 +51,28 @@ const dom = {
   movementRemindersDetail: document.getElementById("movement-reminders-detail"),
   durationError: document.getElementById("duration-error"),
   practiceBeginButton: document.getElementById("practice-begin-btn"),
+  openingStage: document.getElementById("opening-stage"),
+  openingStageTitle: document.getElementById("opening-stage-title"),
   openingGuidanceStatus: document.getElementById("opening-guidance-status"),
   openingGuidanceLabel: document.getElementById("opening-guidance-label"),
+  openingMissingPanel: document.getElementById("opening-missing-panel"),
+  openingMissingTitle: document.getElementById("opening-missing-title"),
+  openingMissingCopy: document.getElementById("opening-missing-copy"),
+  openingSkipButton: document.getElementById("opening-skip-btn"),
+  openingBeginButton: document.getElementById("opening-begin-btn"),
   practiceFocus: document.getElementById("practice-focus"),
   practiceLiveCopy: document.getElementById("practice-live-copy"),
   closingPanel: document.getElementById("closing-panel"),
   closingCopy: document.getElementById("closing-copy"),
+  closingGuidanceStatus: document.getElementById("closing-guidance-status"),
+  closingGuidanceLabel: document.getElementById("closing-guidance-label"),
   postClosingActions: document.getElementById("post-closing-actions"),
+  postClosingCopy: document.getElementById("post-closing-copy"),
   sessionWriteButton: document.getElementById("session-write-btn"),
   sessionWriteLabel: document.getElementById("session-write-label"),
   sessionEndButton: document.getElementById("session-end-btn"),
   sessionContinueButton: document.getElementById("session-continue-btn"),
-  sessionCloseInline: document.getElementById("session-close-inline"),
+  sessionFinishButton: document.getElementById("session-finish-btn"),
   practiceSupportActions: document.getElementById("practice-support-actions"),
   practiceRemindButton: document.getElementById("practice-remind-btn"),
   practiceCompleteButton: document.getElementById("practice-complete-btn"),
@@ -77,6 +93,8 @@ const dom = {
   breathingEndButton: document.getElementById("breathing-end-btn"),
   endScreen: document.getElementById("end-screen"),
   endMessage: document.getElementById("end-message"),
+  endFaqButton: document.getElementById("end-faq-btn"),
+  endEmergeButton: document.getElementById("end-emerge-btn"),
   reflectTitle: document.getElementById("reflect-title"),
   reflectForm: document.getElementById("reflect-form"),
   reflectInput: document.getElementById("reflect-input"),
@@ -85,6 +103,7 @@ const dom = {
   notesListTitle: document.getElementById("notes-list-title"),
   notesAddTodayButton: document.getElementById("notes-add-today-btn"),
   notesReadButton: document.getElementById("notes-read-btn"),
+  notesPrivacy: document.getElementById("notes-privacy"),
   notesEmpty: document.getElementById("notes-empty"),
   notesList: document.getElementById("notes-list"),
   status: document.getElementById("status"),
@@ -305,6 +324,11 @@ function updatePageCopy() {
   if (dom.durationTestValue) dom.durationTestValue.textContent = t("durationTestValue");
   if (dom.durationTestLabel) dom.durationTestLabel.textContent = t("durationTestLabel");
   if (dom.durationCustomLabel) dom.durationCustomLabel.textContent = t("durationCustomLabel");
+  if (dom.durationCustomDetail) dom.durationCustomDetail.textContent = t("durationCustomDetail");
+  if (dom.customDurationTitle) dom.customDurationTitle.textContent = t("customDurationTitle");
+  if (dom.customDurationRange) dom.customDurationRange.textContent = t("customDurationRange");
+  if (dom.customDurationCancel) dom.customDurationCancel.textContent = t("customDurationCancel");
+  if (dom.customDurationDone) dom.customDurationDone.textContent = t("customDurationDone");
   if (dom.openingSectionLabel) dom.openingSectionLabel.textContent = t("openingSectionLabel");
   if (dom.openingQuietTitle) dom.openingQuietTitle.textContent = t("openingQuietTitle");
   if (dom.openingQuietDetail) dom.openingQuietDetail.textContent = t("openingQuietDetail");
@@ -316,14 +340,24 @@ function updatePageCopy() {
   if (dom.movementRemindersDetail) dom.movementRemindersDetail.textContent = t("movementRemindersDetail");
   if (dom.practiceBeginButton) dom.practiceBeginButton.textContent = t("practiceStart");
   if (dom.openingGuidanceLabel) dom.openingGuidanceLabel.textContent = t("openingPreparing");
+  if (dom.openingMissingTitle) dom.openingMissingTitle.textContent = t("openingMissingTitle");
+  if (dom.openingMissingCopy) {
+    dom.openingMissingCopy.textContent = state.openingMode === "guided"
+      ? t("openingMissingCopy")
+      : t("openingRecordingUnavailable");
+  }
+  if (dom.openingSkipButton) dom.openingSkipButton.textContent = t("openingSkipCta");
+  if (dom.openingBeginButton) dom.openingBeginButton.textContent = t("openingMissingBeginCta");
   if (dom.practiceLiveCopy) dom.practiceLiveCopy.textContent = t("practiceLiveCopy");
   if (dom.closingCopy) dom.closingCopy.textContent = t("closingCopy");
+  if (dom.closingGuidanceLabel) dom.closingGuidanceLabel.textContent = t("closingGuidanceLabel");
+  if (dom.postClosingCopy) dom.postClosingCopy.textContent = t("postClosingCopy");
   if (dom.practiceKickoff) dom.practiceKickoff.textContent = t("practiceTitle");
   if (dom.practiceTitle) dom.practiceTitle.textContent = t("practiceTitle");
   if (dom.practiceLead) dom.practiceLead.textContent = t("practiceLead");
   if (dom.practiceBody) dom.practiceBody.textContent = t("practiceBody");
   if (dom.sessionContinueButton) dom.sessionContinueButton.textContent = t("sessionContinuePracticeCta");
-  if (dom.sessionCloseInline) dom.sessionCloseInline.textContent = t("sessionClosePracticeCta");
+  if (dom.sessionFinishButton) dom.sessionFinishButton.textContent = t("sessionClosePracticeCta");
   if (dom.sessionWriteLabel) dom.sessionWriteLabel.textContent = t("sessionWriteCta");
   if (dom.sessionEndButton) dom.sessionEndButton.textContent = t("sessionEndCta");
   if (dom.practiceRemindButton) dom.practiceRemindButton.textContent = t("remindPracticeCta");
@@ -340,6 +374,8 @@ function updatePageCopy() {
   if (dom.supportContinueButton) dom.supportContinueButton.textContent = t("supportContinueCta");
   if (dom.breathingEndButton) dom.breathingEndButton.textContent = t("breathingEndCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
+  if (dom.endFaqButton) dom.endFaqButton.textContent = t("endFaqCta");
+  if (dom.endEmergeButton) dom.endEmergeButton.textContent = t("endEmergeCta");
   if (dom.reflectTitle) dom.reflectTitle.textContent = t("reflectTitle");
   if (dom.reflectInput) dom.reflectInput.placeholder = t("reflectPlaceholder");
   if (dom.reflectSendButton) dom.reflectSendButton.setAttribute("aria-label", t("reflectSendLabel"));
@@ -348,6 +384,7 @@ function updatePageCopy() {
   if (dom.notesAddTodayButton) dom.notesAddTodayButton.textContent = t("notesAddTodayCta");
   if (dom.notesReadButton) dom.notesReadButton.textContent = t("notesReadCta");
   if (dom.notesEmpty) dom.notesEmpty.textContent = t("notesEmpty");
+  if (dom.notesPrivacy) dom.notesPrivacy.textContent = t("notesPrivacy");
   if (dom.faqIntro) dom.faqIntro.textContent = t("faqIntro");
   if (dom.contactTitle) dom.contactTitle.textContent = t("contactTitle");
   if (dom.contactCta) dom.contactCta.textContent = t("contactCta");
@@ -389,7 +426,6 @@ function cancelClosingForNavigation(nextView) {
   document.body.classList.remove("session-closing", "session-complete");
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
 
   if (nextView === "practice") {
     state.sessionPhase = "open";
@@ -707,12 +743,12 @@ function getSelectedDurationMinutes() {
 
 function populateCustomDurationOptions() {
   if (!dom.durationCustomInput) return;
-  const selectedValue = Number(dom.durationCustomInput.value) || 10;
+  const selectedValue = Number(dom.durationCustomInput.value) || 20;
   dom.durationCustomInput.innerHTML = "";
   for (let minutes = 3; minutes <= 60; minutes += 1) {
     const option = document.createElement("option");
     option.value = String(minutes);
-    option.textContent = String(minutes);
+    option.textContent = `${minutes} min`;
     dom.durationCustomInput.appendChild(option);
   }
   dom.durationCustomInput.value = String(Math.min(60, Math.max(3, selectedValue)));
@@ -737,7 +773,7 @@ function updateDurationControls(showError = false) {
 
   dom.durationRecommendedButton?.classList.toggle("is-selected", state.durationMode === "recommended");
   dom.durationTestButton?.classList.toggle("is-selected", state.durationMode === "test");
-  dom.durationCustomInput?.closest(".duration-choice")?.classList.toggle("is-selected", isCustom);
+  dom.durationCustomChoice?.classList.toggle("is-selected", isCustom);
 
   if (dom.durationError) {
     if (showError && hasInvalidCustom) {
@@ -762,6 +798,28 @@ function updateOpeningControls() {
 function setDurationMode(mode) {
   state.durationMode = mode;
   updateDurationControls();
+}
+
+function openCustomDurationPicker() {
+  if (!dom.customDurationModal) return;
+  dom.customDurationModal.hidden = false;
+  document.body.classList.add("modal-open");
+  dom.durationCustomInput?.focus();
+  const selectedOption = dom.durationCustomInput?.selectedOptions?.[0];
+  selectedOption?.scrollIntoView({ block: "center" });
+}
+
+function closeCustomDurationPicker() {
+  if (!dom.customDurationModal) return;
+  dom.customDurationModal.hidden = true;
+  document.body.classList.remove("modal-open");
+  dom.durationCustomChoice?.focus();
+}
+
+function confirmCustomDuration() {
+  state.durationMode = "custom";
+  updateDurationControls();
+  closeCustomDurationPicker();
 }
 
 function updateSessionTimer() {
@@ -913,10 +971,9 @@ function showPracticeSetup(message = "") {
   clearSessionTimer();
   if (dom.practiceSetup) dom.practiceSetup.hidden = false;
   if (dom.practiceLive) dom.practiceLive.hidden = true;
-  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = true;
+  if (dom.openingStage) dom.openingStage.hidden = true;
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   if (dom.practiceFocus) dom.practiceFocus.hidden = false;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
@@ -935,23 +992,37 @@ function showPracticeSetup(message = "") {
 function showPracticeLive() {
   if (dom.practiceSetup) dom.practiceSetup.hidden = true;
   if (dom.practiceLive) dom.practiceLive.hidden = false;
-  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = true;
+  if (dom.openingStage) dom.openingStage.hidden = true;
   if (dom.practiceFocus) dom.practiceFocus.hidden = false;
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = false;
   if (dom.groundButton) dom.groundButton.hidden = false;
 }
 
-function showPracticeOpening() {
+function getOpeningScreenTitle() {
+  if (state.openingMode === "full") return t("openingFullTitle");
+  if (state.openingMode === "guided") return t("openingGuidedTitle");
+  return t("openingQuietScreenTitle");
+}
+
+function showPracticeOpening(recordingMissing = false) {
   if (dom.practiceSetup) dom.practiceSetup.hidden = true;
   if (dom.practiceLive) dom.practiceLive.hidden = false;
-  if (dom.practiceFocus) dom.practiceFocus.hidden = false;
-  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = false;
+  if (dom.openingStage) dom.openingStage.hidden = false;
+  if (dom.openingStageTitle) dom.openingStageTitle.textContent = getOpeningScreenTitle();
+  if (dom.openingMissingCopy) {
+    dom.openingMissingCopy.textContent = state.openingMode === "guided"
+      ? t("openingMissingCopy")
+      : t("openingRecordingUnavailable");
+  }
+  if (dom.practiceFocus) dom.practiceFocus.hidden = true;
+  if (dom.openingGuidanceStatus) dom.openingGuidanceStatus.hidden = recordingMissing;
+  if (dom.openingMissingPanel) dom.openingMissingPanel.hidden = !recordingMissing;
+  if (dom.openingSkipButton) dom.openingSkipButton.hidden = recordingMissing;
+  if (dom.openingBeginButton) dom.openingBeginButton.hidden = !recordingMissing;
   if (dom.closingPanel) dom.closingPanel.hidden = true;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
 }
@@ -1321,15 +1392,6 @@ async function startTimedSession() {
     return;
   }
 
-  if (!GUIDANCE_AUDIO[state.openingMode]) {
-    showPracticeSetupError(t("guidedReleaseMissing"));
-    return;
-  }
-  if (state.movementRemindersEnabled && MOVEMENT_REMINDER_AUDIO.length === 0) {
-    showPracticeSetupError(t("movementRemindersMissing"));
-    return;
-  }
-
   state.selectedDurationMinutes = duration;
   state.sessionPhase = "opening";
   const openingCycleId = state.openingCycleId + 1;
@@ -1340,18 +1402,28 @@ async function startTimedSession() {
     dom.practiceBeginButton.disabled = true;
     dom.practiceBeginButton.textContent = t("practiceStarting");
   }
-  showPracticeOpening();
+  const hasOpeningRecording = Boolean(GUIDANCE_AUDIO[state.openingMode]);
+  showPracticeOpening(!hasOpeningRecording);
+
+  if (!hasOpeningRecording) return;
 
   const openingFinished = await playGuidanceAudio(state.openingMode, t("openingPreparing"));
   if (state.openingCycleId !== openingCycleId || state.sessionPhase !== "opening") return;
   if (!openingFinished) {
-    showPracticeSetup(t("openingPlaybackError"));
+    showPracticeOpening(true);
     return;
   }
 
+  completeOpeningGuidance();
+}
+
+function completeOpeningGuidance() {
+  if (state.sessionPhase !== "opening") return;
+  state.openingCycleId += 1;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
   localStorage.setItem(STORAGE_KEYS.firstSessionComplete, "true");
-  state.openingMode = "quiet";
-  beginTimedPractice(duration);
+  beginTimedPractice(state.selectedDurationMinutes);
 }
 
 function beginTimedPractice(duration) {
@@ -1361,7 +1433,6 @@ function beginTimedPractice(duration) {
   document.body.classList.add("session-active");
   document.body.classList.remove("session-complete", "session-open", "session-closing");
   showPracticeLive();
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   if (dom.transcript) dom.transcript.innerHTML = "";
   startVoiceCapture();
 
@@ -1395,8 +1466,8 @@ async function beginClosingGuidance() {
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
   if (dom.closingPanel) dom.closingPanel.hidden = false;
+  if (dom.closingGuidanceStatus) dom.closingGuidanceStatus.hidden = false;
   if (dom.postClosingActions) dom.postClosingActions.hidden = true;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   setStatus(t("closingStatus"));
   const closingFinished = await playGuidanceAudio("closing", t("closingStatus"));
   if (state.closingCancelled || state.sessionPhase !== "closing") return;
@@ -1419,7 +1490,6 @@ function showPostClosingActions() {
   if (dom.postClosingActions) dom.postClosingActions.hidden = false;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = true;
   if (dom.groundButton) dom.groundButton.hidden = true;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   setStatus(t("postClosingStatus"));
 }
 
@@ -1436,8 +1506,15 @@ function continueSession() {
   if (dom.practiceFocus) dom.practiceFocus.hidden = false;
   if (dom.practiceSupportActions) dom.practiceSupportActions.hidden = false;
   if (dom.groundButton) dom.groundButton.hidden = false;
-  if (dom.sessionCloseInline) dom.sessionCloseInline.hidden = true;
   startVoiceCapture();
+}
+
+function finishClosingGuidance() {
+  if (state.sessionPhase !== "closing") return;
+  state.closingCancelled = true;
+  stopSpeechPlayback();
+  state.isSpeaking = false;
+  showPostClosingActions();
 }
 
 function closeSession() {
@@ -1797,22 +1874,20 @@ function initUi() {
     });
   }
   if (dom.durationCustomInput) {
-    dom.durationCustomInput.addEventListener("focus", () => setDurationMode("custom"));
-    dom.durationCustomInput.addEventListener("change", () => {
-      state.durationMode = "custom";
-      updateDurationControls();
-    });
+    dom.durationCustomInput.addEventListener("change", () => clearPracticeSetupError());
   }
   if (dom.durationCustomChoice) {
-    dom.durationCustomChoice.addEventListener("click", (event) => {
-      if (event.target === dom.durationCustomInput) return;
-      state.durationMode = "custom";
-      if (getSelectedDurationMinutes() === null) {
-        dom.durationCustomInput?.focus();
-        updateDurationControls(true);
-        return;
-      }
-      updateDurationControls();
+    dom.durationCustomChoice.addEventListener("click", openCustomDurationPicker);
+  }
+  if (dom.customDurationCancel) {
+    dom.customDurationCancel.addEventListener("click", closeCustomDurationPicker);
+  }
+  if (dom.customDurationDone) {
+    dom.customDurationDone.addEventListener("click", confirmCustomDuration);
+  }
+  if (dom.customDurationModal) {
+    dom.customDurationModal.addEventListener("click", (event) => {
+      if (event.target === dom.customDurationModal) closeCustomDurationPicker();
     });
   }
   dom.openingChoices.forEach((button) => {
@@ -1831,6 +1906,12 @@ function initUi() {
   }
   if (dom.practiceBeginButton) {
     dom.practiceBeginButton.addEventListener("click", startTimedSession);
+  }
+  if (dom.openingSkipButton) {
+    dom.openingSkipButton.addEventListener("click", completeOpeningGuidance);
+  }
+  if (dom.openingBeginButton) {
+    dom.openingBeginButton.addEventListener("click", completeOpeningGuidance);
   }
   if (dom.groundButton) {
     dom.groundButton.addEventListener("click", triggerGrounding);
@@ -1862,8 +1943,8 @@ function initUi() {
   if (dom.sessionContinueButton) {
     dom.sessionContinueButton.addEventListener("click", continueSession);
   }
-  if (dom.sessionCloseInline) {
-    dom.sessionCloseInline.addEventListener("click", closeSession);
+  if (dom.sessionFinishButton) {
+    dom.sessionFinishButton.addEventListener("click", finishClosingGuidance);
   }
   if (dom.sessionWriteButton) {
     dom.sessionWriteButton.addEventListener("click", () => openReflectPage());
@@ -1884,14 +1965,11 @@ function initUi() {
       }
     });
   }
-  if (dom.endScreen) {
-    dom.endScreen.addEventListener("click", openFaqFromEnd);
-    dom.endScreen.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        openFaqFromEnd();
-      }
-    });
+  if (dom.endFaqButton) {
+    dom.endFaqButton.addEventListener("click", openFaqFromEnd);
+  }
+  if (dom.endEmergeButton) {
+    dom.endEmergeButton.addEventListener("click", () => setView("practice"));
   }
   if (dom.notesAddTodayButton) {
     dom.notesAddTodayButton.addEventListener("click", openTodayNotesEditor);
@@ -1916,6 +1994,11 @@ function initUi() {
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && state.view === "breathing") {
       setView("support");
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && dom.customDurationModal && !dom.customDurationModal.hidden) {
+      closeCustomDurationPicker();
     }
   });
   window.addEventListener("pagehide", () => {

@@ -130,16 +130,10 @@
                 <span class="duration-label" id="duration-recommended-label">Suggested</span>
               </button>
 
-              <label class="duration-choice duration-custom" for="duration-custom-input">
+              <button class="duration-choice duration-custom" id="duration-custom-btn" type="button">
                 <span class="duration-value" id="duration-custom-label">Custom</span>
-                <span class="duration-input-wrap">
-                  <select id="duration-custom-input" aria-label="Custom practice duration">
-                    <option value="10">10</option>
-                  </select>
-                  <span>min</span>
-                  <span class="duration-select-arrow" aria-hidden="true">⌄</span>
-                </span>
-              </label>
+                <span class="duration-label" id="duration-custom-detail">3–60 min</span>
+              </button>
             </div>
 
             <p class="setup-section-label opening-section-label" id="opening-section-label">Opening</p>
@@ -185,9 +179,22 @@
           </div>
 
           <div class="practice-live" id="practice-live" hidden>
-            <div class="opening-guidance-status" id="opening-guidance-status" hidden>
-              <span class="opening-guidance-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-              <span id="opening-guidance-label">Preparing to begin…</span>
+            <div class="opening-stage" id="opening-stage" hidden>
+              <img class="opening-stage-logo" src="./assets/logo.png" alt="">
+              <h2 class="opening-stage-title" id="opening-stage-title">Take a moment</h2>
+
+              <div class="opening-guidance-status" id="opening-guidance-status">
+                <span class="opening-guidance-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                <span id="opening-guidance-label">Preparing to begin…</span>
+              </div>
+
+              <div class="missing-recording-panel" id="opening-missing-panel" hidden>
+                <strong>⌁ <span id="opening-missing-title">Voice recording to be added</span></strong>
+                <p id="opening-missing-copy">The guided release recording has not been added yet.</p>
+              </div>
+
+              <button class="text-link guidance-skip-btn" id="opening-skip-btn" type="button">Skip guidance</button>
+              <button class="page-cta guidance-begin-btn" id="opening-begin-btn" type="button" hidden>Begin practice</button>
             </div>
 
             <div class="practice-focus" id="practice-focus">
@@ -199,18 +206,25 @@
             <div id="transcript-area" aria-live="polite"></div>
 
             <div class="closing-panel" id="closing-panel" hidden>
+              <img class="closing-logo" src="./assets/logo.png" alt="">
               <p id="closing-copy">Closing guidance.</p>
-              <button class="text-link session-continue-btn" id="session-continue-btn" type="button">continuer la pratique</button>
+              <div class="closing-guidance-status" id="closing-guidance-status">
+                <span class="opening-guidance-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+                <span id="closing-guidance-label">Closing guidance</span>
+              </div>
+              <div class="closing-actions">
+                <button class="text-link session-continue-btn" id="session-continue-btn" type="button">Continue the session</button>
+                <button class="page-cta session-finish-btn" id="session-finish-btn" type="button">Finish the session</button>
+              </div>
             </div>
 
-            <button class="text-link session-close-inline" id="session-close-inline" type="button" hidden>terminer la pratique</button>
-
             <div class="post-closing-actions" id="post-closing-actions" hidden>
-              <button class="text-link session-write-btn" id="session-write-btn" type="button">
+              <p class="post-closing-copy" id="post-closing-copy">Take all the time you need.</p>
+              <button class="page-cta session-write-btn" id="session-write-btn" type="button">
                 <span id="session-write-label">Reflect</span>
                 <span class="session-write-emoji" aria-hidden="true">✍️</span>
               </button>
-              <button class="page-cta session-end-btn" id="session-end-btn" type="button">End</button>
+              <button class="text-link session-end-btn" id="session-end-btn" type="button">End</button>
             </div>
 
             <div class="practice-support-actions" id="practice-support-actions">
@@ -267,8 +281,12 @@
       </section>
 
       <section class="page page-end" data-view="end" hidden>
-        <div class="visual-screen end-screen" id="end-screen" role="button" tabindex="0">
+        <div class="visual-screen end-screen" id="end-screen">
           <div class="end-message" id="end-message">Thank you ♥</div>
+          <div class="end-actions">
+            <button class="text-link" id="end-faq-btn" type="button">FAQ</button>
+            <button class="page-cta" id="end-emerge-btn" type="button">Back to Emerge</button>
+          </div>
         </div>
       </section>
 
@@ -287,8 +305,10 @@
       <section class="page page-notes" data-view="notes" hidden>
         <div class="page-card notes-card">
           <div class="notes-actions">
+            <h2 class="page-title notes-home-title" id="notes-title">My Notes</h2>
             <button class="page-cta notes-add-btn" id="notes-add-today-btn" type="button">Add notes for today</button>
             <button class="text-link notes-read-btn" id="notes-read-btn" type="button">Read my notes</button>
+            <p class="notes-privacy" id="notes-privacy">Your notes stay on this device.</p>
           </div>
         </div>
       </section>
@@ -313,6 +333,20 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <div class="custom-duration-modal" id="custom-duration-modal" hidden>
+    <div class="custom-duration-dialog" role="dialog" aria-modal="true" aria-labelledby="custom-duration-title">
+      <h2 id="custom-duration-title">Choose your practice</h2>
+      <p id="custom-duration-range">3 to 60 minutes</p>
+      <div class="duration-wheel-wrap">
+        <select id="duration-custom-input" size="5" aria-label="Practice duration"></select>
+      </div>
+      <div class="custom-duration-actions">
+        <button class="text-link" id="custom-duration-cancel" type="button">Cancel</button>
+        <button class="page-cta" id="custom-duration-done" type="button">Done</button>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="./js/app.js"></script>
