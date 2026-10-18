@@ -1,0 +1,12 @@
+.git/
+.vercel/
+node_modules/
+dist/
+notes/
+tmp/
+ios/
+docs/
+*.DS_Store
+assets/end-bg-candidate-*.png
+assets/end-bg-saved-version-1.png
+assets/integration-design-*.png

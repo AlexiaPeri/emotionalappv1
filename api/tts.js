@@ -52,6 +52,7 @@ function configuredOrigins() {
     "https://alexiaperi.github.io",
     "https://alexiaperineau.com",
     "https://www.alexiaperineau.com",
+    "https://emotionalappv1.vercel.app",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
   ];
