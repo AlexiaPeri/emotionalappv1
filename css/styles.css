@@ -136,6 +136,52 @@ button {
   display: block;
 }
 
+.gemini-settings {
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid rgba(218, 166, 98, 0.16);
+}
+
+.gemini-settings strong,
+.gemini-settings p {
+  display: block;
+}
+
+.gemini-settings strong {
+  margin-top: 0.35rem;
+  color: var(--cream);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.gemini-settings p {
+  margin-top: 0.35rem;
+  color: rgba(244, 229, 207, 0.58);
+  font-size: 0.78rem;
+  line-height: 1.42;
+}
+
+.settings-eyebrow {
+  color: var(--gold);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.voice-lab-link {
+  display: inline-flex;
+  margin-top: 0.72rem;
+  padding-bottom: 0.16rem;
+  border-bottom: 1px solid rgba(218, 166, 98, 0.42);
+  color: var(--gold-soft);
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.legacy-voice-settings {
+  margin-top: 0.9rem;
+  opacity: 0.78;
+}
+
 .settings-panel label {
   display: block;
   margin: 0.75rem 0 0.3rem;

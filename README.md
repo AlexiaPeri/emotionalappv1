@@ -35,7 +35,7 @@ Speech Recognition (Web Speech API, Chrome)
        ↓
 Swap de pronoms (FR: je→tu / EN: I→you)
        ↓
-ElevenLabs TTS (voix naturelle)
+ElevenLabs TTS (fallback actuel pendant la sélection Gemini)
        ↓
 L'app répète vocalement
 ```
@@ -52,9 +52,11 @@ La page de préparation web reprend le parcours de l'app native : 15 minutes ou 
 - **Core portable** : copy, presets de voix, transformation de texte
 - **Pages** : accueil, pratique, FAQ, contact
 - **Reconnaissance vocale** : Web Speech API (Chrome uniquement)
-- **TTS** : ElevenLabs API (`eleven_turbo_v2_5`) + fallback voix navigateur
-- **Hébergement** : GitHub Pages
-- **Clé API** : stockée en localStorage côté client, jamais en dur dans le code
+- **TTS cible** : Gemini 3.8 Flash TTS, avec comparaison Flash / Flash-Lite et fallback temporaire ElevenLabs / navigateur
+- **Hébergement actuel** : GitHub Pages pour le frontend ; migration vers un hébergement avec fonction serveur nécessaire pour Gemini
+- **Clé Gemini** : exclusivement côté serveur via `GEMINI_API_KEY`, jamais dans le navigateur ni dans Git
+
+La transition Gemini est préparée séparément avant de remplacer le moteur de la pratique : le comparateur privé `voice-lab.html` permet d'écouter quatre voix féminines et quatre voix masculines avec les mêmes phrases, puis sauvegarde le choix localement. L'endpoint `api/tts.js` limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. Après validation d'une voix, cet endpoint sera connecté à la boucle de répétition avec lecture en streaming.
 
 Cette stack sert à tester les parcours et le design. Elle n'est pas l'architecture vocale prévue pour l'app iPhone finale.
 
@@ -179,7 +181,17 @@ python3 -m http.server 8000
 
 ---
 
-## Configuration ElevenLabs
+## Configuration Gemini TTS
+
+1. Copier les noms de variables de `.env.example` dans les secrets de l'hébergeur.
+2. Définir `GEMINI_API_KEY` avec la clé du projet Google AI Studio Emerge.
+3. Ne jamais ajouter une vraie clé à `.env.example`, au dépôt Git ou au code navigateur.
+4. Déployer le projet sur Vercel : le frontend Vite et la fonction `/api/tts` sont configurés par `vercel.json`.
+5. Ouvrir `/voice-lab.html` et comparer les voix avant d'activer Gemini dans la pratique principale.
+
+Le serveur autorise actuellement `gemini-3.8-flash-tts` et `gemini-3.8-flash-lite-tts`, avec une limite de 320 caractères par génération et un rate limit de précaution.
+
+## Configuration ElevenLabs — fallback temporaire
 
 - Clé gratuite sur [elevenlabs.io](https://elevenlabs.io) — 10 000 caractères/mois
 - Plan gratuit : voix pré-définies uniquement (Adam, Antoni, Daniel, Josh…)

@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emerge — Let it out</title>
-  <link rel="preconnect" href="https://api.elevenlabs.io">
   <link rel="preload" href="./assets/end-bg-thank-you-v1.png" as="image">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
@@ -25,22 +24,31 @@
     <button class="settings-btn" id="settings-toggle" title="Réglages">⚙️</button>
 
     <div class="settings-panel" id="settings-panel">
-      <label>Clé API ElevenLabs (optionnel)</label>
-      <input type="password" id="api-key" placeholder="sk_..." autocomplete="off">
-      <div class="hint-text">Gratuit sur <a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">elevenlabs.io</a> — pour une voix naturelle</div>
+      <div class="gemini-settings">
+        <span class="settings-eyebrow">New repetition voice</span>
+        <strong>Gemini 3.8 TTS</strong>
+        <p>Compare warm female and male voices before choosing the final voice.</p>
+        <a class="voice-lab-link" href="./voice-lab.html">Open voice comparison</a>
+      </div>
 
-      <label>Voix FR</label>
-      <select id="voice-select-fr">
+      <div class="legacy-voice-settings">
+        <p class="settings-eyebrow">Temporary fallback</p>
+        <label>Clé API ElevenLabs (optionnel)</label>
+        <input type="password" id="api-key" placeholder="sk_..." autocomplete="off">
+        <div class="hint-text">Gratuit sur <a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">elevenlabs.io</a> — pour une voix naturelle</div>
+
+        <label>Voix FR</label>
+        <select id="voice-select-fr">
         <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
         <option value="XB0fDUnXU5powFXDhCwa">Charlotte</option>
         <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
         <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
         <option value="ErXwobaYiN019PkySvjV">Antoni</option>
         <option value="onwK4e9ZLuTAKqWW03F9">Daniel</option>
-      </select>
+        </select>
 
-      <label>Voix EN</label>
-      <select id="voice-select-en">
+        <label>Voix EN</label>
+        <select id="voice-select-en">
         <option value="ErXwobaYiN019PkySvjV">Antoni</option>
         <option value="pNInz6obpgDQGcFmaJgB">Adam</option>
         <option value="onwK4e9ZLuTAKqWW03F9">Daniel</option>
@@ -49,9 +57,10 @@
         <option value="EXAVITQu4vr4xnSDxMaL">Bella</option>
         <option value="XB0fDUnXU5powFXDhCwa">Charlotte</option>
         <option value="MF3mGyEYCl7XYWbV9V6O">Elli</option>
-      </select>
+        </select>
 
-      <div id="tts-mode"></div>
+        <div id="tts-mode"></div>
+      </div>
 
       <div class="how-it-works">
         <div class="how-title" id="how-title">Le geste</div>
