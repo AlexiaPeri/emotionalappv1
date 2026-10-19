@@ -35,14 +35,14 @@ Speech Recognition (Web Speech API, Chrome)
        ↓
 Swap de pronoms (FR: je→tu / EN: I→you)
        ↓
-ElevenLabs TTS (fallback actuel pendant la sélection Gemini)
+Gemini 3.8 Flash-Lite TTS en streaming PCM 24 kHz
        ↓
 L'app répète vocalement
 ```
 
 **Pas de texte affiché pendant la session.** L'expérience de pratique reste vocale.
 
-La page de préparation web reprend le parcours de l'app native : 15 minutes ou un picker personnalisé de 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, puis Movement reminders facultatifs et désactivés par défaut. Les écrans d'opening, de closing, de grounding, d'après-session et de fin reprennent aussi les mêmes contrôles que l'iPhone, notamment `Skip guidance`, `Continue the session`, `Finish the session` et `End the guidance`. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels attendent encore leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
+La page de préparation web reprend le parcours de l'app native : 15 minutes ou un picker personnalisé de 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, choix de la voix de répétition (Callirrhoe ou Umbriel), puis Movement reminders facultatifs et désactivés par défaut. Les écrans d'opening, de closing, de grounding, d'après-session et de fin reprennent aussi les mêmes contrôles que l'iPhone, notamment `Skip guidance`, `Continue the session`, `Finish the session` et `End the guidance`. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels attendent encore leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
 
 ---
 
@@ -52,12 +52,12 @@ La page de préparation web reprend le parcours de l'app native : 15 minutes ou 
 - **Core portable** : copy, presets de voix, transformation de texte
 - **Pages** : accueil, pratique, FAQ, contact
 - **Reconnaissance vocale** : Web Speech API (Chrome uniquement)
-- **TTS cible** : Gemini 3.8 Flash-Lite TTS (choix provisoire pour réduire latence et coût), avec fallback temporaire ElevenLabs / navigateur
-- **Voix candidates** : Callirrhoe (féminine) et Umbriel (masculine), à confirmer après comparaison complète
+- **TTS de répétition** : Gemini 3.8 Flash-Lite TTS en streaming PCM 24 kHz ; voix navigateur uniquement en secours technique
+- **Voix finales** : Callirrhoe (féminine) et Umbriel (masculine), choisies avant la pratique et mémorisées sur l'appareil
 - **Hébergement actuel** : Vercel pour le frontend et la fonction Gemini sécurisée
 - **Clé Gemini** : exclusivement côté serveur via `GEMINI_API_KEY`, jamais dans le navigateur ni dans Git
 
-La transition Gemini est préparée séparément avant de remplacer le moteur de la pratique : le comparateur privé `voice-lab.html` permet d'écouter quatre voix féminines et quatre voix masculines avec les mêmes phrases, puis sauvegarde le choix localement. Les extraits réussis sont conservés dans le cache du navigateur afin de ne pas consommer à nouveau le quota pour une combinaison déjà écoutée. L'endpoint `api/tts.js` limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. Après validation des deux voix, cet endpoint sera connecté à la boucle de répétition avec lecture en streaming et choix féminin/masculin dans l'interface.
+La boucle de répétition utilise désormais l'endpoint sécurisé `api/tts.js`, qui limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. L'audio est renvoyé progressivement sous forme de PCM mono 24 kHz et joué avec Web Audio dès l'arrivée des premiers morceaux afin de réduire la latence. Le comparateur privé `voice-lab.html` reste disponible pour les essais ; ses extraits réussis sont conservés dans le cache du navigateur.
 
 Cette stack sert à tester les parcours et le design. Elle n'est pas l'architecture vocale prévue pour l'app iPhone finale.
 
@@ -164,19 +164,14 @@ Les données de recherche restent locales jusqu'à leur export et ne doivent jam
 
 ## Lancer en local
 
-### Option Live Server (recommandé)
-
-1. Ouvre le dossier dans VS Code
-2. Clic droit sur `index.html` → **Open with Live Server**
-3. Chrome s'ouvre sur `http://127.0.0.1:5500`
-4. Entre ta clé ElevenLabs dans ⚙️ (une seule fois, sauvegardée)
-
-### Option terminal
+### Interface locale
 
 ```bash
-python3 -m http.server 8000
-# puis ouvrir http://localhost:8000
+npm install
+npm run dev
 ```
+
+Vite affiche ensuite l'URL locale. La fonction vocale sécurisée est disponible sur la version Vercel ; pour la tester localement, utiliser `vercel dev` avec les variables d'environnement du projet.
 
 > ⚠️ Ne pas ouvrir `index.html` directement en `file://` — les modules JS sont bloqués par le navigateur.
 
@@ -188,20 +183,11 @@ python3 -m http.server 8000
 2. Définir `GEMINI_API_KEY` avec la clé du projet Google AI Studio Emerge.
 3. Ne jamais ajouter une vraie clé à `.env.example`, au dépôt Git ou au code navigateur.
 4. Déployer le projet sur Vercel : le frontend Vite et la fonction `/api/tts` sont configurés par `vercel.json`.
-5. Ouvrir `/voice-lab.html` et comparer les voix avant d'activer Gemini dans la pratique principale.
+5. Ouvrir `/voice-lab.html` pour comparer les voix, ou lancer une pratique pour tester Callirrhoe et Umbriel en streaming.
 
 Le serveur autorise actuellement `gemini-3.8-flash-tts` et `gemini-3.8-flash-lite-tts`, avec une limite de 320 caractères par génération et un rate limit de précaution.
 
 Le Free Tier Google est insuffisant pour un test complet (actuellement 3 requêtes par minute et 10 par jour pour chaque modèle). La facturation Google doit être activée avant les tests utilisateurs et la mise en production ; le comparateur affiche une erreur explicite lorsque ce quota est atteint.
-
-## Configuration ElevenLabs — fallback temporaire
-
-- Clé gratuite sur [elevenlabs.io](https://elevenlabs.io) — 10 000 caractères/mois
-- Plan gratuit : voix pré-définies uniquement (Adam, Antoni, Daniel, Josh…)
-- Plan Starter (5€/mois) : accès aux voix de la Voice Library (Frederick Surrey, etc.)
-- La clé est entrée une fois dans ⚙️ et reste en localStorage
-
----
 
 ## Swap de pronoms
 
@@ -233,8 +219,8 @@ Le Free Tier Google est insuffisant pour un test complet (actuellement 3 requêt
 ### v1 — Actuel ✅
 - [x] Reconnaissance vocale continue (sans bouton par phrase)
 - [x] Swap de pronoms FR ↔ EN
-- [x] ElevenLabs TTS + fallback navigateur
-- [x] Sélection de langue et de voix
+- [x] Gemini Flash-Lite streaming + fallback navigateur
+- [x] Sélection Callirrhoe / Umbriel mémorisée localement
 - [x] Expérience voice-only (pas de texte affiché)
 - [x] Code refactorisé (HTML / CSS / JS séparés)
 

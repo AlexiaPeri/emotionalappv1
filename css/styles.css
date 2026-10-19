@@ -928,6 +928,10 @@ body[data-home-version="home2"] .home-screen {
   margin-top: 0.6rem;
 }
 
+.voice-section-label {
+  margin-top: 0.55rem;
+}
+
 .duration-options {
   display: grid;
   width: 100%;
@@ -976,6 +980,42 @@ body[data-home-version="home2"] .home-screen {
   display: grid;
   width: 100%;
   gap: 0.46rem;
+}
+
+.practice-voice-options {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.46rem;
+}
+
+.practice-voice-choice {
+  display: grid;
+  min-height: 61px;
+  align-content: center;
+  gap: 0.22rem;
+  padding: 0.68rem;
+  border: 1px solid rgba(218, 166, 98, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--cream);
+  text-align: center;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.practice-voice-choice.is-selected {
+  border-color: rgba(218, 166, 98, 0.46);
+  background: rgba(178, 82, 49, 0.17);
+}
+
+.practice-voice-choice strong {
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.practice-voice-choice small {
+  color: rgba(244, 229, 207, 0.5);
+  font-size: 0.61rem;
 }
 
 .opening-choice {

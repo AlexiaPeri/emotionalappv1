@@ -1,6 +1,6 @@
 "use strict";
 
-import { I18N, STORAGE_KEYS, VOICE_PRESETS } from "./app-config.js";
+import { I18N, STORAGE_KEYS } from "./app-config.js";
 import { convertPronouns, isLikelyEcho, normalizeForMatch, normalizeSpokenText } from "./pronouns.js";
 
 const dom = {
@@ -46,6 +46,10 @@ const dom = {
   openingGuidedDetail: document.getElementById("opening-guided-detail"),
   openingFullTitle: document.getElementById("opening-full-title"),
   openingFullDetail: document.getElementById("opening-full-detail"),
+  voiceSectionLabel: document.getElementById("voice-section-label"),
+  voiceChoices: document.querySelectorAll(".practice-voice-choice"),
+  voiceFemaleTitle: document.getElementById("voice-female-title"),
+  voiceMaleTitle: document.getElementById("voice-male-title"),
   movementRemindersInput: document.getElementById("movement-reminders-input"),
   movementRemindersTitle: document.getElementById("movement-reminders-title"),
   movementRemindersDetail: document.getElementById("movement-reminders-detail"),
@@ -119,11 +123,12 @@ const dom = {
   contactCta: document.getElementById("contact-cta"),
   howTitle: document.getElementById("how-title"),
   howText: document.getElementById("how-text"),
-  apiKey: document.getElementById("api-key"),
-  voiceSelectFr: document.getElementById("voice-select-fr"),
-  voiceSelectEn: document.getElementById("voice-select-en"),
-  ttsMode: document.getElementById("tts-mode"),
+  settingsVoiceSummary: document.getElementById("tts-voice-summary"),
 };
+
+const GEMINI_TTS_MODEL = "gemini-3.8-flash-lite-tts";
+const GEMINI_REPETITION_VOICES = new Set(["Callirrhoe", "Umbriel"]);
+const savedRepetitionVoice = localStorage.getItem(STORAGE_KEYS.geminiVoice);
 
 const state = {
   lang: getInitialLang(),
@@ -140,10 +145,14 @@ const state = {
   recognitionHandledCycleId: -1,
   currentAudio: null,
   recordedAudioResolve: null,
+  speechAbortController: null,
+  streamingSources: new Set(),
+  streamingPlaybackResolve: null,
   durationMode: "recommended",
   selectedDurationMinutes: 15,
   openingMode: localStorage.getItem(STORAGE_KEYS.firstSessionComplete) === "true" ? "quiet" : "full",
   movementRemindersEnabled: false,
+  repetitionVoice: GEMINI_REPETITION_VOICES.has(savedRepetitionVoice) ? savedRepetitionVoice : "Callirrhoe",
   openingCycleId: 0,
   sessionPhase: "setup",
   sessionTimerId: null,
@@ -189,10 +198,6 @@ function setStatus(message) {
   dom.status.textContent = message;
 }
 
-function getVoiceSelect() {
-  return state.lang === "fr" ? dom.voiceSelectFr : dom.voiceSelectEn;
-}
-
 function updateButton() {
   if (!dom.micButton) return;
   dom.micButton.classList.remove("active", "speaking");
@@ -208,17 +213,6 @@ function updateButton() {
       label.textContent = state.view === "practice" ? t("practiceStart") : t("navStart");
     }
   }
-}
-
-function renderVoiceOptions(select, presets) {
-  if (!select) return;
-  select.innerHTML = "";
-  presets.forEach((preset) => {
-    const option = document.createElement("option");
-    option.value = preset.value;
-    option.textContent = preset.label;
-    select.appendChild(option);
-  });
 }
 
 function renderFaq() {
@@ -336,6 +330,9 @@ function updatePageCopy() {
   if (dom.openingGuidedDetail) dom.openingGuidedDetail.textContent = t("openingGuidedDetail");
   if (dom.openingFullTitle) dom.openingFullTitle.textContent = t("openingFullTitle");
   if (dom.openingFullDetail) dom.openingFullDetail.textContent = t("openingFullDetail");
+  if (dom.voiceSectionLabel) dom.voiceSectionLabel.textContent = t("voiceSectionLabel");
+  if (dom.voiceFemaleTitle) dom.voiceFemaleTitle.textContent = t("voiceFemaleTitle");
+  if (dom.voiceMaleTitle) dom.voiceMaleTitle.textContent = t("voiceMaleTitle");
   if (dom.movementRemindersTitle) dom.movementRemindersTitle.textContent = t("movementRemindersTitle");
   if (dom.movementRemindersDetail) dom.movementRemindersDetail.textContent = t("movementRemindersDetail");
   if (dom.practiceBeginButton) dom.practiceBeginButton.textContent = t("practiceStart");
@@ -701,31 +698,6 @@ function renderNotes() {
   });
 }
 
-function getApiKey() {
-  return dom.apiKey.value.trim();
-}
-
-function getVoiceId() {
-  return getVoiceSelect().value;
-}
-
-function buildElevenLabsUrl() {
-  const url = new URL(`https://api.elevenlabs.io/v1/text-to-speech/${getVoiceId()}`);
-  url.searchParams.set("output_format", "mp3_22050_32");
-  url.searchParams.set("optimize_streaming_latency", "4");
-  return url.toString();
-}
-
-function buildVoiceSettings(text) {
-  const density = Math.min(text.length / 240, 1);
-  return {
-    stability: 0.38 + density * 0.08,
-    similarity_boost: 0.84,
-    style: 0.22 + density * 0.18,
-    use_speaker_boost: true,
-  };
-}
-
 function formatSessionTime(ms) {
   const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
   const minutes = Math.floor(totalSeconds / 60);
@@ -793,6 +765,12 @@ function updateOpeningControls() {
   if (dom.movementRemindersInput) {
     dom.movementRemindersInput.checked = state.movementRemindersEnabled;
   }
+  dom.voiceChoices.forEach((button) => {
+    const selected = button.dataset.voice === state.repetitionVoice;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-checked", selected ? "true" : "false");
+  });
+  updateTtsStatus();
 }
 
 function setDurationMode(mode) {
@@ -1029,6 +1007,21 @@ function showPracticeOpening(recordingMissing = false) {
 
 function stopSpeechPlayback() {
   speechSynthesis.cancel();
+  state.speechAbortController?.abort();
+  state.speechAbortController = null;
+  state.streamingSources.forEach((source) => {
+    try {
+      source.stop();
+    } catch {
+      // no-op
+    }
+  });
+  state.streamingSources.clear();
+  if (state.streamingPlaybackResolve) {
+    const resolveStreamingPlayback = state.streamingPlaybackResolve;
+    state.streamingPlaybackResolve = null;
+    resolveStreamingPlayback(false);
+  }
   if (state.currentAudio) {
     try {
       state.currentAudio.pause();
@@ -1085,8 +1078,12 @@ async function playGuidanceAudio(kind, statusMessage) {
   return completed;
 }
 
-function getModelId() {
-  return state.lang === "fr" ? "eleven_multilingual_v2" : "eleven_turbo_v2_5";
+function getSpeechAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  if (!state.audioContext) state.audioContext = new AudioContext();
+  state.audioContext.resume?.();
+  return state.audioContext;
 }
 
 function scheduleRecognitionRestart(delay = 120) {
@@ -1124,153 +1121,113 @@ function pauseRecognitionForTts() {
   }
 }
 
-function playStreamingAudio(response) {
+async function speakGemini(text) {
+  const spokenText = normalizeSpokenText(text);
+  const context = getSpeechAudioContext();
+  if (!context) throw new Error("Web Audio is unavailable.");
+
+  const controller = new AbortController();
+  state.speechAbortController = controller;
+  const response = await fetch("./api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: spokenText,
+      model: GEMINI_TTS_MODEL,
+      voice: state.repetitionVoice,
+      style: "grounded",
+      stream: true,
+    }),
+    signal: controller.signal,
+  });
+
+  if (!response.ok) {
+    const details = await response.json().catch(() => ({}));
+    throw new Error(details.error || `Gemini voice service returned ${response.status}.`);
+  }
+  if (!response.body) throw new Error("Gemini returned no audio stream.");
+
+  const reader = response.body.getReader();
+  let pendingByte = null;
+  let nextStartTime = context.currentTime + 0.025;
+  let streamFinished = false;
+  let activeSourceCount = 0;
+  let settled = false;
+
   return new Promise((resolve, reject) => {
-    const mediaSource = new MediaSource();
-    const audioUrl = URL.createObjectURL(mediaSource);
-    const audio = new Audio();
-    state.currentAudio = audio;
-    audio.preload = "auto";
-    audio.src = audioUrl;
-
-    let sourceBuffer = null;
-    let reader = null;
-    const pendingChunks = [];
-    let streamFinished = false;
-    let playbackStarted = false;
-    let settled = false;
-
-    const cleanup = () => {
+    const finish = (completed) => {
       if (settled) return;
       settled = true;
-      if (state.currentAudio === audio) state.currentAudio = null;
-      URL.revokeObjectURL(audioUrl);
+      if (state.speechAbortController === controller) state.speechAbortController = null;
+      if (state.streamingPlaybackResolve === finish) state.streamingPlaybackResolve = null;
+      if (completed) state.lastSpokenText = spokenText;
+      resolve(completed);
     };
 
     const fail = (error) => {
-      cleanup();
+      if (settled) return;
+      settled = true;
+      if (state.speechAbortController === controller) state.speechAbortController = null;
+      if (state.streamingPlaybackResolve === finish) state.streamingPlaybackResolve = null;
       reject(error);
     };
 
-    const flushQueue = () => {
-      if (!sourceBuffer || sourceBuffer.updating) return;
-      if (pendingChunks.length > 0) {
-        try {
-          sourceBuffer.appendBuffer(pendingChunks.shift());
-          playbackStarted = true;
-        } catch (error) {
-          fail(error);
-        }
-        return;
+    state.streamingPlaybackResolve = finish;
+
+    const schedulePcm = (chunk) => {
+      let bytes = chunk;
+      if (pendingByte !== null) {
+        const joined = new Uint8Array(chunk.byteLength + 1);
+        joined[0] = pendingByte;
+        joined.set(chunk, 1);
+        bytes = joined;
+        pendingByte = null;
+      }
+      if (bytes.byteLength % 2 === 1) {
+        pendingByte = bytes[bytes.byteLength - 1];
+        bytes = bytes.subarray(0, bytes.byteLength - 1);
+      }
+      if (!bytes.byteLength) return;
+
+      const sampleCount = bytes.byteLength / 2;
+      const audioBuffer = context.createBuffer(1, sampleCount, 24000);
+      const channel = audioBuffer.getChannelData(0);
+      const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      for (let index = 0; index < sampleCount; index += 1) {
+        channel[index] = view.getInt16(index * 2, true) / 32768;
       }
 
-      if (streamFinished && mediaSource.readyState === "open") {
-        try {
-          mediaSource.endOfStream();
-        } catch {
-          // no-op
-        }
-      }
+      const source = context.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(context.destination);
+      const startAt = Math.max(nextStartTime, context.currentTime + 0.012);
+      nextStartTime = startAt + audioBuffer.duration;
+      activeSourceCount += 1;
+      state.streamingSources.add(source);
+      source.onended = () => {
+        state.streamingSources.delete(source);
+        activeSourceCount -= 1;
+        if (streamFinished && activeSourceCount === 0) finish(true);
+      };
+      source.start(startAt);
     };
 
-    audio.onended = () => {
-      cleanup();
-      resolve();
-    };
-    audio.onerror = () => {
-      fail(new Error("Streaming audio playback failed"));
-    };
-
-    mediaSource.addEventListener("sourceopen", () => {
+    const pump = async () => {
       try {
-        sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
-        sourceBuffer.mode = "sequence";
-        sourceBuffer.addEventListener("updateend", flushQueue);
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value?.byteLength) schedulePcm(value);
+        }
+        streamFinished = true;
+        if (activeSourceCount === 0) finish(true);
       } catch (error) {
-        fail(error);
-        return;
+        if (error.name === "AbortError") finish(false);
+        else fail(error);
       }
-
-      reader = response.body.getReader();
-
-      const pump = () => reader.read().then(({ value, done }) => {
-        if (done) {
-          streamFinished = true;
-          flushQueue();
-          if (!playbackStarted && mediaSource.readyState === "open") {
-            try {
-              mediaSource.endOfStream();
-            } catch {
-              // no-op
-            }
-          }
-          return;
-        }
-
-        if (value && value.byteLength) {
-          pendingChunks.push(value);
-          flushQueue();
-        }
-
-        return pump();
-      }).catch(fail);
-
-      pump();
-    }, { once: true });
-
-    audio.play().catch(() => {
-      // Browsers may defer playback until data is ready.
-    });
-  });
-}
-
-async function speakElevenLabs(text) {
-  const spokenText = normalizeSpokenText(text);
-  const response = await fetch(
-    buildElevenLabsUrl(),
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": getApiKey(),
-      },
-      body: JSON.stringify({
-        text: spokenText,
-        model_id: getModelId(),
-        language_code: state.lang === "fr" ? "fr" : "en",
-        voice_settings: buildVoiceSettings(spokenText),
-        previous_text: state.lastSpokenText || undefined,
-      }),
-    }
-  );
-
-  if (!response.ok) throw new Error(`ElevenLabs error: ${response.status}`);
-
-  if (response.body && window.MediaSource && MediaSource.isTypeSupported("audio/mpeg")) {
-    await playStreamingAudio(response);
-    state.lastSpokenText = spokenText;
-    return;
-  }
-
-  const audioBlob = await response.blob();
-  const audioUrl = URL.createObjectURL(audioBlob);
-  const audio = new Audio(audioUrl);
-  audio.preload = "auto";
-  state.currentAudio = audio;
-
-  return new Promise((resolve, reject) => {
-    audio.onended = () => {
-      URL.revokeObjectURL(audioUrl);
-      if (state.currentAudio === audio) state.currentAudio = null;
-      state.lastSpokenText = spokenText;
-      resolve();
     };
-    audio.onerror = () => {
-      URL.revokeObjectURL(audioUrl);
-      if (state.currentAudio === audio) state.currentAudio = null;
-      reject();
-    };
-    audio.play().catch(reject);
+
+    pump();
   });
 }
 
@@ -1310,14 +1267,15 @@ async function speakText(text, statusMessage = null) {
   setStatus(statusMessage || t("speaking"));
 
   try {
-    if (getApiKey()) await speakElevenLabs(text);
-    else await speakBrowser(text);
+    await speakGemini(text);
   } catch (error) {
     console.error("TTS error:", error);
-    try {
-      await speakBrowser(text);
-    } catch (fallbackError) {
-      console.error("Fallback TTS error:", fallbackError);
+    if (state.isActive && error.name !== "AbortError") {
+      try {
+        await speakBrowser(text);
+      } catch (fallbackError) {
+        console.error("Fallback TTS error:", fallbackError);
+      }
     }
   } finally {
     state.isSpeaking = false;
@@ -1704,18 +1662,10 @@ function returnFromGuide() {
 }
 
 function updateTtsStatus() {
-  const frVoice = dom.voiceSelectFr?.selectedOptions?.[0]?.textContent || "FR";
-  const enVoice = dom.voiceSelectEn?.selectedOptions?.[0]?.textContent || "EN";
-  const voiceSummary = `FR: ${frVoice} · EN: ${enVoice}`;
-  const fallbackNote = '<div class="tts-status-voices">Browser voice active. Voice picks only apply with ElevenLabs.</div>';
-
-  if (getApiKey()) {
-    dom.ttsMode.innerHTML = `<span class="tts-status ok">✓ ElevenLabs actif</span><div class="tts-status-voices">${voiceSummary}</div>`;
-    dom.settingsToggle.classList.add("has-key");
-  } else {
-    dom.ttsMode.innerHTML = `<span class="tts-status fallback">Voix navigateur (basique)</span><div class="tts-status-voices">${voiceSummary}</div>${fallbackNote}`;
-    dom.settingsToggle.classList.remove("has-key");
-  }
+  if (!dom.settingsVoiceSummary) return;
+  const label = state.repetitionVoice === "Umbriel" ? t("voiceMaleTitle") : t("voiceFemaleTitle");
+  dom.settingsVoiceSummary.textContent = `${label} · ${state.repetitionVoice}`;
+  dom.settingsToggle.classList.add("has-key");
 }
 
 function initSpeechRecognition() {
@@ -1804,17 +1754,6 @@ function initSpeechRecognition() {
 }
 
 function initSettings() {
-  const savedKey = localStorage.getItem(STORAGE_KEYS.apiKey);
-  if (savedKey) dom.apiKey.value = savedKey;
-
-  renderVoiceOptions(dom.voiceSelectFr, VOICE_PRESETS.fr);
-  renderVoiceOptions(dom.voiceSelectEn, VOICE_PRESETS.en);
-
-  const savedVoiceFr = localStorage.getItem(STORAGE_KEYS.voiceFr) || VOICE_PRESETS.fr[0].value;
-  const savedVoiceEn = localStorage.getItem(STORAGE_KEYS.voiceEn) || VOICE_PRESETS.en[0].value;
-  dom.voiceSelectFr.value = savedVoiceFr;
-  dom.voiceSelectEn.value = savedVoiceEn;
-
   dom.settingsToggle.addEventListener("click", (event) => {
     event.stopPropagation();
     dom.settingsPanel.classList.toggle("open");
@@ -1822,21 +1761,6 @@ function initSettings() {
 
   dom.settingsPanel.addEventListener("click", (event) => {
     event.stopPropagation();
-  });
-
-  dom.apiKey.addEventListener("change", (event) => {
-    localStorage.setItem(STORAGE_KEYS.apiKey, event.target.value.trim());
-    updateTtsStatus();
-  });
-
-  dom.voiceSelectFr.addEventListener("change", (event) => {
-    localStorage.setItem(STORAGE_KEYS.voiceFr, event.target.value);
-    updateTtsStatus();
-  });
-
-  dom.voiceSelectEn.addEventListener("change", (event) => {
-    localStorage.setItem(STORAGE_KEYS.voiceEn, event.target.value);
-    updateTtsStatus();
   });
 
   document.addEventListener("click", () => {
@@ -1894,6 +1818,13 @@ function initUi() {
     button.addEventListener("click", () => {
       state.openingMode = button.dataset.opening;
       clearPracticeSetupError();
+      updateOpeningControls();
+    });
+  });
+  dom.voiceChoices.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.repetitionVoice = button.dataset.voice;
+      localStorage.setItem(STORAGE_KEYS.geminiVoice, state.repetitionVoice);
       updateOpeningControls();
     });
   });

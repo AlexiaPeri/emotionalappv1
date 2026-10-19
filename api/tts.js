@@ -17,12 +17,12 @@ const ALLOWED_VOICES = new Set([
 ]);
 
 const STYLE_PRESETS = {
-  grounded: "Warm, grounded and emotionally present. Natural conversational pace. Gentle without sounding therapeutic, performative or cheerful.",
+  grounded: "Repeat the sentence exactly as written, with no preamble or commentary. Warm, grounded and emotionally present. Natural conversational pace. Gentle without sounding therapeutic, performative or cheerful.",
   neutral: "Natural, clear and emotionally neutral. Conversational pace, with no theatrical emphasis.",
 };
 
 const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS_PER_WINDOW = 60;
+const MAX_REQUESTS_PER_WINDOW = 180;
 const requestBuckets = new Map();
 
 function sendJson(response, status, payload) {
@@ -90,7 +90,7 @@ function findAudio(output) {
   return null;
 }
 
-async function requestGemini(apiKey, payload, attempt = 0) {
+async function fetchGeminiResponse(apiKey, payload, attempt = 0) {
   const upstream = await fetch("https://generativelanguage.googleapis.com/v1beta/interactions", {
     method: "POST",
     headers: {
@@ -102,7 +102,7 @@ async function requestGemini(apiKey, payload, attempt = 0) {
   });
 
   if (upstream.status >= 500 && attempt === 0) {
-    return requestGemini(apiKey, payload, 1);
+    return fetchGeminiResponse(apiKey, payload, 1);
   }
 
   if (!upstream.ok) {
@@ -113,7 +113,81 @@ async function requestGemini(apiKey, payload, attempt = 0) {
     throw error;
   }
 
+  return upstream;
+}
+
+async function requestGemini(apiKey, payload) {
+  const upstream = await fetchGeminiResponse(apiKey, payload);
   return upstream.json();
+}
+
+function extractStreamingAudio(eventBlock) {
+  const data = eventBlock
+    .split("\n")
+    .filter((line) => line.startsWith("data:"))
+    .map((line) => line.slice(5).trimStart())
+    .join("\n")
+    .trim();
+  if (!data || data === "[DONE]") return null;
+
+  try {
+    const event = JSON.parse(data);
+    if (event?.event_type !== "step.delta" || event?.delta?.type !== "audio" || !event.delta.data) {
+      return null;
+    }
+    return Buffer.from(event.delta.data, "base64");
+  } catch {
+    return null;
+  }
+}
+
+async function streamGeminiAudio(apiKey, payload, response) {
+  const upstream = await fetchGeminiResponse(apiKey, { ...payload, stream: true });
+  if (!upstream.body) throw new Error("Gemini returned no audio stream");
+
+  response.status(200);
+  response.setHeader("Content-Type", "audio/L16; rate=24000; channels=1");
+  response.setHeader("Cache-Control", "no-store");
+  response.setHeader("X-Content-Type-Options", "nosniff");
+
+  const reader = upstream.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let wroteAudio = false;
+
+  const processEvents = (flush = false) => {
+    buffer = buffer.replace(/\r\n/g, "\n");
+    let boundary = buffer.indexOf("\n\n");
+    while (boundary !== -1) {
+      const eventBlock = buffer.slice(0, boundary);
+      buffer = buffer.slice(boundary + 2);
+      const audio = extractStreamingAudio(eventBlock);
+      if (audio?.length) {
+        wroteAudio = true;
+        response.write(audio);
+      }
+      boundary = buffer.indexOf("\n\n");
+    }
+    if (flush && buffer.trim()) {
+      const audio = extractStreamingAudio(buffer);
+      if (audio?.length) {
+        wroteAudio = true;
+        response.write(audio);
+      }
+      buffer = "";
+    }
+  };
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    processEvents();
+  }
+  buffer += decoder.decode();
+  processEvents(true);
+  if (!wroteAudio) throw new Error("Gemini returned no playable streaming audio");
+  return response.end();
 }
 
 async function handler(request, response) {
@@ -133,6 +207,7 @@ async function handler(request, response) {
   const model = typeof body.model === "string" ? body.model : "gemini-3.8-flash-tts";
   const voice = typeof body.voice === "string" ? body.voice : "Achird";
   const style = STYLE_PRESETS[body.style] || STYLE_PRESETS.grounded;
+  const wantsStreamingAudio = body.stream === true;
 
   if (!text || text.length > 320) {
     return sendJson(response, 400, { error: "Text must contain between 1 and 320 characters." });
@@ -155,6 +230,7 @@ async function handler(request, response) {
   };
 
   try {
+    if (wantsStreamingAudio) return await streamGeminiAudio(apiKey, payload, response);
     const output = await requestGemini(apiKey, payload);
     const audio = findAudio(output);
     if (!audio) return sendJson(response, 502, { error: "Gemini returned no playable audio." });
@@ -170,6 +246,7 @@ async function handler(request, response) {
       status: error.status,
       details: error.details,
     });
+    if (response.headersSent) return response.end();
     if (error.status === 429) {
       const dailyLimitReached = /per day/i.test(error.details || "");
       if (!dailyLimitReached) response.setHeader("Retry-After", "60");
@@ -188,3 +265,4 @@ module.exports = handler;
 module.exports.ALLOWED_MODELS = ALLOWED_MODELS;
 module.exports.ALLOWED_VOICES = ALLOWED_VOICES;
 module.exports.findAudio = findAudio;
+module.exports.extractStreamingAudio = extractStreamingAudio;

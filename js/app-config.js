@@ -1,7 +1,5 @@
 export const STORAGE_KEYS = {
-  apiKey: "elevenlabs_key",
-  voiceFr: "elevenlabs_voice_fr",
-  voiceEn: "elevenlabs_voice_en",
+  geminiVoice: "emerge_gemini_tts_voice",
   introSeen: "emerge_first_guide_seen_v2",
   firstSessionComplete: "emerge_first_session_complete_v1",
   notes: "emerge_reflection_notes_v2",
@@ -72,6 +70,9 @@ export const I18N = {
     openingGuidedDetail: "Court · plus énergisant",
     openingFullTitle: "Full guidance",
     openingFullDetail: "Long · l’introduction originale",
+    voiceSectionLabel: "Voix de répétition",
+    voiceFemaleTitle: "Féminine",
+    voiceMaleTitle: "Masculine",
     movementRemindersTitle: "Movement reminders",
     movementRemindersDetail: "Tout au long de la pratique",
     guidedReleaseMissing: "L’audio Guided release sera ajouté avec ton nouvel enregistrement.",
@@ -242,6 +243,9 @@ export const I18N = {
     openingGuidedDetail: "Short · more energising",
     openingFullTitle: "Full guidance",
     openingFullDetail: "Long · the original introduction",
+    voiceSectionLabel: "Repetition voice",
+    voiceFemaleTitle: "Female",
+    voiceMaleTitle: "Male",
     movementRemindersTitle: "Movement reminders",
     movementRemindersDetail: "Throughout the practice",
     guidedReleaseMissing: "The Guided release audio will be added with your new recording.",
@@ -363,25 +367,4 @@ export const I18N = {
       },
     ],
   },
-};
-
-export const VOICE_PRESETS = {
-  fr: [
-    { value: "EXAVITQu4vr4xnSDxMaL", label: "Bella" },
-    { value: "XB0fDUnXU5powFXDhCwa", label: "Charlotte" },
-    { value: "MF3mGyEYCl7XYWbV9V6O", label: "Elli" },
-    { value: "pNInz6obpgDQGcFmaJgB", label: "Adam" },
-    { value: "ErXwobaYiN019PkySvjV", label: "Antoni" },
-    { value: "onwK4e9ZLuTAKqWW03F9", label: "Daniel" },
-  ],
-  en: [
-    { value: "ErXwobaYiN019PkySvjV", label: "Antoni" },
-    { value: "pNInz6obpgDQGcFmaJgB", label: "Adam" },
-    { value: "onwK4e9ZLuTAKqWW03F9", label: "Daniel" },
-    { value: "TxGEqnHWrfWFTfGW9XjX", label: "Josh" },
-    { value: "VR6AewLTigWG4xSOukaG", label: "Arnold" },
-    { value: "EXAVITQu4vr4xnSDxMaL", label: "Bella" },
-    { value: "XB0fDUnXU5powFXDhCwa", label: "Charlotte" },
-    { value: "MF3mGyEYCl7XYWbV9V6O", label: "Elli" },
-  ],
 };

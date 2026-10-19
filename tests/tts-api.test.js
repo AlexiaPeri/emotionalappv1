@@ -7,6 +7,8 @@ const handler = require("../api/tts.js");
 function createResponse() {
   return {
     headers: {},
+    headersSent: false,
+    chunks: [],
     statusCode: 200,
     payload: undefined,
     setHeader(name, value) {
@@ -17,12 +19,19 @@ function createResponse() {
       return this;
     },
     json(payload) {
+      this.headersSent = true;
       this.payload = payload;
       return this;
     },
     send(payload) {
+      this.headersSent = true;
       this.payload = payload;
       return this;
+    },
+    write(payload) {
+      this.headersSent = true;
+      this.chunks.push(Buffer.from(payload));
+      return true;
     },
     end() {
       return this;
@@ -100,6 +109,45 @@ test("returns the generated WAV without exposing the API key", async () => {
   assert.deepEqual(response.payload, expectedAudio);
   assert.equal(capturedRequest.options.headers["x-goog-api-key"], "private-test-key");
   assert.equal(JSON.parse(capturedRequest.options.body).generation_config.speech_config[0].voice, "Achird");
+
+  global.fetch = previousFetch;
+  if (previousKey === undefined) delete process.env.GEMINI_API_KEY;
+  else process.env.GEMINI_API_KEY = previousKey;
+});
+
+test("streams Gemini PCM audio chunks for the live practice", async () => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  const previousFetch = global.fetch;
+  process.env.GEMINI_API_KEY = "private-test-key";
+  const expectedAudio = Buffer.from([0, 1, 2, 3, 4, 5]);
+  const event = JSON.stringify({
+    event_type: "step.delta",
+    delta: { type: "audio", data: expectedAudio.toString("base64") },
+  });
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    body: new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode(`data: ${event}\n\n`));
+        controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
+        controller.close();
+      },
+    }),
+  });
+
+  const response = createResponse();
+  await handler(createRequest({
+    text: "You feel angry.",
+    model: "gemini-3.8-flash-lite-tts",
+    voice: "Umbriel",
+    style: "grounded",
+    stream: true,
+  }), response);
+
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.headers["Content-Type"], "audio/L16; rate=24000; channels=1");
+  assert.deepEqual(Buffer.concat(response.chunks), expectedAudio);
 
   global.fetch = previousFetch;
   if (previousKey === undefined) delete process.env.GEMINI_API_KEY;
