@@ -226,7 +226,7 @@ async function handler(request, response) {
       }],
     }],
     response_format: { type: "audio" },
-    generation_config: { speech_config: [{ voice, mode: "conversational" }] },
+    generation_config: { speech_config: [{ voice }] },
   };
 
   try {

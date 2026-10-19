@@ -110,7 +110,6 @@ test("returns the generated WAV without exposing the API key", async () => {
   assert.equal(capturedRequest.options.headers["x-goog-api-key"], "private-test-key");
   const requestPayload = JSON.parse(capturedRequest.options.body);
   assert.equal(requestPayload.generation_config.speech_config[0].voice, "Achird");
-  assert.equal(requestPayload.generation_config.speech_config[0].mode, "conversational");
   assert.match(requestPayload.input[0].content[0].annotations[0].style, /falling cadence/i);
   assert.match(requestPayload.input[0].content[0].annotations[0].style, /never use questioning/i);
 
