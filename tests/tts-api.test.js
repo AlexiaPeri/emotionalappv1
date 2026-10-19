@@ -111,7 +111,8 @@ test("returns the generated WAV without exposing the API key", async () => {
   const requestPayload = JSON.parse(capturedRequest.options.body);
   assert.equal(requestPayload.generation_config.speech_config[0].voice, "Achird");
   assert.match(requestPayload.input[0].content[0].annotations[0].style, /falling cadence/i);
-  assert.match(requestPayload.input[0].content[0].annotations[0].style, /never use questioning/i);
+  assert.match(requestPayload.input[0].content[0].annotations[0].style, /brisk natural conversational pace/i);
+  assert.match(requestPayload.input[0].content[0].annotations[0].style, /never use rising or questioning/i);
 
   global.fetch = previousFetch;
   if (previousKey === undefined) delete process.env.GEMINI_API_KEY;

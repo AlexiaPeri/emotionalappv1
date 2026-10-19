@@ -17,7 +17,7 @@ const ALLOWED_VOICES = new Set([
 ]);
 
 const STYLE_PRESETS = {
-  grounded: "Calm, warm and conversational. Always use a declarative tone with a natural falling cadence at the end. Never use questioning or rising intonation. Never sound theatrical or cheerful.",
+  grounded: "Brisk natural conversational pace. Calm declarative delivery with a clear falling cadence. Never use rising or questioning intonation. No dramatic pauses.",
   neutral: "Natural, clear and emotionally neutral. Conversational pace, with no theatrical emphasis.",
 };
 

@@ -1,7 +1,7 @@
 "use strict";
 
 import { I18N, STORAGE_KEYS } from "./app-config.js";
-import { convertPronouns, isLikelyEcho, normalizeForMatch, normalizeSpokenText } from "./pronouns.js";
+import { convertPronouns, normalizeSpokenText } from "./pronouns.js";
 
 const dom = {
   langButtons: document.querySelectorAll(".lang-btn"),
@@ -138,8 +138,26 @@ const dom = {
 const GEMINI_TTS_MODEL = "gemini-3.8-flash-lite-tts";
 const GEMINI_REPETITION_VOICES = new Set(["Callirrhoe", "Umbriel"]);
 const savedRepetitionVoice = localStorage.getItem(STORAGE_KEYS.geminiVoice);
-const INTERIM_COMMIT_MS = 280;
+const INTERIM_FINALIZE_MS = 1400;
+const SPEECH_END_FINALIZE_MS = 80;
+const RECOGNITION_WATCHDOG_MS = 12000;
 const MAX_TTS_CACHE_ENTRIES = 20;
+const EMOTION_BIAS_TERMS = [
+  "overwhelmed",
+  "anxious",
+  "angry",
+  "frustrated",
+  "exhausted",
+  "scared",
+  "stressed",
+  "ashamed",
+  "disappointed",
+  "powerless",
+  "panicked",
+  "furious",
+  "lonely",
+  "numb",
+];
 
 const state = {
   lang: getInitialLang(),
@@ -148,11 +166,12 @@ const state = {
   recognition: null,
   speechAvailable: true,
   lastSpokenText: "",
-  lastProcessedText: "",
-  lastProcessedAt: 0,
   recognitionRestartTimer: null,
   recognitionInterimTimer: null,
   recognitionInterimText: "",
+  recognitionWatchdogTimer: null,
+  recognitionRecoveryRequested: false,
+  recognitionBiasEnabled: true,
   recognitionPauseRequested: false,
   recognitionCycleId: 0,
   recognitionHandledCycleId: -1,
@@ -590,6 +609,7 @@ function setLang(lang) {
 
   if (state.recognition) {
     state.recognition.lang = lang === "fr" ? "fr-FR" : "en-US";
+    applyRecognitionBias();
   }
 }
 
@@ -1115,6 +1135,43 @@ function clearRecognitionInterim() {
   state.recognitionInterimText = "";
 }
 
+function clearRecognitionWatchdog() {
+  if (!state.recognitionWatchdogTimer) return;
+  clearTimeout(state.recognitionWatchdogTimer);
+  state.recognitionWatchdogTimer = null;
+}
+
+function armRecognitionWatchdog() {
+  clearRecognitionWatchdog();
+  if (!state.isActive || state.isSpeaking || state.recognitionPauseRequested || !state.recognition) return;
+  state.recognitionWatchdogTimer = setTimeout(() => {
+    state.recognitionWatchdogTimer = null;
+    if (!state.isActive || state.isSpeaking || state.recognitionPauseRequested) return;
+    state.recognitionRecoveryRequested = true;
+    try {
+      state.recognition.abort();
+    } catch {
+      // The engine may already have ended. The scheduled restart still recovers it.
+    }
+    scheduleRecognitionRestart(160);
+  }, RECOGNITION_WATCHDOG_MS);
+}
+
+function scheduleInterimFinalization(delay) {
+  if (state.recognitionInterimTimer) clearTimeout(state.recognitionInterimTimer);
+  state.recognitionInterimTimer = setTimeout(() => {
+    state.recognitionInterimTimer = null;
+    if (!state.recognitionInterimText || state.recognitionHandledCycleId === state.recognitionCycleId) return;
+    try {
+      state.recognition.stop();
+    } catch {
+      const pendingInterim = state.recognitionInterimText;
+      clearRecognitionInterim();
+      handleRecognizedText(pendingInterim);
+    }
+  }, delay);
+}
+
 function scheduleRecognitionRestart(delay = 120) {
   if (!state.isActive || !state.recognition) return;
   if (state.recognitionRestartTimer) clearTimeout(state.recognitionRestartTimer);
@@ -1132,6 +1189,7 @@ function startRecognition() {
     state.recognitionRestartTimer = null;
   }
   clearRecognitionInterim();
+  clearRecognitionWatchdog();
   try {
     state.recognitionCycleId += 1;
     state.recognition.start();
@@ -1144,6 +1202,8 @@ function startRecognition() {
 function pauseRecognitionForTts() {
   if (!state.isActive || !state.recognition) return;
   clearRecognitionInterim();
+  clearRecognitionWatchdog();
+  state.recognitionRecoveryRequested = false;
   state.recognitionPauseRequested = true;
   try {
     state.recognition.abort();
@@ -1374,6 +1434,7 @@ async function speakText(text, statusMessage = null) {
 function stopVoiceCapture() {
   state.isActive = false;
   clearRecognitionInterim();
+  clearRecognitionWatchdog();
   if (state.recognition) {
     try {
       state.recognition.abort();
@@ -1386,6 +1447,7 @@ function stopVoiceCapture() {
   document.body.classList.remove("session-active");
   state.lastSpokenText = "";
   state.recognitionPauseRequested = false;
+  state.recognitionRecoveryRequested = false;
   state.recognitionCycleId = 0;
   state.recognitionHandledCycleId = -1;
   if (state.recognitionRestartTimer) {
@@ -1408,8 +1470,6 @@ function startVoiceCapture() {
   state.isActive = true;
   document.body.classList.add("session-active");
   state.lastSpokenText = "";
-  state.lastProcessedText = "";
-  state.lastProcessedAt = 0;
   state.recognitionPauseRequested = false;
   state.recognitionCycleId = 0;
   state.recognitionHandledCycleId = -1;
@@ -1808,23 +1868,6 @@ function handleRecognizedText(userText) {
   if (state.recognitionHandledCycleId === state.recognitionCycleId) return;
   clearRecognitionInterim();
 
-  const normalizedUserText = normalizeForMatch(userText);
-  const now = Date.now();
-  if (
-    normalizedUserText &&
-    normalizedUserText === state.lastProcessedText &&
-    now - state.lastProcessedAt < 700
-  ) {
-    scheduleRecognitionRestart(80);
-    return;
-  }
-  if (isLikelyEcho(userText)) {
-    scheduleRecognitionRestart(100);
-    return;
-  }
-
-  state.lastProcessedText = normalizedUserText;
-  state.lastProcessedAt = now;
   state.recognitionHandledCycleId = state.recognitionCycleId;
 
   addBubble("user", userText);
@@ -1832,6 +1875,19 @@ function handleRecognizedText(userText) {
   addBubble("voice", converted);
   pauseRecognitionForTts();
   speakText(converted);
+}
+
+function applyRecognitionBias() {
+  if (!state.recognition || !state.recognitionBiasEnabled) return;
+  const SpeechRecognitionPhrase = window.SpeechRecognitionPhrase || window.webkitSpeechRecognitionPhrase;
+  if (!("phrases" in state.recognition) || !SpeechRecognitionPhrase) return;
+  try {
+    state.recognition.phrases = state.lang === "en"
+      ? EMOTION_BIAS_TERMS.map((phrase) => new SpeechRecognitionPhrase(phrase, 3.0))
+      : [];
+  } catch {
+    state.recognitionBiasEnabled = false;
+  }
 }
 
 function initSpeechRecognition() {
@@ -1848,11 +1904,27 @@ function initSpeechRecognition() {
   state.recognition.lang = "fr-FR";
   state.recognition.continuous = false;
   state.recognition.interimResults = true;
-  state.recognition.maxAlternatives = 3;
+  state.recognition.maxAlternatives = 5;
+  applyRecognitionBias();
+
+  state.recognition.onstart = () => {
+    state.recognitionRecoveryRequested = false;
+    armRecognitionWatchdog();
+  };
+
+  state.recognition.onaudiostart = armRecognitionWatchdog;
+  state.recognition.onspeechstart = armRecognitionWatchdog;
+
+  state.recognition.onspeechend = () => {
+    if (state.recognitionInterimText && !state.recognitionPauseRequested) {
+      scheduleInterimFinalization(SPEECH_END_FINALIZE_MS);
+    }
+  };
 
   state.recognition.onresult = (event) => {
     if (state.isSpeaking || state.recognitionPauseRequested) return;
     if (state.recognitionHandledCycleId === state.recognitionCycleId) return;
+    armRecognitionWatchdog();
 
     const resultIndex = typeof event.resultIndex === "number" ? event.resultIndex : event.results.length - 1;
     let finalResult = null;
@@ -1877,13 +1949,7 @@ function initSpeechRecognition() {
     const cleanedInterim = interimText.trim();
     if (!cleanedInterim) return;
     state.recognitionInterimText = cleanedInterim;
-    if (state.recognitionInterimTimer) clearTimeout(state.recognitionInterimTimer);
-    state.recognitionInterimTimer = setTimeout(() => {
-      state.recognitionInterimTimer = null;
-      const textToCommit = state.recognitionInterimText;
-      state.recognitionInterimText = "";
-      handleRecognizedText(textToCommit);
-    }, INTERIM_COMMIT_MS);
+    scheduleInterimFinalization(INTERIM_FINALIZE_MS);
   };
 
   state.recognition.onerror = (event) => {
@@ -1894,12 +1960,29 @@ function initSpeechRecognition() {
       updateButton();
       return;
     }
+    if (event.error === "phrases-not-supported") {
+      state.recognitionBiasEnabled = false;
+      try {
+        state.recognition.phrases = [];
+      } catch {
+        // no-op
+      }
+      if (state.isActive) scheduleRecognitionRestart(80);
+      return;
+    }
     if (state.isActive && event.error !== "aborted" && !state.recognitionPauseRequested) {
       scheduleRecognitionRestart(220);
     }
   };
 
   state.recognition.onend = () => {
+    clearRecognitionWatchdog();
+    if (state.recognitionRecoveryRequested) {
+      state.recognitionRecoveryRequested = false;
+      clearRecognitionInterim();
+      if (state.isActive && !state.isSpeaking) scheduleRecognitionRestart(60);
+      return;
+    }
     const pendingInterim = state.recognitionInterimText;
     clearRecognitionInterim();
     if (pendingInterim && state.isActive && !state.isSpeaking && !state.recognitionPauseRequested) {
