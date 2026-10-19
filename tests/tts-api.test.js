@@ -108,7 +108,11 @@ test("returns the generated WAV without exposing the API key", async () => {
   assert.equal(response.headers["Content-Type"], "audio/wav");
   assert.deepEqual(response.payload, expectedAudio);
   assert.equal(capturedRequest.options.headers["x-goog-api-key"], "private-test-key");
-  assert.equal(JSON.parse(capturedRequest.options.body).generation_config.speech_config[0].voice, "Achird");
+  const requestPayload = JSON.parse(capturedRequest.options.body);
+  assert.equal(requestPayload.generation_config.speech_config[0].voice, "Achird");
+  assert.equal(requestPayload.generation_config.speech_config[0].mode, "conversational");
+  assert.match(requestPayload.input[0].content[0].annotations[0].style, /falling cadence/i);
+  assert.match(requestPayload.input[0].content[0].annotations[0].style, /never use questioning/i);
 
   global.fetch = previousFetch;
   if (previousKey === undefined) delete process.env.GEMINI_API_KEY;

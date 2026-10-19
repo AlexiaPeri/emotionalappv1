@@ -97,8 +97,6 @@ const dom = {
   breathingEndButton: document.getElementById("breathing-end-btn"),
   endScreen: document.getElementById("end-screen"),
   endMessage: document.getElementById("end-message"),
-  endFaqButton: document.getElementById("end-faq-btn"),
-  endEmergeButton: document.getElementById("end-emerge-btn"),
   reflectTitle: document.getElementById("reflect-title"),
   reflectForm: document.getElementById("reflect-form"),
   reflectInput: document.getElementById("reflect-input"),
@@ -121,6 +119,17 @@ const dom = {
   faqList: document.getElementById("faq-list"),
   contactTitle: document.getElementById("contact-title"),
   contactCta: document.getElementById("contact-cta"),
+  contactBackButton: document.getElementById("contact-back-btn"),
+  contactFormTitle: document.getElementById("contact-form-title"),
+  contactFormIntro: document.getElementById("contact-form-intro"),
+  contactForm: document.getElementById("contact-form"),
+  contactNameLabel: document.getElementById("contact-name-label"),
+  contactEmailLabel: document.getElementById("contact-email-label"),
+  contactMessageLabel: document.getElementById("contact-message-label"),
+  contactConsentLabel: document.getElementById("contact-consent-label"),
+  contactSubmitButton: document.getElementById("contact-submit-btn"),
+  contactFormStatus: document.getElementById("contact-form-status"),
+  contactPrivacyNote: document.getElementById("contact-privacy-note"),
   howTitle: document.getElementById("how-title"),
   howText: document.getElementById("how-text"),
   settingsVoiceSummary: document.getElementById("tts-voice-summary"),
@@ -129,6 +138,8 @@ const dom = {
 const GEMINI_TTS_MODEL = "gemini-3.8-flash-lite-tts";
 const GEMINI_REPETITION_VOICES = new Set(["Callirrhoe", "Umbriel"]);
 const savedRepetitionVoice = localStorage.getItem(STORAGE_KEYS.geminiVoice);
+const INTERIM_COMMIT_MS = 280;
+const MAX_TTS_CACHE_ENTRIES = 20;
 
 const state = {
   lang: getInitialLang(),
@@ -140,6 +151,8 @@ const state = {
   lastProcessedText: "",
   lastProcessedAt: 0,
   recognitionRestartTimer: null,
+  recognitionInterimTimer: null,
+  recognitionInterimText: "",
   recognitionPauseRequested: false,
   recognitionCycleId: 0,
   recognitionHandledCycleId: -1,
@@ -148,6 +161,7 @@ const state = {
   speechAbortController: null,
   streamingSources: new Set(),
   streamingPlaybackResolve: null,
+  ttsAudioCache: new Map(),
   durationMode: "recommended",
   selectedDurationMinutes: 15,
   openingMode: localStorage.getItem(STORAGE_KEYS.firstSessionComplete) === "true" ? "quiet" : "full",
@@ -371,8 +385,6 @@ function updatePageCopy() {
   if (dom.supportContinueButton) dom.supportContinueButton.textContent = t("supportContinueCta");
   if (dom.breathingEndButton) dom.breathingEndButton.textContent = t("breathingEndCta");
   if (dom.endMessage) dom.endMessage.textContent = t("endMessage");
-  if (dom.endFaqButton) dom.endFaqButton.textContent = t("endFaqCta");
-  if (dom.endEmergeButton) dom.endEmergeButton.textContent = t("endEmergeCta");
   if (dom.reflectTitle) dom.reflectTitle.textContent = t("reflectTitle");
   if (dom.reflectInput) dom.reflectInput.placeholder = t("reflectPlaceholder");
   if (dom.reflectSendButton) dom.reflectSendButton.setAttribute("aria-label", t("reflectSendLabel"));
@@ -385,6 +397,15 @@ function updatePageCopy() {
   if (dom.faqIntro) dom.faqIntro.textContent = t("faqIntro");
   if (dom.contactTitle) dom.contactTitle.textContent = t("contactTitle");
   if (dom.contactCta) dom.contactCta.textContent = t("contactCta");
+  if (dom.contactBackButton) dom.contactBackButton.textContent = t("contactBackCta");
+  if (dom.contactFormTitle) dom.contactFormTitle.textContent = t("contactFormTitle");
+  if (dom.contactFormIntro) dom.contactFormIntro.textContent = t("contactFormIntro");
+  if (dom.contactNameLabel) dom.contactNameLabel.textContent = t("contactNameLabel");
+  if (dom.contactEmailLabel) dom.contactEmailLabel.textContent = t("contactEmailLabel");
+  if (dom.contactMessageLabel) dom.contactMessageLabel.textContent = t("contactMessageLabel");
+  if (dom.contactConsentLabel) dom.contactConsentLabel.textContent = t("contactConsentLabel");
+  if (dom.contactSubmitButton && !dom.contactSubmitButton.disabled) dom.contactSubmitButton.textContent = t("contactSubmitCta");
+  if (dom.contactPrivacyNote) dom.contactPrivacyNote.textContent = t("contactPrivacy");
   if (dom.howTitle) dom.howTitle.textContent = t("howTitle");
   if (dom.howText) dom.howText.innerHTML = t("howText");
   updateDurationControls();
@@ -1086,6 +1107,14 @@ function getSpeechAudioContext() {
   return state.audioContext;
 }
 
+function clearRecognitionInterim() {
+  if (state.recognitionInterimTimer) {
+    clearTimeout(state.recognitionInterimTimer);
+    state.recognitionInterimTimer = null;
+  }
+  state.recognitionInterimText = "";
+}
+
 function scheduleRecognitionRestart(delay = 120) {
   if (!state.isActive || !state.recognition) return;
   if (state.recognitionRestartTimer) clearTimeout(state.recognitionRestartTimer);
@@ -1102,6 +1131,7 @@ function startRecognition() {
     clearTimeout(state.recognitionRestartTimer);
     state.recognitionRestartTimer = null;
   }
+  clearRecognitionInterim();
   try {
     state.recognitionCycleId += 1;
     state.recognition.start();
@@ -1113,6 +1143,7 @@ function startRecognition() {
 
 function pauseRecognitionForTts() {
   if (!state.isActive || !state.recognition) return;
+  clearRecognitionInterim();
   state.recognitionPauseRequested = true;
   try {
     state.recognition.abort();
@@ -1121,10 +1152,61 @@ function pauseRecognitionForTts() {
   }
 }
 
+function createAudioBufferFromPcm(context, bytes) {
+  const sampleCount = Math.floor(bytes.byteLength / 2);
+  const audioBuffer = context.createBuffer(1, sampleCount, 24000);
+  const channel = audioBuffer.getChannelData(0);
+  const view = new DataView(bytes.buffer, bytes.byteOffset, sampleCount * 2);
+  for (let index = 0; index < sampleCount; index += 1) {
+    channel[index] = view.getInt16(index * 2, true) / 32768;
+  }
+  return audioBuffer;
+}
+
+function cacheGeminiPcm(key, chunks, totalBytes) {
+  if (!totalBytes) return;
+  const combined = new Uint8Array(totalBytes);
+  let offset = 0;
+  chunks.forEach((chunk) => {
+    combined.set(chunk, offset);
+    offset += chunk.byteLength;
+  });
+  if (state.ttsAudioCache.size >= MAX_TTS_CACHE_ENTRIES) {
+    const oldestKey = state.ttsAudioCache.keys().next().value;
+    state.ttsAudioCache.delete(oldestKey);
+  }
+  state.ttsAudioCache.set(key, combined);
+}
+
+function playCachedGeminiPcm(context, pcmBytes, spokenText) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const source = context.createBufferSource();
+    const finish = (completed) => {
+      if (settled) return;
+      settled = true;
+      state.streamingSources.delete(source);
+      if (state.streamingPlaybackResolve === finish) state.streamingPlaybackResolve = null;
+      if (completed) state.lastSpokenText = spokenText;
+      resolve(completed);
+    };
+
+    state.streamingPlaybackResolve = finish;
+    source.buffer = createAudioBufferFromPcm(context, pcmBytes);
+    source.connect(context.destination);
+    state.streamingSources.add(source);
+    source.onended = () => finish(true);
+    source.start(context.currentTime + 0.008);
+  });
+}
+
 async function speakGemini(text) {
   const spokenText = normalizeSpokenText(text);
   const context = getSpeechAudioContext();
   if (!context) throw new Error("Web Audio is unavailable.");
+  const cacheKey = `${state.repetitionVoice}|${state.lang}|${spokenText.toLocaleLowerCase()}`;
+  const cachedPcm = state.ttsAudioCache.get(cacheKey);
+  if (cachedPcm) return playCachedGeminiPcm(context, cachedPcm, spokenText);
 
   const controller = new AbortController();
   state.speechAbortController = controller;
@@ -1153,6 +1235,8 @@ async function speakGemini(text) {
   let streamFinished = false;
   let activeSourceCount = 0;
   let settled = false;
+  const pcmChunks = [];
+  let pcmTotalBytes = 0;
 
   return new Promise((resolve, reject) => {
     const finish = (completed) => {
@@ -1189,13 +1273,7 @@ async function speakGemini(text) {
       }
       if (!bytes.byteLength) return;
 
-      const sampleCount = bytes.byteLength / 2;
-      const audioBuffer = context.createBuffer(1, sampleCount, 24000);
-      const channel = audioBuffer.getChannelData(0);
-      const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-      for (let index = 0; index < sampleCount; index += 1) {
-        channel[index] = view.getInt16(index * 2, true) / 32768;
-      }
+      const audioBuffer = createAudioBufferFromPcm(context, bytes);
 
       const source = context.createBufferSource();
       source.buffer = audioBuffer;
@@ -1217,9 +1295,15 @@ async function speakGemini(text) {
         while (true) {
           const { value, done } = await reader.read();
           if (done) break;
-          if (value?.byteLength) schedulePcm(value);
+          if (value?.byteLength) {
+            const cachedChunk = Uint8Array.from(value);
+            pcmChunks.push(cachedChunk);
+            pcmTotalBytes += cachedChunk.byteLength;
+            schedulePcm(value);
+          }
         }
         streamFinished = true;
+        cacheGeminiPcm(cacheKey, pcmChunks, pcmTotalBytes);
         if (activeSourceCount === 0) finish(true);
       } catch (error) {
         if (error.name === "AbortError") finish(false);
@@ -1282,13 +1366,14 @@ async function speakText(text, statusMessage = null) {
     updateButton();
     updatePageCopy();
     if (state.isActive) {
-      scheduleRecognitionRestart(130);
+      scheduleRecognitionRestart(50);
     }
   }
 }
 
 function stopVoiceCapture() {
   state.isActive = false;
+  clearRecognitionInterim();
   if (state.recognition) {
     try {
       state.recognition.abort();
@@ -1562,6 +1647,56 @@ function openFaqFromEnd() {
   setView("faq");
 }
 
+function openContactForm() {
+  if (dom.contactFormStatus) {
+    dom.contactFormStatus.textContent = "";
+    dom.contactFormStatus.classList.remove("is-error");
+  }
+  setView("contact");
+  document.getElementById("contact-name")?.focus();
+}
+
+async function handleContactSubmit(event) {
+  event.preventDefault();
+  if (!dom.contactForm || !dom.contactSubmitButton || dom.contactSubmitButton.disabled) return;
+
+  const formData = new FormData(dom.contactForm);
+  const payload = {
+    name: String(formData.get("name") || "").trim(),
+    email: String(formData.get("email") || "").trim(),
+    message: String(formData.get("message") || "").trim(),
+    consent: formData.get("consent") === "on",
+    website: String(formData.get("website") || ""),
+  };
+
+  dom.contactSubmitButton.disabled = true;
+  dom.contactSubmitButton.textContent = t("contactSending");
+  if (dom.contactFormStatus) {
+    dom.contactFormStatus.textContent = "";
+    dom.contactFormStatus.classList.remove("is-error");
+  }
+
+  try {
+    const response = await fetch("./api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error(`Contact service returned ${response.status}.`);
+    dom.contactForm.reset();
+    if (dom.contactFormStatus) dom.contactFormStatus.textContent = t("contactSent");
+  } catch (error) {
+    console.error("Contact form error:", error);
+    if (dom.contactFormStatus) {
+      dom.contactFormStatus.textContent = t("contactError");
+      dom.contactFormStatus.classList.add("is-error");
+    }
+  } finally {
+    dom.contactSubmitButton.disabled = false;
+    dom.contactSubmitButton.textContent = t("contactSubmitCta");
+  }
+}
+
 function openCompletionChoicesFromSupport() {
   state.groundingCycleId += 1;
   clearSessionTimer();
@@ -1664,8 +1799,39 @@ function returnFromGuide() {
 function updateTtsStatus() {
   if (!dom.settingsVoiceSummary) return;
   const label = state.repetitionVoice === "Umbriel" ? t("voiceMaleTitle") : t("voiceFemaleTitle");
-  dom.settingsVoiceSummary.textContent = `${label} · ${state.repetitionVoice}`;
+  dom.settingsVoiceSummary.textContent = label;
   dom.settingsToggle.classList.add("has-key");
+}
+
+function handleRecognizedText(userText) {
+  if (!userText || state.isSpeaking || state.recognitionPauseRequested || !state.isActive) return;
+  if (state.recognitionHandledCycleId === state.recognitionCycleId) return;
+  clearRecognitionInterim();
+
+  const normalizedUserText = normalizeForMatch(userText);
+  const now = Date.now();
+  if (
+    normalizedUserText &&
+    normalizedUserText === state.lastProcessedText &&
+    now - state.lastProcessedAt < 700
+  ) {
+    scheduleRecognitionRestart(80);
+    return;
+  }
+  if (isLikelyEcho(userText)) {
+    scheduleRecognitionRestart(100);
+    return;
+  }
+
+  state.lastProcessedText = normalizedUserText;
+  state.lastProcessedAt = now;
+  state.recognitionHandledCycleId = state.recognitionCycleId;
+
+  addBubble("user", userText);
+  const converted = convertPronouns(userText, state.lang);
+  addBubble("voice", converted);
+  pauseRecognitionForTts();
+  speakText(converted);
 }
 
 function initSpeechRecognition() {
@@ -1681,7 +1847,7 @@ function initSpeechRecognition() {
   state.recognition = new SpeechRecognition();
   state.recognition.lang = "fr-FR";
   state.recognition.continuous = false;
-  state.recognition.interimResults = false;
+  state.recognition.interimResults = true;
   state.recognition.maxAlternatives = 3;
 
   state.recognition.onresult = (event) => {
@@ -1689,47 +1855,35 @@ function initSpeechRecognition() {
     if (state.recognitionHandledCycleId === state.recognitionCycleId) return;
 
     const resultIndex = typeof event.resultIndex === "number" ? event.resultIndex : event.results.length - 1;
-    let result = null;
+    let finalResult = null;
+    let interimText = "";
     for (let index = resultIndex; index < event.results.length; index += 1) {
       if (event.results[index].isFinal) {
-        result = event.results[index];
+        finalResult = event.results[index];
+      } else {
+        interimText += `${event.results[index][0]?.transcript || ""} `;
       }
     }
-    if (!result) return;
 
-    const alternatives = Array.from(result);
-    const bestAlternative = alternatives.reduce((best, candidate) => (
-      (candidate.confidence || 0) > (best.confidence || 0) ? candidate : best
-    ), alternatives[0]);
-
-    const userText = bestAlternative?.transcript?.trim() || result[0].transcript.trim();
-    if (!userText) return;
-
-    const normalizedUserText = normalizeForMatch(userText);
-    const now = Date.now();
-    if (
-      normalizedUserText &&
-      normalizedUserText === state.lastProcessedText &&
-      now - state.lastProcessedAt < 1800
-    ) {
-      scheduleRecognitionRestart(140);
-      return;
-    }
-    if (isLikelyEcho(userText)) {
-      scheduleRecognitionRestart(180);
+    if (finalResult) {
+      const alternatives = Array.from(finalResult);
+      const bestAlternative = alternatives.reduce((best, candidate) => (
+        (candidate.confidence || 0) > (best.confidence || 0) ? candidate : best
+      ), alternatives[0]);
+      handleRecognizedText(bestAlternative?.transcript?.trim() || finalResult[0]?.transcript?.trim());
       return;
     }
 
-    state.lastProcessedText = normalizedUserText;
-    state.lastProcessedAt = now;
-    state.recognitionHandledCycleId = state.recognitionCycleId;
-
-    addBubble("user", userText);
-    const converted = convertPronouns(userText, state.lang);
-    addBubble("voice", converted);
-
-    pauseRecognitionForTts();
-    speakText(converted);
+    const cleanedInterim = interimText.trim();
+    if (!cleanedInterim) return;
+    state.recognitionInterimText = cleanedInterim;
+    if (state.recognitionInterimTimer) clearTimeout(state.recognitionInterimTimer);
+    state.recognitionInterimTimer = setTimeout(() => {
+      state.recognitionInterimTimer = null;
+      const textToCommit = state.recognitionInterimText;
+      state.recognitionInterimText = "";
+      handleRecognizedText(textToCommit);
+    }, INTERIM_COMMIT_MS);
   };
 
   state.recognition.onerror = (event) => {
@@ -1746,6 +1900,12 @@ function initSpeechRecognition() {
   };
 
   state.recognition.onend = () => {
+    const pendingInterim = state.recognitionInterimText;
+    clearRecognitionInterim();
+    if (pendingInterim && state.isActive && !state.isSpeaking && !state.recognitionPauseRequested) {
+      handleRecognizedText(pendingInterim);
+      return;
+    }
     if (state.isActive && !state.isSpeaking) {
       if (state.recognitionPauseRequested) return;
       scheduleRecognitionRestart(120);
@@ -1896,11 +2056,23 @@ function initUi() {
       }
     });
   }
-  if (dom.endFaqButton) {
-    dom.endFaqButton.addEventListener("click", openFaqFromEnd);
+  if (dom.endScreen) {
+    dom.endScreen.addEventListener("click", openFaqFromEnd);
+    dom.endScreen.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openFaqFromEnd();
+      }
+    });
   }
-  if (dom.endEmergeButton) {
-    dom.endEmergeButton.addEventListener("click", () => setView("practice"));
+  if (dom.contactCta) {
+    dom.contactCta.addEventListener("click", openContactForm);
+  }
+  if (dom.contactBackButton) {
+    dom.contactBackButton.addEventListener("click", () => setView("faq"));
+  }
+  if (dom.contactForm) {
+    dom.contactForm.addEventListener("submit", handleContactSubmit);
   }
   if (dom.notesAddTodayButton) {
     dom.notesAddTodayButton.addEventListener("click", openTodayNotesEditor);

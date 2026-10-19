@@ -26,7 +26,7 @@
     <div class="settings-panel" id="settings-panel">
       <div class="gemini-settings">
         <span class="settings-eyebrow">Repetition voice</span>
-        <strong id="tts-voice-summary">Female · Callirrhoe</strong>
+        <strong id="tts-voice-summary">Female</strong>
         <p>Gemini 3.8 Flash-Lite · Change the voice before beginning a practice.</p>
       </div>
 
@@ -141,19 +141,6 @@
               </button>
             </div>
 
-            <p class="setup-section-label voice-section-label" id="voice-section-label">Repetition voice</p>
-
-            <div class="practice-voice-options" role="radiogroup" aria-label="Repetition voice">
-              <button class="practice-voice-choice is-selected" data-voice="Callirrhoe" role="radio" aria-checked="true" type="button">
-                <strong id="voice-female-title">Female</strong>
-                <small>Callirrhoe</small>
-              </button>
-              <button class="practice-voice-choice" data-voice="Umbriel" role="radio" aria-checked="false" type="button">
-                <strong id="voice-male-title">Male</strong>
-                <small>Umbriel</small>
-              </button>
-            </div>
-
             <label class="movement-reminders-choice" for="movement-reminders-input">
               <span class="movement-reminders-copy">
                 <strong id="movement-reminders-title">Movement reminders</strong>
@@ -162,6 +149,17 @@
               <input id="movement-reminders-input" type="checkbox">
               <span class="setup-switch" aria-hidden="true"></span>
             </label>
+
+            <p class="setup-section-label voice-section-label" id="voice-section-label">Repetition voice</p>
+
+            <div class="practice-voice-options" role="radiogroup" aria-label="Repetition voice">
+              <button class="practice-voice-choice is-selected" data-voice="Callirrhoe" role="radio" aria-checked="true" type="button">
+                <strong id="voice-female-title">Female</strong>
+              </button>
+              <button class="practice-voice-choice" data-voice="Umbriel" role="radio" aria-checked="false" type="button">
+                <strong id="voice-male-title">Male</strong>
+              </button>
+            </div>
 
             <p class="duration-error" id="duration-error" role="status" aria-live="polite"></p>
 
@@ -271,12 +269,8 @@
       </section>
 
       <section class="page page-end" data-view="end" hidden>
-        <div class="visual-screen end-screen" id="end-screen">
+        <div class="visual-screen end-screen" id="end-screen" role="button" tabindex="0" aria-label="Open the FAQ">
           <div class="end-message" id="end-message">Thank you ♥</div>
-          <div class="end-actions">
-            <button class="text-link" id="end-faq-btn" type="button">FAQ</button>
-            <button class="page-cta" id="end-emerge-btn" type="button">Back to Emerge</button>
-          </div>
         </div>
       </section>
 
@@ -298,8 +292,8 @@
             <h2 class="page-title notes-home-title" id="notes-title">My Notes</h2>
             <button class="page-cta notes-add-btn" id="notes-add-today-btn" type="button">Add notes for today</button>
             <button class="text-link notes-read-btn" id="notes-read-btn" type="button">Read my notes</button>
-            <p class="notes-privacy" id="notes-privacy">Your notes stay on this device.</p>
           </div>
+          <p class="notes-privacy" id="notes-privacy">Your notes stay on this device.</p>
         </div>
       </section>
 
@@ -318,8 +312,41 @@
 
           <div class="faq-contact">
             <p class="faq-contact-prompt" id="contact-title">Your question is not in there ?</p>
-            <a class="contact-button" id="contact-cta" href="mailto:your-email@example.com?subject=Question%20about%20Emerge">Écrire à Alexia</a>
+            <button class="contact-button" id="contact-cta" type="button">Write to us</button>
           </div>
+        </div>
+      </section>
+
+      <section class="page page-contact" data-view="contact" hidden>
+        <div class="page-card contact-card">
+          <button class="text-link contact-back-btn" id="contact-back-btn" type="button">Back to FAQ</button>
+          <h2 class="page-title contact-form-title" id="contact-form-title">Write to us</h2>
+          <p class="contact-form-intro" id="contact-form-intro">Send us your question or feedback.</p>
+          <form class="contact-form" id="contact-form">
+            <div class="form-honeypot" aria-hidden="true">
+              <label for="contact-website">Website</label>
+              <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <label class="contact-field" for="contact-name">
+              <span id="contact-name-label">Name</span>
+              <input id="contact-name" name="name" type="text" autocomplete="name" maxlength="120" required>
+            </label>
+            <label class="contact-field" for="contact-email">
+              <span id="contact-email-label">Email</span>
+              <input id="contact-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+            </label>
+            <label class="contact-field" for="contact-message">
+              <span id="contact-message-label">Message</span>
+              <textarea id="contact-message" name="message" rows="6" maxlength="2000" required></textarea>
+            </label>
+            <label class="contact-consent" for="contact-consent">
+              <input id="contact-consent" name="consent" type="checkbox" required>
+              <span id="contact-consent-label">I agree to be contacted about this message and receive Emerge product updates. I can unsubscribe at any time.</span>
+            </label>
+            <button class="page-cta contact-submit-btn" id="contact-submit-btn" type="submit">Send message</button>
+            <p class="contact-form-status" id="contact-form-status" role="status" aria-live="polite"></p>
+            <p class="contact-privacy-note" id="contact-privacy-note">Your details are used only to reply and send Emerge updates. Please do not include sensitive personal information.</p>
+          </form>
         </div>
       </section>
     </main>

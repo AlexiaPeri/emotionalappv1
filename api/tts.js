@@ -17,7 +17,7 @@ const ALLOWED_VOICES = new Set([
 ]);
 
 const STYLE_PRESETS = {
-  grounded: "Repeat the sentence exactly as written, with no preamble or commentary. Warm, grounded and emotionally present. Natural conversational pace. Gentle without sounding therapeutic, performative or cheerful.",
+  grounded: "Calm, warm and conversational. Always use a declarative tone with a natural falling cadence at the end. Never use questioning or rising intonation. Never sound theatrical or cheerful.",
   neutral: "Natural, clear and emotionally neutral. Conversational pace, with no theatrical emphasis.",
 };
 
@@ -226,7 +226,7 @@ async function handler(request, response) {
       }],
     }],
     response_format: { type: "audio" },
-    generation_config: { speech_config: [{ voice }] },
+    generation_config: { speech_config: [{ voice, mode: "conversational" }] },
   };
 
   try {

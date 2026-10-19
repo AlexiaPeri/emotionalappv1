@@ -5,6 +5,9 @@
   "functions": {
     "api/tts.js": {
       "maxDuration": 20
+    },
+    "api/contact.js": {
+      "maxDuration": 10
     }
   },
   "headers": [

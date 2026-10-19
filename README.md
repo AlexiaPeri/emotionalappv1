@@ -42,7 +42,7 @@ L'app répète vocalement
 
 **Pas de texte affiché pendant la session.** L'expérience de pratique reste vocale.
 
-La page de préparation web reprend le parcours de l'app native : 15 minutes ou un picker personnalisé de 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, choix de la voix de répétition (Callirrhoe ou Umbriel), puis Movement reminders facultatifs et désactivés par défaut. Les écrans d'opening, de closing, de grounding, d'après-session et de fin reprennent aussi les mêmes contrôles que l'iPhone, notamment `Skip guidance`, `Continue the session`, `Finish the session` et `End the guidance`. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels attendent encore leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
+La page de préparation web reprend le parcours de l'app native : 15 minutes ou un picker personnalisé de 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, Movement reminders facultatifs et désactivés par défaut, puis choix final d'une voix féminine ou masculine. Les noms techniques des voix ne sont pas affichés. Les écrans d'opening, de closing, de grounding, d'après-session et de fin reprennent aussi les mêmes contrôles que l'iPhone, notamment `Skip guidance`, `Continue the session`, `Finish the session` et `End the guidance`. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels attendent encore leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
 
 ---
 
@@ -57,7 +57,9 @@ La page de préparation web reprend le parcours de l'app native : 15 minutes ou 
 - **Hébergement actuel** : Vercel pour le frontend et la fonction Gemini sécurisée
 - **Clé Gemini** : exclusivement côté serveur via `GEMINI_API_KEY`, jamais dans le navigateur ni dans Git
 
-La boucle de répétition utilise désormais l'endpoint sécurisé `api/tts.js`, qui limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. L'audio est renvoyé progressivement sous forme de PCM mono 24 kHz et joué avec Web Audio dès l'arrivée des premiers morceaux afin de réduire la latence. Le comparateur privé `voice-lab.html` reste disponible pour les essais ; ses extraits réussis sont conservés dans le cache du navigateur.
+La boucle de répétition utilise désormais l'endpoint sécurisé `api/tts.js`, qui limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. L'audio est renvoyé progressivement sous forme de PCM mono 24 kHz et joué avec Web Audio dès l'arrivée des premiers morceaux. La reconnaissance valide aussi une phrase après un court silence sans attendre inutilement le résultat final du navigateur, l'écoute reprend presque immédiatement après la voix et les répétitions identiques déjà générées sont rejouées depuis un petit cache mémoire. La consigne vocale demande une cadence déclarative descendante, jamais une intonation interrogative. Le comparateur privé `voice-lab.html` reste disponible pour les essais ; ses extraits réussis sont conservés dans le cache du navigateur.
+
+Le bouton `Write to us` de la FAQ ouvre un formulaire nom, email et message. La fonction sécurisée `api/contact.js` valide et limite les envois, puis les transmet au même système de collecte que le formulaire public d'Emerge. Aucune donnée de contact n'est conservée dans le navigateur ni ajoutée au dépôt.
 
 Cette stack sert à tester les parcours et le design. Elle n'est pas l'architecture vocale prévue pour l'app iPhone finale.
 
