@@ -189,6 +189,14 @@ export const I18N = {
         q: "Est-ce une thérapie ?",
         a: "Non. Emerge est une pratique guidée d'expression émotionnelle. Ce n'est ni un soin médical, ni une psychothérapie, ni un dispositif de crise.",
       },
+      {
+        q: "Comment Emerge protège-t-il ma vie privée ?",
+        a: "Pour cette bêta, Emerge ne crée pas de compte et n'enregistre pas les enregistrements vocaux. Pendant une pratique, le service de reconnaissance vocale de ton navigateur traite le son du microphone. La phrase reconnue — pas l'enregistrement — passe ensuite par le serveur sécurisé d'Emerge et est envoyée à Google Gemini pour produire la répétition vocale. Emerge ne conserve pas les transcriptions de pratique.\n\nTes notes restent uniquement dans ce navigateur, sur cet appareil, jusqu'à ce que ses données de site soient effacées. Si tu utilises Nous écrire, ton nom, ton email et ton message sont conservés afin de te répondre et, si tu y consens, de t'envoyer les nouvelles d'Emerge. N'inclus pas d'informations personnelles sensibles. Utilise Nous écrire pour demander l'accès, la correction ou la suppression de tes coordonnées, ou pour retirer ton consentement aux nouvelles.",
+      },
+      {
+        q: "Quelles sont les conditions d'utilisation de la bêta ?",
+        a: "En utilisant cette bêta, tu confirmes avoir au moins 18 ans. Utilise Emerge uniquement dans un endroit physiquement sûr, jamais en conduisant ni pendant une activité qui exige toute ton attention. Emerge est une pratique expérimentale de bien-être : ce n'est ni un soin médical, ni une psychothérapie, ni un service de crise, et aucun résultat particulier n'est garanti.\n\nTu peux arrêter à tout moment. Si la détresse est intense ou persistante, contacte un professionnel qualifié. Si tu te sens en danger immédiat, contacte les services d'urgence locaux ou une personne de confiance. N'essaie pas de perturber ou de détourner le service. Les fonctionnalités de la bêta peuvent évoluer. Dernière mise à jour : 19 octobre 2026.",
+      },
     ],
   },
   en: {
@@ -388,6 +396,14 @@ export const I18N = {
       {
         q: "Is this therapy?",
         a: "No. Emerge is a guided practice for emotional release. It is not medical care.",
+      },
+      {
+        q: "How does Emerge protect my privacy?",
+        a: "For this beta, Emerge does not create an account or save voice recordings. During a practice, your browser's speech-recognition service processes microphone audio. The recognized sentence — not the recording — then passes through Emerge's secure server and is sent to Google Gemini to generate the spoken repetition. Emerge does not retain practice transcripts.\n\nYour notes remain only in this browser on this device until its site data is cleared. If you use Write to us, your name, email and message are kept so we can reply and, if you consent, send Emerge updates. Do not include sensitive personal information. Use Write to us to request access to, correction or deletion of your contact details, or to withdraw from updates.",
+      },
+      {
+        q: "What are the beta terms of use?",
+        a: "By using this beta, you confirm that you are at least 18. Use Emerge only in a physically safe place, never while driving or doing anything that requires your full attention. Emerge is an experimental wellness practice: it is not medical care, psychotherapy or a crisis service, and no particular outcome is guaranteed.\n\nYou may stop at any time. If distress is intense or persistent, contact a qualified professional. If you feel in immediate danger, contact local emergency services or someone you trust. Do not misuse or interfere with the service. Beta features may change. Last updated: 19 October 2026.",
       },
     ],
   },

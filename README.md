@@ -61,6 +61,8 @@ La boucle de répétition utilise désormais l'endpoint sécurisé `api/tts.js`,
 
 Le bouton `Write to us` de la FAQ ouvre un formulaire nom, email et message. La fonction sécurisée `api/contact.js` valide et limite les envois, puis les transmet au même système de collecte que le formulaire public d'Emerge. Aucune donnée de contact n'est conservée dans le navigateur ni ajoutée au dépôt.
 
+La FAQ contient également un résumé bilingue de confidentialité et des conditions d'utilisation de la bêta : traitement vocal, notes locales, données du formulaire, droits liés aux coordonnées, restriction 18+, cadre de sécurité et statut non médical. Ce résumé devra être remplacé ou complété par des documents juridiques autonomes avant un lancement public à plus grande échelle.
+
 Cette stack sert à tester les parcours et le design. Elle n'est pas l'architecture vocale prévue pour l'app iPhone finale.
 
 ---

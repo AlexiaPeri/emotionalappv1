@@ -2518,6 +2518,7 @@ body[data-view="end"] .page-end {
   padding: 0 1rem 1rem;
   color: rgba(244, 229, 207, 0.68);
   line-height: 1.7;
+  white-space: pre-line;
 }
 
 .faq-item.open .faq-answer {
