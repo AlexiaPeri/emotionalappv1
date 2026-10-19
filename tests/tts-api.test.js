@@ -105,3 +105,40 @@ test("returns the generated WAV without exposing the API key", async () => {
   if (previousKey === undefined) delete process.env.GEMINI_API_KEY;
   else process.env.GEMINI_API_KEY = previousKey;
 });
+
+test("explains when the Gemini daily testing quota has been reached", async () => {
+  const previousKey = process.env.GEMINI_API_KEY;
+  const previousFetch = global.fetch;
+  process.env.GEMINI_API_KEY = "private-test-key";
+  let requestCount = 0;
+  global.fetch = async () => {
+    requestCount += 1;
+    return {
+      ok: false,
+      status: 429,
+      async text() {
+        return JSON.stringify({
+          error: {
+            message: "Rate limit exceeded (limit: 10 requests per day on Free Tier).",
+          },
+        });
+      },
+    };
+  };
+
+  const response = createResponse();
+  await handler(createRequest({
+    text: "You feel angry.",
+    model: "gemini-3.8-flash-lite-tts",
+    voice: "Callirrhoe",
+  }), response);
+
+  assert.equal(response.statusCode, 429);
+  assert.equal(response.payload.code, "daily_quota_reached");
+  assert.match(response.payload.error, /daily quota resets/i);
+  assert.equal(requestCount, 1);
+
+  global.fetch = previousFetch;
+  if (previousKey === undefined) delete process.env.GEMINI_API_KEY;
+  else process.env.GEMINI_API_KEY = previousKey;
+});

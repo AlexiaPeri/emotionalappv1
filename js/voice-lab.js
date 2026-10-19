@@ -15,6 +15,7 @@ const dom = {
 };
 
 const saved = getSavedGeminiSelection();
+const AUDIO_CACHE_NAME = "emerge-voice-lab-v1";
 const state = {
   model: saved.model,
   voice: saved.voice,
@@ -22,6 +23,38 @@ const state = {
   activeButton: null,
   requestController: null,
 };
+
+function getAudioCacheRequest(voice) {
+  const url = new URL("/__emerge_voice_lab_cache__", window.location.origin);
+  url.searchParams.set("model", state.model);
+  url.searchParams.set("voice", voice.id);
+  url.searchParams.set("text", dom.sampleSelect.value);
+  return new Request(url.toString());
+}
+
+async function getCachedAudio(voice) {
+  if (!("caches" in window)) return null;
+  try {
+    const cache = await caches.open(AUDIO_CACHE_NAME);
+    const response = await cache.match(getAudioCacheRequest(voice));
+    return response ? response.blob() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function cacheAudio(voice, audioBlob) {
+  if (!("caches" in window)) return;
+  try {
+    const cache = await caches.open(AUDIO_CACHE_NAME);
+    await cache.put(
+      getAudioCacheRequest(voice),
+      new Response(audioBlob, { headers: { "Content-Type": audioBlob.type || "audio/wav" } })
+    );
+  } catch {
+    // A disabled or full browser cache should never prevent playback.
+  }
+}
 
 function setStatus(message, tone = "") {
   dom.status.textContent = message;
@@ -81,29 +114,36 @@ async function playVoice(voice, button) {
   setStatus(`Generating ${voice.id} with ${GEMINI_TTS_MODELS.find(({ id }) => id === state.model)?.label}…`, "loading");
 
   try {
-    const response = await fetch("./api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text: dom.sampleSelect.value,
-        model: state.model,
-        voice: voice.id,
-        style: "grounded",
-      }),
-      signal: state.requestController.signal,
-    });
+    let audioBlob = await getCachedAudio(voice);
+    const cached = Boolean(audioBlob);
 
-    if (!response.ok) {
-      const details = await response.json().catch(() => ({}));
-      throw new Error(details.error || `Voice service returned ${response.status}.`);
+    if (!audioBlob) {
+      const response = await fetch("./api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: dom.sampleSelect.value,
+          model: state.model,
+          voice: voice.id,
+          style: "grounded",
+        }),
+        signal: state.requestController.signal,
+      });
+
+      if (!response.ok) {
+        const details = await response.json().catch(() => ({}));
+        throw new Error(details.error || `Voice service returned ${response.status}.`);
+      }
+
+      audioBlob = await response.blob();
+      await cacheAudio(voice, audioBlob);
     }
 
-    const audioBlob = await response.blob();
     const audioUrl = URL.createObjectURL(audioBlob);
     const audio = new Audio(audioUrl);
     state.activeAudio = audio;
     button.textContent = "Playing…";
-    setStatus(`Listening to ${voice.id}.`, "playing");
+    setStatus(`Listening to ${voice.id}${cached ? " · saved preview" : ""}.`, "playing");
 
     await new Promise((resolve, reject) => {
       audio.onended = resolve;

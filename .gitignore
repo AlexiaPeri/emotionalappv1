@@ -10,3 +10,4 @@ dist/
 DerivedData/
 *.xcuserstate
 xcuserdata/
+.vercel

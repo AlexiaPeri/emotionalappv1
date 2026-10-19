@@ -101,7 +101,7 @@ async function requestGemini(apiKey, payload, attempt = 0) {
     signal: AbortSignal.timeout(15000),
   });
 
-  if ((upstream.status === 429 || upstream.status >= 500) && attempt === 0) {
+  if (upstream.status >= 500 && attempt === 0) {
     return requestGemini(apiKey, payload, 1);
   }
 
@@ -170,8 +170,17 @@ async function handler(request, response) {
       status: error.status,
       details: error.details,
     });
-    const status = error.status === 429 ? 429 : 502;
-    return sendJson(response, status, { error: "The voice could not be generated. Please try again." });
+    if (error.status === 429) {
+      const dailyLimitReached = /per day/i.test(error.details || "");
+      if (!dailyLimitReached) response.setHeader("Retry-After", "60");
+      return sendJson(response, 429, {
+        code: dailyLimitReached ? "daily_quota_reached" : "rate_limit_reached",
+        error: dailyLimitReached
+          ? "Today's Gemini testing limit has been reached. Try again after Google's daily quota resets."
+          : "Gemini is receiving too many voice requests. Please wait one minute and try again.",
+      });
+    }
+    return sendJson(response, 502, { error: "The voice could not be generated. Please try again." });
   }
 }
 

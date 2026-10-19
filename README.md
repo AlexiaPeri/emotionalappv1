@@ -52,11 +52,12 @@ La page de préparation web reprend le parcours de l'app native : 15 minutes ou 
 - **Core portable** : copy, presets de voix, transformation de texte
 - **Pages** : accueil, pratique, FAQ, contact
 - **Reconnaissance vocale** : Web Speech API (Chrome uniquement)
-- **TTS cible** : Gemini 3.8 Flash TTS, avec comparaison Flash / Flash-Lite et fallback temporaire ElevenLabs / navigateur
-- **Hébergement actuel** : GitHub Pages pour le frontend ; migration vers un hébergement avec fonction serveur nécessaire pour Gemini
+- **TTS cible** : Gemini 3.8 Flash-Lite TTS (choix provisoire pour réduire latence et coût), avec fallback temporaire ElevenLabs / navigateur
+- **Voix candidates** : Callirrhoe (féminine) et Umbriel (masculine), à confirmer après comparaison complète
+- **Hébergement actuel** : Vercel pour le frontend et la fonction Gemini sécurisée
 - **Clé Gemini** : exclusivement côté serveur via `GEMINI_API_KEY`, jamais dans le navigateur ni dans Git
 
-La transition Gemini est préparée séparément avant de remplacer le moteur de la pratique : le comparateur privé `voice-lab.html` permet d'écouter quatre voix féminines et quatre voix masculines avec les mêmes phrases, puis sauvegarde le choix localement. L'endpoint `api/tts.js` limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. Après validation d'une voix, cet endpoint sera connecté à la boucle de répétition avec lecture en streaming.
+La transition Gemini est préparée séparément avant de remplacer le moteur de la pratique : le comparateur privé `voice-lab.html` permet d'écouter quatre voix féminines et quatre voix masculines avec les mêmes phrases, puis sauvegarde le choix localement. Les extraits réussis sont conservés dans le cache du navigateur afin de ne pas consommer à nouveau le quota pour une combinaison déjà écoutée. L'endpoint `api/tts.js` limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. Après validation des deux voix, cet endpoint sera connecté à la boucle de répétition avec lecture en streaming et choix féminin/masculin dans l'interface.
 
 Cette stack sert à tester les parcours et le design. Elle n'est pas l'architecture vocale prévue pour l'app iPhone finale.
 
@@ -190,6 +191,8 @@ python3 -m http.server 8000
 5. Ouvrir `/voice-lab.html` et comparer les voix avant d'activer Gemini dans la pratique principale.
 
 Le serveur autorise actuellement `gemini-3.8-flash-tts` et `gemini-3.8-flash-lite-tts`, avec une limite de 320 caractères par génération et un rate limit de précaution.
+
+Le Free Tier Google est insuffisant pour un test complet (actuellement 3 requêtes par minute et 10 par jour pour chaque modèle). La facturation Google doit être activée avant les tests utilisateurs et la mise en production ; le comparateur affiche une erreur explicite lorsque ce quota est atteint.
 
 ## Configuration ElevenLabs — fallback temporaire
 
