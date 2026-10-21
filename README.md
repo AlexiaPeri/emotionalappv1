@@ -298,4 +298,4 @@ Voir [la comparaison visuelle des deux homepages](docs/homepage-comparison.md).
 
 - Chrome est requis pour la Web Speech API (pas de support Firefox/Safari)
 - Le token GitHub ne doit jamais transiter par Discord (révocation automatique)
-- Deploy : `git push` sur `main` → le projet Vercel connecté se met à jour automatiquement
+- Deploy : `git push` sur `main`, puis `npx vercel@latest --prod --yes` tant que l'accès du projet Vercel au dépôt GitHub privé n'a pas été réautorisé
