@@ -2821,14 +2821,15 @@ body[data-view="end"] .page-end {
       0 30px 90px rgba(0, 0, 0, 0.46),
       inset 0 1px 0 rgba(255, 255, 255, 0.035);
     scrollbar-width: thin;
+    text-align: center;
   }
 
   .page-title {
     font-size: clamp(2rem, 3vw, 3rem);
   }
 
-  /* Immersive desktop home: copy on the left, portrait artwork preserved on
-     the right instead of being stretched across a landscape viewport. */
+  /* Immersive desktop home: a centred hierarchy over a dedicated landscape
+     artwork. The phone artwork remains untouched outside this breakpoint. */
   body[data-view="home"] .pages,
   body[data-view="first"] .pages {
     max-width: none;
@@ -2849,25 +2850,21 @@ body[data-view="end"] .page-end {
 
   .home-screen {
     display: grid;
-    grid-template-columns: minmax(350px, 0.78fr) minmax(440px, 1.22fr);
+    grid-template-columns: minmax(0, 1fr);
     align-content: center;
-    justify-items: start;
-    background:
-      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.93) 31%, rgba(6, 5, 4, 0.5) 52%, rgba(6, 5, 4, 0.06) 76%),
-      #070706 url("../assets/home1-bg.png") 80% 47% / auto 138% no-repeat;
-    text-align: left;
+    justify-items: center;
+    background: #050504 url("../assets/home1-bg-web.jpg") center / contain no-repeat;
+    text-align: center;
   }
 
   body[data-home-version="home2"] .home-screen {
-    background:
-      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.93) 31%, rgba(6, 5, 4, 0.5) 52%, rgba(6, 5, 4, 0.06) 76%),
-      #070706 url("../assets/home2-bg.png") 80% 47% / auto 138% no-repeat;
+    background: #050504 url("../assets/home2-bg.png") center / contain no-repeat;
   }
 
   .home-screen::before {
     background:
-      radial-gradient(ellipse at 78% 48%, transparent 0 34%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.52) 100%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 22%, rgba(0, 0, 0, 0.16));
+      radial-gradient(ellipse at 50% 43%, rgba(0, 0, 0, 0.08) 0 24%, rgba(0, 0, 0, 0.25) 62%, rgba(0, 0, 0, 0.42) 100%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 22%, rgba(0, 0, 0, 0.12));
   }
 
   .home-screen .home-status,
@@ -2882,8 +2879,8 @@ body[data-view="end"] .page-end {
   .home-screen .welcome-copy,
   .home-screen > .page-cta {
     grid-column: 1;
-    margin-right: 0;
-    margin-left: 0;
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .home-screen .brand-mark {
@@ -2897,13 +2894,13 @@ body[data-view="end"] .page-end {
     margin-bottom: 0.85rem;
     font-size: clamp(2.5rem, 4vw, 3.4rem);
     letter-spacing: 0.31em;
-    text-indent: 0;
+    text-indent: 0.31em;
   }
 
   .home-screen .poster-subtitle {
     margin-bottom: 1.7rem;
     font-size: 0.82rem;
-    text-indent: 0;
+    text-indent: 0.52em;
   }
 
   .home-screen .poster-rule {
@@ -2923,27 +2920,22 @@ body[data-view="end"] .page-end {
   }
 
   .first-card {
-    grid-template-columns: minmax(330px, 0.75fr) minmax(420px, 1.25fr);
-    justify-items: start;
-    padding-right: clamp(3rem, 7vw, 7.5rem);
-    background:
-      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.9) 36%, rgba(6, 5, 4, 0.3) 62%, rgba(6, 5, 4, 0.08) 100%),
-      #070706 url("../assets/home1-bg.png") 82% 47% / auto 138% no-repeat;
-    text-align: left;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    background: #050504 url("../assets/home1-bg-web.jpg") center / contain no-repeat;
+    text-align: center;
   }
 
   body[data-home-version="home2"] .first-card {
-    background:
-      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.9) 36%, rgba(6, 5, 4, 0.3) 62%, rgba(6, 5, 4, 0.08) 100%),
-      #070706 url("../assets/home2-bg.png") 82% 47% / auto 138% no-repeat;
+    background: #050504 url("../assets/home2-bg.png") center / contain no-repeat;
   }
 
   .first-card p,
   .first-card .page-cta {
     grid-column: 1;
-    justify-self: start;
-    margin-right: 0;
-    margin-left: 0;
+    justify-self: center;
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .first-card p {
@@ -2957,17 +2949,16 @@ body[data-view="end"] .page-end {
 
   /* Guide */
   .intro-card {
-    grid-template-columns: minmax(230px, 0.52fr) minmax(0, 1.18fr);
+    grid-template-columns: minmax(0, 760px);
     align-content: start;
-    column-gap: clamp(3rem, 7vw, 7rem);
+    justify-content: center;
     row-gap: 1.5rem;
   }
 
   .intro-card .page-title {
-    position: sticky;
-    top: 112px;
-    max-width: 15rem;
-    margin: 0;
+    position: static;
+    max-width: 28rem;
+    margin: 0 auto 1rem;
     color: var(--gold-soft);
     font-size: clamp(1.75rem, 2.4vw, 2.6rem);
     line-height: 1.18;
@@ -2975,12 +2966,13 @@ body[data-view="end"] .page-end {
 
   .intro-written,
   .intro-return-btn {
-    grid-column: 2;
+    grid-column: 1;
   }
 
   .intro-written {
-    max-width: 690px;
+    max-width: 760px;
     gap: 1rem;
+    text-align: center;
   }
 
   .intro-written p {
@@ -2989,12 +2981,12 @@ body[data-view="end"] .page-end {
   }
 
   .intro-return-btn {
-    justify-self: start;
+    justify-self: center;
     margin-top: 0.4rem;
   }
 
-  /* Practice setup: two deliberate zones on desktop. The live practice stays
-     narrow and centred so the voice remains the only point of attention. */
+  /* Practice setup: one centred web composition. Duration and voice controls
+     use horizontal rows, while all hierarchy remains on the central axis. */
   .practice-chamber {
     min-height: calc(100vh - 124px);
     align-items: stretch;
@@ -3002,42 +2994,48 @@ body[data-view="end"] .page-end {
   }
 
   .practice-setup {
-    width: min(100%, 1010px);
+    width: min(100%, 980px);
     grid-template-areas:
-      "primary options"
-      "footer footer";
-    grid-template-columns: minmax(280px, 0.82fr) minmax(390px, 1.18fr);
+      "primary"
+      "options"
+      "footer";
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
-    justify-items: stretch;
-    column-gap: clamp(2.5rem, 6vw, 6rem);
-    row-gap: 2rem;
+    justify-items: center;
+    row-gap: 1.7rem;
     margin: auto;
-    text-align: left;
+    text-align: center;
   }
 
   .practice-setup-primary,
   .practice-setup-options {
     display: grid;
+    width: 100%;
     align-content: start;
+    justify-items: center;
     gap: 1rem;
   }
 
   .practice-setup-primary {
     grid-area: primary;
-    padding-top: 0.1rem;
+    max-width: 560px;
+    padding-top: 0;
   }
 
   .practice-setup-options {
     grid-area: options;
+    max-width: 920px;
     gap: 0.72rem;
   }
 
   .practice-setup-footer {
     display: grid;
+    width: min(100%, 560px);
     grid-area: footer;
-    grid-template-columns: minmax(0, 1fr) 270px;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
-    gap: 2rem;
+    justify-items: center;
+    gap: 0.9rem;
     padding-top: 1.35rem;
     border-top: 1px solid rgba(218, 166, 98, 0.13);
   }
@@ -3062,6 +3060,47 @@ body[data-view="end"] .page-end {
     margin-top: 0;
   }
 
+  .duration-prompt,
+  .setup-subtitle,
+  .setup-section-label,
+  .duration-error {
+    text-align: center;
+  }
+
+  .opening-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.72rem;
+  }
+
+  .opening-choice {
+    display: grid;
+    min-height: 112px;
+    place-items: center;
+    align-content: center;
+    gap: 0.6rem;
+    text-align: center;
+  }
+
+  .opening-copy {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .movement-reminders-choice,
+  .practice-voice-options {
+    width: min(100%, 560px);
+  }
+
+  .movement-reminders-choice {
+    justify-content: center;
+    gap: 1.2rem;
+    text-align: center;
+  }
+
+  .movement-reminders-copy {
+    justify-items: center;
+  }
+
   .duration-choice,
   .opening-choice,
   .movement-reminders-choice,
@@ -3083,11 +3122,12 @@ body[data-view="end"] .page-end {
 
   .practice-setup-footer .practice-begin-btn {
     width: 270px;
-    margin: 0;
+    margin: 0 auto;
   }
 
   .practice-live {
     width: min(100%, 540px);
+    text-align: center;
   }
 
   .opening-stage {
@@ -3117,15 +3157,15 @@ body[data-view="end"] .page-end {
     min-height: 100%;
     padding: 1.25rem;
     border-radius: 12px;
+    text-align: center;
   }
 
-  /* FAQ: a readable single accordion column with its contact action in a
-     separate side rail. This keeps question order obvious. */
+  /* FAQ */
   .page-faq .page-card {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(230px, 0.38fr);
+    grid-template-columns: minmax(0, 760px);
     align-content: start;
-    column-gap: clamp(3rem, 7vw, 7rem);
+    justify-content: center;
   }
 
   .page-faq .faq-title,
@@ -3136,16 +3176,19 @@ body[data-view="end"] .page-end {
   .page-faq .faq-title {
     font-size: clamp(1.8rem, 2.5vw, 2.55rem);
     line-height: 1.2;
+    text-align: center;
   }
 
   .page-faq .faq-list {
-    max-width: 720px;
+    width: 100%;
+    max-width: 760px;
     gap: 0.85rem;
   }
 
   .faq-question {
-    padding: 1.15rem 3rem 1.15rem 1.2rem;
+    padding: 1.15rem 3rem;
     font-size: 1rem;
+    text-align: center;
   }
 
   .faq-answer {
@@ -3153,25 +3196,31 @@ body[data-view="end"] .page-end {
   }
 
   .page-faq .faq-contact {
-    position: sticky;
-    top: 116px;
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    align-self: start;
-    margin: 0;
+    position: static;
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: center;
+    width: min(100%, 420px);
+    margin: 2rem auto 0;
     padding: 1.5rem;
     border: 1px solid rgba(218, 166, 98, 0.15);
     border-radius: 18px;
     background: rgba(7, 6, 5, 0.32);
+    text-align: center;
+  }
+
+  .faq-contact .contact-button {
+    margin-right: auto;
+    margin-left: auto;
   }
 
   /* Contact */
   .contact-card {
-    width: min(100%, 1080px);
-    grid-template-columns: minmax(230px, 0.68fr) minmax(440px, 1.32fr);
-    grid-template-rows: auto auto 1fr;
+    width: min(100%, 820px);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
     align-content: center;
-    column-gap: clamp(3rem, 7vw, 7rem);
+    justify-items: center;
     row-gap: 1rem;
   }
 
@@ -3183,6 +3232,7 @@ body[data-view="end"] .page-end {
 
   .contact-back-btn {
     align-self: start;
+    justify-self: center;
     margin-bottom: 1rem;
   }
 
@@ -3193,17 +3243,29 @@ body[data-view="end"] .page-end {
 
   .contact-form-intro {
     align-self: start;
-    max-width: 18rem;
+    max-width: 30rem;
     font-size: 0.92rem;
   }
 
   .contact-form {
-    grid-column: 2;
-    grid-row: 1 / span 3;
+    width: 100%;
+    grid-column: 1;
+    grid-row: auto;
     grid-template-columns: 1fr 1fr;
     align-self: center;
     column-gap: 1rem;
     margin: 0;
+  }
+
+  .contact-field {
+    text-align: center;
+  }
+
+  .contact-consent,
+  .contact-form-status,
+  .contact-privacy-note {
+    justify-content: center;
+    text-align: center;
   }
 
   .contact-field[for="contact-message"],
@@ -3217,10 +3279,10 @@ body[data-view="end"] .page-end {
   .reflect-card {
     width: min(100%, 820px);
     align-content: center;
+    text-align: center;
   }
 
-  /* Illustrated transitions remain portrait compositions inside a wide web
-     stage. Their artwork is never distorted or cropped into a fake phone. */
+  /* Illustrated transitions use dedicated uncropped 16:9 desktop artwork. */
   body[data-view="ground"] .pages,
   body[data-view="support"] .pages,
   body[data-view="breathing"] .pages,
@@ -3242,16 +3304,37 @@ body[data-view="end"] .page-end {
 
   .ground-screen {
     background-color: #9f7784;
-    background-position: center bottom;
-    background-size: auto 100%;
+    background-image: url("../assets/ground-bg-soft-web.jpg");
+    background-position: center;
+    background-size: contain;
     background-repeat: no-repeat;
   }
 
   .end-screen {
-    background-color: #130d0b;
+    background-color: #0c3938;
+    background-image: url("../assets/end-bg-thank-you-web.jpg");
     background-position: center;
-    background-size: auto 100%;
+    background-size: contain;
     background-repeat: no-repeat;
+  }
+
+  .end-message {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: auto;
+    height: auto;
+    margin: 0 0 5vh;
+    overflow: visible;
+    clip: auto;
+    color: rgba(255, 238, 214, 0.95);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-size: clamp(2.8rem, 6vw, 5.7rem);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    text-shadow: 0 2px 24px rgba(80, 27, 18, 0.22);
+    white-space: nowrap;
   }
 
   .custom-duration-modal {
@@ -3270,5 +3353,58 @@ body[data-view="end"] .page-end {
   [tabindex]:focus-visible {
     outline: 2px solid rgba(231, 189, 118, 0.78);
     outline-offset: 3px;
+  }
+}
+
+/* Keep the complete centred practice setup visible on common laptop screens
+   without changing either the phone layout or the large desktop rhythm. */
+@media (min-width: 900px) and (max-height: 760px) {
+  .practice-chamber {
+    padding: 1.55rem clamp(2.4rem, 4vw, 4.5rem) 1.25rem;
+  }
+
+  .practice-setup {
+    row-gap: 0.85rem;
+  }
+
+  .practice-setup-primary,
+  .practice-setup-options {
+    gap: 0.5rem;
+  }
+
+  .duration-prompt {
+    font-size: 2.45rem;
+  }
+
+  .setup-subtitle {
+    margin-top: -0.1rem;
+  }
+
+  .duration-choice {
+    min-height: 58px;
+  }
+
+  .opening-choice {
+    min-height: 88px;
+    gap: 0.38rem;
+    padding-block: 0.5rem;
+  }
+
+  .movement-reminders-choice {
+    min-height: 54px;
+    padding-block: 0.58rem;
+  }
+
+  .practice-voice-choice {
+    min-height: 52px;
+  }
+
+  .practice-setup-footer {
+    gap: 0.45rem;
+    padding-top: 0.72rem;
+  }
+
+  .practice-setup-footer .practice-begin-btn {
+    min-height: 44px;
   }
 }

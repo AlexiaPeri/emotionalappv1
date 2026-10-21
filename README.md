@@ -49,9 +49,9 @@ La page de préparation web reprend le parcours de l'app native : 15 minutes ou 
 La web app possède désormais deux présentations responsive clairement séparées. Elles utilisent exactement les mêmes textes, choix, données locales et logique de session ; seul le système de mise en page change automatiquement selon la largeur disponible.
 
 - **Design téléphone / iPhone (`< 900 px`)** : le design mobile historique est conservé intact, avec ses proportions verticales, ses cartes, sa navigation compacte et son déroulé en une colonne. Il reste la référence visuelle de l'app native.
-- **Design web desktop (`≥ 900 px`)** : une interface paysage dédiée exploite la largeur de l'écran sans agrandir artificiellement un cadre de téléphone. Elle ajoute un header web horizontal, un accueil éditorial en paysage, une préparation de pratique en deux zones, un Guide à largeur de lecture confortable, une FAQ avec rail de contact, un formulaire desktop et une grille de notes.
+- **Design web desktop (`≥ 900 px`)** : une interface paysage dédiée exploite la largeur de l'écran sans agrandir artificiellement un cadre de téléphone. Toute la hiérarchie principale reste centrée : accueil, préparation de pratique, Guide, FAQ, formulaire, Notes et pratique active suivent le même axe visuel central.
 - **Pratique en cours** : même sur ordinateur, elle reste volontairement étroite et centrée pour éviter toute distraction pendant l'expérience vocale.
-- **Écrans illustrés** : Grounding, Breathing et Thank you utilisent un stage web large, mais leurs compositions verticales restent centrées et ne sont ni étirées ni déformées.
+- **Écrans illustrés** : le desktop utilise trois images 16:9 dédiées et optimisées — `home1-bg-web.jpg`, `ground-bg-soft-web.jpg` et `end-bg-thank-you-web.jpg`. Elles ont été recomposées à partir des créations portrait pour que tous les éléments restent visibles dans un vrai cadre paysage, sans étirement ni recadrage de type téléphone. Le texte de l'écran Thank you est rendu par l'interface au centre de l'image afin de rester net et responsive.
 
 Le breakpoint desktop se trouve exclusivement dans le bloc `@media (min-width: 900px)` de `css/styles.css`. Toute évolution desktop doit rester dans cette couche afin de ne pas modifier involontairement le design téléphone.
 
