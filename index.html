@@ -9,35 +9,45 @@
 </head>
 <body data-home-version="home1">
   <div class="app-shell">
-    <div class="top-bar">
-      <button class="lang-btn active" data-lang="en">EN</button>
-      <button class="lang-btn" data-lang="fr">FR</button>
-    </div>
-
-    <nav class="page-nav" aria-label="Sections">
-      <button class="page-btn active" data-view="practice">Emerge</button>
-      <button class="page-btn" data-view="intro">Guide</button>
-      <button class="page-btn" data-view="faq">FAQ</button>
-      <button class="page-btn" data-view="notes">My Notes</button>
-    </nav>
-
-    <button class="settings-btn" id="settings-toggle" title="Réglages">⚙️</button>
-
-    <div class="settings-panel" id="settings-panel">
-      <div class="gemini-settings">
-        <span class="settings-eyebrow">Repetition voice</span>
-        <strong id="tts-voice-summary">Female</strong>
-        <p>Gemini 3.8 Flash-Lite · Change the voice before beginning a practice.</p>
+    <header class="app-header">
+      <div class="app-header-brand" aria-hidden="true">
+        <img src="./assets/logo.png" alt="">
+        <span>
+          <strong>EMERGE</strong>
+          <small>LET IT OUT</small>
+        </span>
       </div>
 
-      <div class="how-it-works">
-        <div class="how-title" id="how-title">Le geste</div>
-        <div class="how-text" id="how-text">
-          Parle à voix haute. L'app te renvoie tes mots.<br><br>
-          Répète-les, respire, laisse ton corps répondre. Change seulement quand une phrase plus juste vient d'elle-même.
+      <div class="top-bar">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+      </div>
+
+      <nav class="page-nav" aria-label="Sections">
+        <button class="page-btn active" data-view="practice">Emerge</button>
+        <button class="page-btn" data-view="intro">Guide</button>
+        <button class="page-btn" data-view="faq">FAQ</button>
+        <button class="page-btn" data-view="notes">My Notes</button>
+      </nav>
+
+      <button class="settings-btn" id="settings-toggle" title="Réglages">⚙️</button>
+
+      <div class="settings-panel" id="settings-panel">
+        <div class="gemini-settings">
+          <span class="settings-eyebrow">Repetition voice</span>
+          <strong id="tts-voice-summary">Female</strong>
+          <p>Gemini 3.8 Flash-Lite · Change the voice before beginning a practice.</p>
+        </div>
+
+        <div class="how-it-works">
+          <div class="how-title" id="how-title">Le geste</div>
+          <div class="how-text" id="how-text">
+            Parle à voix haute. L'app te renvoie tes mots.<br><br>
+            Répète-les, respire, laisse ton corps répondre. Change seulement quand une phrase plus juste vient d'elle-même.
+          </div>
         </div>
       </div>
-    </div>
+    </header>
 
     <main class="pages">
       <section class="page page-first" data-view="first" hidden>
@@ -96,74 +106,79 @@
       <section class="page page-practice" data-view="practice" hidden>
         <div class="page-card practice-card practice-chamber">
           <div class="practice-setup" id="practice-setup">
-            <p class="duration-prompt" id="duration-prompt">Let's begin.</p>
-            <p class="setup-subtitle" id="setup-subtitle">A few choices, then the space is yours.</p>
+            <div class="practice-setup-primary">
+              <p class="duration-prompt" id="duration-prompt">Let's begin.</p>
+              <p class="setup-subtitle" id="setup-subtitle">A few choices, then the space is yours.</p>
 
-            <p class="setup-section-label" id="duration-section-label">Duration</p>
+              <p class="setup-section-label" id="duration-section-label">Duration</p>
 
-            <div class="duration-options" role="group" aria-label="Practice duration">
-              <button class="duration-choice is-selected" id="duration-recommended-btn" type="button">
-                <span class="duration-value" id="duration-recommended-value">15 min</span>
-                <span class="duration-label" id="duration-recommended-label">Suggested</span>
-              </button>
+              <div class="duration-options" role="group" aria-label="Practice duration">
+                <button class="duration-choice is-selected" id="duration-recommended-btn" type="button">
+                  <span class="duration-value" id="duration-recommended-value">15 min</span>
+                  <span class="duration-label" id="duration-recommended-label">Suggested</span>
+                </button>
 
-              <button class="duration-choice duration-custom" id="duration-custom-btn" type="button">
-                <span class="duration-value" id="duration-custom-label">Custom</span>
-                <span class="duration-label" id="duration-custom-detail">3–60 min</span>
-              </button>
+                <button class="duration-choice duration-custom" id="duration-custom-btn" type="button">
+                  <span class="duration-value" id="duration-custom-label">Custom</span>
+                  <span class="duration-label" id="duration-custom-detail">3–60 min</span>
+                </button>
+              </div>
             </div>
 
-            <p class="setup-section-label opening-section-label" id="opening-section-label">Opening</p>
+            <div class="practice-setup-options">
+              <p class="setup-section-label opening-section-label" id="opening-section-label">Opening</p>
 
-            <div class="opening-options" role="radiogroup" aria-label="Opening guidance">
-              <button class="opening-choice" data-opening="quiet" role="radio" aria-checked="false" type="button">
-                <span class="opening-radio" aria-hidden="true"></span>
-                <span class="opening-copy">
-                  <strong id="opening-quiet-title">Quiet arrival</strong>
-                  <small id="opening-quiet-detail">Short · simple and neutral</small>
-                </span>
-              </button>
+              <div class="opening-options" role="radiogroup" aria-label="Opening guidance">
+                <button class="opening-choice" data-opening="quiet" role="radio" aria-checked="false" type="button">
+                  <span class="opening-radio" aria-hidden="true"></span>
+                  <span class="opening-copy">
+                    <strong id="opening-quiet-title">Quiet arrival</strong>
+                    <small id="opening-quiet-detail">Short · simple and neutral</small>
+                  </span>
+                </button>
 
-              <button class="opening-choice" data-opening="guided" role="radio" aria-checked="false" type="button">
-                <span class="opening-radio" aria-hidden="true"></span>
-                <span class="opening-copy">
-                  <strong id="opening-guided-title">Guided release</strong>
-                  <small id="opening-guided-detail">Short · more energising</small>
-                </span>
-              </button>
+                <button class="opening-choice" data-opening="guided" role="radio" aria-checked="false" type="button">
+                  <span class="opening-radio" aria-hidden="true"></span>
+                  <span class="opening-copy">
+                    <strong id="opening-guided-title">Guided release</strong>
+                    <small id="opening-guided-detail">Short · more energising</small>
+                  </span>
+                </button>
 
-              <button class="opening-choice" data-opening="full" role="radio" aria-checked="true" type="button">
-                <span class="opening-radio" aria-hidden="true"></span>
-                <span class="opening-copy">
-                  <strong id="opening-full-title">Full guidance</strong>
-                  <small id="opening-full-detail">Long · the original introduction</small>
+                <button class="opening-choice" data-opening="full" role="radio" aria-checked="true" type="button">
+                  <span class="opening-radio" aria-hidden="true"></span>
+                  <span class="opening-copy">
+                    <strong id="opening-full-title">Full guidance</strong>
+                    <small id="opening-full-detail">Long · the original introduction</small>
+                  </span>
+                </button>
+              </div>
+
+              <label class="movement-reminders-choice" for="movement-reminders-input">
+                <span class="movement-reminders-copy">
+                  <strong id="movement-reminders-title">Movement reminders</strong>
+                  <small id="movement-reminders-detail">Throughout the practice</small>
                 </span>
-              </button>
+                <input id="movement-reminders-input" type="checkbox">
+                <span class="setup-switch" aria-hidden="true"></span>
+              </label>
+
+              <p class="setup-section-label voice-section-label" id="voice-section-label">Repetition voice</p>
+
+              <div class="practice-voice-options" role="radiogroup" aria-label="Repetition voice">
+                <button class="practice-voice-choice is-selected" data-voice="Callirrhoe" role="radio" aria-checked="true" type="button">
+                  <strong id="voice-female-title">Female</strong>
+                </button>
+                <button class="practice-voice-choice" data-voice="Umbriel" role="radio" aria-checked="false" type="button">
+                  <strong id="voice-male-title">Male</strong>
+                </button>
+              </div>
             </div>
 
-            <label class="movement-reminders-choice" for="movement-reminders-input">
-              <span class="movement-reminders-copy">
-                <strong id="movement-reminders-title">Movement reminders</strong>
-                <small id="movement-reminders-detail">Throughout the practice</small>
-              </span>
-              <input id="movement-reminders-input" type="checkbox">
-              <span class="setup-switch" aria-hidden="true"></span>
-            </label>
-
-            <p class="setup-section-label voice-section-label" id="voice-section-label">Repetition voice</p>
-
-            <div class="practice-voice-options" role="radiogroup" aria-label="Repetition voice">
-              <button class="practice-voice-choice is-selected" data-voice="Callirrhoe" role="radio" aria-checked="true" type="button">
-                <strong id="voice-female-title">Female</strong>
-              </button>
-              <button class="practice-voice-choice" data-voice="Umbriel" role="radio" aria-checked="false" type="button">
-                <strong id="voice-male-title">Male</strong>
-              </button>
+            <div class="practice-setup-footer">
+              <p class="duration-error" id="duration-error" role="status" aria-live="polite"></p>
+              <button class="page-cta practice-begin-btn" id="practice-begin-btn" type="button">Begin practice</button>
             </div>
-
-            <p class="duration-error" id="duration-error" role="status" aria-live="polite"></p>
-
-            <button class="page-cta practice-begin-btn" id="practice-begin-btn" type="button">Begin practice</button>
           </div>
 
           <div class="practice-live" id="practice-live" hidden>

@@ -60,6 +60,19 @@ button {
   min-height: 100vh;
 }
 
+/* These wrappers have no visual effect on the phone layout. They only become
+   layout containers in the dedicated desktop experience below. */
+.app-header,
+.practice-setup-primary,
+.practice-setup-options,
+.practice-setup-footer {
+  display: contents;
+}
+
+.app-header-brand {
+  display: none;
+}
+
 .top-bar {
   position: fixed;
   top: 0.75rem;
@@ -2628,5 +2641,634 @@ body[data-view="end"] .page-end {
 
   .page-card {
     padding: 1.15rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Desktop web experience
+
+   The mobile/iPhone composition above intentionally remains the source of
+   truth below 900px. This layer is a separate widescreen layout: it uses the
+   same content and interactions without stretching the phone simulator.
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 900px) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(218, 166, 98, 0.28) #050504;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at 14% 10%, rgba(151, 65, 36, 0.16), transparent 32%),
+      radial-gradient(ellipse at 88% 88%, rgba(218, 166, 98, 0.07), transparent 38%),
+      linear-gradient(180deg, #0b0907 0%, #030303 100%);
+  }
+
+  body::-webkit-scrollbar {
+    display: block;
+    width: 9px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background: #050504;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    border: 2px solid #050504;
+    border-radius: 999px;
+    background: rgba(218, 166, 98, 0.28);
+  }
+
+  .app-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 40;
+    display: grid;
+    height: 76px;
+    grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
+    align-items: center;
+    padding: 0 clamp(1.5rem, 4vw, 4.75rem);
+    border-bottom: 1px solid rgba(218, 166, 98, 0.12);
+    background: rgba(7, 6, 5, 0.82);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(22px);
+  }
+
+  .app-header-brand {
+    display: flex;
+    grid-column: 1;
+    align-items: center;
+    justify-self: start;
+    gap: 0.72rem;
+  }
+
+  .app-header-brand img {
+    display: block;
+    width: 38px;
+    height: 42px;
+    object-fit: contain;
+    opacity: 0.86;
+  }
+
+  .app-header-brand span {
+    display: grid;
+    gap: 0.17rem;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .app-header-brand strong {
+    color: rgba(232, 190, 119, 0.92);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+  }
+
+  .app-header-brand small {
+    color: rgba(244, 229, 207, 0.4);
+    font-size: 0.52rem;
+    letter-spacing: 0.28em;
+  }
+
+  .page-nav {
+    position: static;
+    grid-column: 2;
+    width: auto;
+    min-width: 430px;
+    gap: 0.42rem;
+    transform: none;
+  }
+
+  .page-btn {
+    min-height: 36px;
+    padding: 0 1rem;
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    font-size: 0.61rem;
+    letter-spacing: 0.12em;
+  }
+
+  .page-btn:hover {
+    border-color: rgba(218, 166, 98, 0.22);
+    color: rgba(244, 229, 207, 0.92);
+  }
+
+  .page-btn.active {
+    background: rgba(136, 63, 40, 0.62);
+    box-shadow: inset 0 1px 0 rgba(255, 229, 197, 0.1);
+  }
+
+  .top-bar {
+    position: static;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    margin-right: 48px;
+  }
+
+  .lang-btn {
+    min-width: 36px;
+    min-height: 31px;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .settings-btn {
+    position: static;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .settings-panel {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    right: clamp(1.5rem, 4vw, 4.75rem);
+  }
+
+  body[data-view="home"] .app-header,
+  body[data-view="first"] .app-header,
+  body[data-view="ground"] .app-header,
+  body[data-view="support"] .app-header,
+  body[data-view="breathing"] .app-header,
+  body[data-view="end"] .app-header,
+  body.session-focus .app-header {
+    display: none;
+  }
+
+  .pages {
+    width: 100%;
+    max-width: 1440px;
+    min-height: 100vh;
+    padding: 100px clamp(1.5rem, 4vw, 4rem) 2rem;
+  }
+
+  .page-card {
+    width: min(100%, 1180px);
+    height: auto;
+    min-height: calc(100vh - 124px);
+    overflow: visible;
+    padding: clamp(2.4rem, 4vw, 4.5rem);
+    border: 1px solid rgba(245, 245, 245, 0.12);
+    border-radius: 30px;
+    box-shadow:
+      0 30px 90px rgba(0, 0, 0, 0.46),
+      inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    scrollbar-width: thin;
+  }
+
+  .page-title {
+    font-size: clamp(2rem, 3vw, 3rem);
+  }
+
+  /* Immersive desktop home: copy on the left, portrait artwork preserved on
+     the right instead of being stretched across a landscape viewport. */
+  body[data-view="home"] .pages,
+  body[data-view="first"] .pages {
+    max-width: none;
+    padding: 1.5rem;
+  }
+
+  .home-screen,
+  .first-card {
+    width: min(calc(100vw - 3rem), 1380px);
+    min-height: calc(100vh - 3rem);
+    padding: clamp(3rem, 7vw, 7.5rem);
+    border: 1px solid rgba(245, 245, 245, 0.13);
+    border-radius: 30px;
+    box-shadow:
+      0 32px 100px rgba(0, 0, 0, 0.58),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .home-screen {
+    display: grid;
+    grid-template-columns: minmax(350px, 0.78fr) minmax(440px, 1.22fr);
+    align-content: center;
+    justify-items: start;
+    background:
+      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.93) 31%, rgba(6, 5, 4, 0.5) 52%, rgba(6, 5, 4, 0.06) 76%),
+      #070706 url("../assets/home1-bg.png") 80% 47% / auto 138% no-repeat;
+    text-align: left;
+  }
+
+  body[data-home-version="home2"] .home-screen {
+    background:
+      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.93) 31%, rgba(6, 5, 4, 0.5) 52%, rgba(6, 5, 4, 0.06) 76%),
+      #070706 url("../assets/home2-bg.png") 80% 47% / auto 138% no-repeat;
+  }
+
+  .home-screen::before {
+    background:
+      radial-gradient(ellipse at 78% 48%, transparent 0 34%, rgba(0, 0, 0, 0.28) 75%, rgba(0, 0, 0, 0.52) 100%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 22%, rgba(0, 0, 0, 0.16));
+  }
+
+  .home-screen .home-status,
+  .first-card .home-status {
+    display: none;
+  }
+
+  .home-screen .brand-mark,
+  .home-screen .poster-title,
+  .home-screen .poster-subtitle,
+  .home-screen .poster-rule,
+  .home-screen .welcome-copy,
+  .home-screen > .page-cta {
+    grid-column: 1;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .home-screen .brand-mark {
+    width: 144px;
+    height: 154px;
+    margin-top: 0;
+    margin-bottom: 1.45rem;
+  }
+
+  .home-screen .poster-title {
+    margin-bottom: 0.85rem;
+    font-size: clamp(2.5rem, 4vw, 3.4rem);
+    letter-spacing: 0.31em;
+    text-indent: 0;
+  }
+
+  .home-screen .poster-subtitle {
+    margin-bottom: 1.7rem;
+    font-size: 0.82rem;
+    text-indent: 0;
+  }
+
+  .home-screen .poster-rule {
+    width: 76px;
+    margin-bottom: 2rem;
+  }
+
+  .home-screen .welcome-copy {
+    max-width: 22rem;
+    margin-bottom: 2.5rem;
+    font-size: 1.08rem;
+    line-height: 1.72;
+  }
+
+  .home-screen > .page-cta {
+    width: 230px;
+  }
+
+  .first-card {
+    grid-template-columns: minmax(330px, 0.75fr) minmax(420px, 1.25fr);
+    justify-items: start;
+    padding-right: clamp(3rem, 7vw, 7.5rem);
+    background:
+      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.9) 36%, rgba(6, 5, 4, 0.3) 62%, rgba(6, 5, 4, 0.08) 100%),
+      #070706 url("../assets/home1-bg.png") 82% 47% / auto 138% no-repeat;
+    text-align: left;
+  }
+
+  body[data-home-version="home2"] .first-card {
+    background:
+      linear-gradient(90deg, rgba(6, 5, 4, 0.98) 0%, rgba(6, 5, 4, 0.9) 36%, rgba(6, 5, 4, 0.3) 62%, rgba(6, 5, 4, 0.08) 100%),
+      #070706 url("../assets/home2-bg.png") 82% 47% / auto 138% no-repeat;
+  }
+
+  .first-card p,
+  .first-card .page-cta {
+    grid-column: 1;
+    justify-self: start;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .first-card p {
+    max-width: 32rem;
+    font-size: 1.08rem;
+  }
+
+  .first-card p:first-of-type {
+    font-size: 1.38rem;
+  }
+
+  /* Guide */
+  .intro-card {
+    grid-template-columns: minmax(230px, 0.52fr) minmax(0, 1.18fr);
+    align-content: start;
+    column-gap: clamp(3rem, 7vw, 7rem);
+    row-gap: 1.5rem;
+  }
+
+  .intro-card .page-title {
+    position: sticky;
+    top: 112px;
+    max-width: 15rem;
+    margin: 0;
+    color: var(--gold-soft);
+    font-size: clamp(1.75rem, 2.4vw, 2.6rem);
+    line-height: 1.18;
+  }
+
+  .intro-written,
+  .intro-return-btn {
+    grid-column: 2;
+  }
+
+  .intro-written {
+    max-width: 690px;
+    gap: 1rem;
+  }
+
+  .intro-written p {
+    font-size: 1.03rem;
+    line-height: 1.78;
+  }
+
+  .intro-return-btn {
+    justify-self: start;
+    margin-top: 0.4rem;
+  }
+
+  /* Practice setup: two deliberate zones on desktop. The live practice stays
+     narrow and centred so the voice remains the only point of attention. */
+  .practice-chamber {
+    min-height: calc(100vh - 124px);
+    align-items: stretch;
+    padding: clamp(2.4rem, 4vw, 4.5rem);
+  }
+
+  .practice-setup {
+    width: min(100%, 1010px);
+    grid-template-areas:
+      "primary options"
+      "footer footer";
+    grid-template-columns: minmax(280px, 0.82fr) minmax(390px, 1.18fr);
+    align-items: start;
+    justify-items: stretch;
+    column-gap: clamp(2.5rem, 6vw, 6rem);
+    row-gap: 2rem;
+    margin: auto;
+    text-align: left;
+  }
+
+  .practice-setup-primary,
+  .practice-setup-options {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+
+  .practice-setup-primary {
+    grid-area: primary;
+    padding-top: 0.1rem;
+  }
+
+  .practice-setup-options {
+    grid-area: options;
+    gap: 0.72rem;
+  }
+
+  .practice-setup-footer {
+    display: grid;
+    grid-area: footer;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    align-items: center;
+    gap: 2rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid rgba(218, 166, 98, 0.13);
+  }
+
+  .duration-prompt {
+    font-size: clamp(2.25rem, 3.3vw, 3.2rem);
+  }
+
+  .setup-subtitle {
+    max-width: 24rem;
+    margin-top: -0.25rem;
+    font-size: 0.88rem;
+  }
+
+  .setup-section-label,
+  .opening-section-label,
+  .voice-section-label {
+    margin-top: 0.5rem;
+  }
+
+  .opening-section-label {
+    margin-top: 0;
+  }
+
+  .duration-choice,
+  .opening-choice,
+  .movement-reminders-choice,
+  .practice-voice-choice {
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .duration-choice:hover,
+  .opening-choice:hover,
+  .movement-reminders-choice:hover,
+  .practice-voice-choice:hover {
+    border-color: rgba(218, 166, 98, 0.36);
+    transform: translateY(-1px);
+  }
+
+  .practice-setup-footer .duration-error {
+    margin: 0;
+  }
+
+  .practice-setup-footer .practice-begin-btn {
+    width: 270px;
+    margin: 0;
+  }
+
+  .practice-live {
+    width: min(100%, 540px);
+  }
+
+  .opening-stage {
+    min-height: min(68vh, 660px);
+  }
+
+  /* Notes */
+  .page-notes .notes-actions {
+    width: min(100%, 560px);
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1rem;
+  }
+
+  .page-notes .notes-home-title {
+    grid-column: 1 / -1;
+    margin-bottom: 1rem;
+    font-size: 2.35rem;
+    text-align: center;
+  }
+
+  .notes-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .note-item {
+    min-height: 100%;
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  /* FAQ: a readable single accordion column with its contact action in a
+     separate side rail. This keeps question order obvious. */
+  .page-faq .page-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(230px, 0.38fr);
+    align-content: start;
+    column-gap: clamp(3rem, 7vw, 7rem);
+  }
+
+  .page-faq .faq-title,
+  .page-faq .faq-list {
+    grid-column: 1;
+  }
+
+  .page-faq .faq-title {
+    font-size: clamp(1.8rem, 2.5vw, 2.55rem);
+    line-height: 1.2;
+  }
+
+  .page-faq .faq-list {
+    max-width: 720px;
+    gap: 0.85rem;
+  }
+
+  .faq-question {
+    padding: 1.15rem 3rem 1.15rem 1.2rem;
+    font-size: 1rem;
+  }
+
+  .faq-answer {
+    padding: 0 1.2rem 1.2rem;
+  }
+
+  .page-faq .faq-contact {
+    position: sticky;
+    top: 116px;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    margin: 0;
+    padding: 1.5rem;
+    border: 1px solid rgba(218, 166, 98, 0.15);
+    border-radius: 18px;
+    background: rgba(7, 6, 5, 0.32);
+  }
+
+  /* Contact */
+  .contact-card {
+    width: min(100%, 1080px);
+    grid-template-columns: minmax(230px, 0.68fr) minmax(440px, 1.32fr);
+    grid-template-rows: auto auto 1fr;
+    align-content: center;
+    column-gap: clamp(3rem, 7vw, 7rem);
+    row-gap: 1rem;
+  }
+
+  .contact-back-btn,
+  .contact-form-title,
+  .contact-form-intro {
+    grid-column: 1;
+  }
+
+  .contact-back-btn {
+    align-self: start;
+    margin-bottom: 1rem;
+  }
+
+  .contact-form-title {
+    margin: 0;
+    font-size: clamp(2.2rem, 3.2vw, 3.25rem);
+  }
+
+  .contact-form-intro {
+    align-self: start;
+    max-width: 18rem;
+    font-size: 0.92rem;
+  }
+
+  .contact-form {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    grid-template-columns: 1fr 1fr;
+    align-self: center;
+    column-gap: 1rem;
+    margin: 0;
+  }
+
+  .contact-field[for="contact-message"],
+  .contact-consent,
+  .contact-submit-btn,
+  .contact-form-status,
+  .contact-privacy-note {
+    grid-column: 1 / -1;
+  }
+
+  .reflect-card {
+    width: min(100%, 820px);
+    align-content: center;
+  }
+
+  /* Illustrated transitions remain portrait compositions inside a wide web
+     stage. Their artwork is never distorted or cropped into a fake phone. */
+  body[data-view="ground"] .pages,
+  body[data-view="support"] .pages,
+  body[data-view="breathing"] .pages,
+  body[data-view="end"] .pages {
+    padding: 1.5rem;
+  }
+
+  .ground-screen,
+  .end-screen {
+    width: min(calc(100vw - 3rem), 1380px);
+    height: calc(100vh - 3rem);
+    min-height: min(620px, calc(100vh - 3rem));
+    border: 1px solid rgba(245, 245, 245, 0.13);
+    border-radius: 30px;
+    box-shadow:
+      0 30px 100px rgba(0, 0, 0, 0.52),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .ground-screen {
+    background-color: #9f7784;
+    background-position: center bottom;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+  }
+
+  .end-screen {
+    background-color: #130d0b;
+    background-position: center;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+  }
+
+  .custom-duration-modal {
+    place-items: center;
+  }
+
+  .custom-duration-dialog {
+    width: min(100%, 430px);
+    padding: 1.8rem 2rem;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid rgba(231, 189, 118, 0.78);
+    outline-offset: 3px;
   }
 }

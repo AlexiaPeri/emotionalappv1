@@ -1,6 +1,6 @@
 # Emerge: Let it out
 
-**App iPhone native de libération émotionnelle guidée par la voix, avec son prototype web conservé comme référence**
+**Expérience de libération émotionnelle guidée par la voix, disponible dans une app iPhone native et une web app responsive dédiée aux tests utilisateurs**
 
 Quand tu as un trop-plein d'émotions — au lieu de scroller — tu ouvres Emerge, tu nommes simplement ce que tu ressens et l'app te le répète. Cette boucle vocale aide à rester au contact du ressenti plutôt que de repartir dans l'analyse.
 
@@ -43,6 +43,17 @@ L'app répète vocalement
 **Pas de texte affiché pendant la session.** L'expérience de pratique reste vocale.
 
 La page de préparation web reprend le parcours de l'app native : 15 minutes ou un picker personnalisé de 3 à 60 minutes, Quiet arrival, Guided release ou Full guidance, Movement reminders facultatifs et désactivés par défaut, puis choix final d'une voix féminine ou masculine. Les noms techniques des voix ne sont pas affichés. Les écrans d'opening, de closing, de grounding, d'après-session et de fin reprennent aussi les mêmes contrôles que l'iPhone, notamment `Skip guidance`, `Continue the session`, `Finish the session` et `End the guidance`. Quiet arrival, Full guidance, Closing et Grounding utilisent les enregistrements d'Alexia. Guided release et les rappels corporels attendent encore leurs nouveaux enregistrements ; aucune voix synthétique provisoire ne les remplace.
+
+### Deux designs distincts, un même parcours
+
+La web app possède désormais deux présentations responsive clairement séparées. Elles utilisent exactement les mêmes textes, choix, données locales et logique de session ; seul le système de mise en page change automatiquement selon la largeur disponible.
+
+- **Design téléphone / iPhone (`< 900 px`)** : le design mobile historique est conservé intact, avec ses proportions verticales, ses cartes, sa navigation compacte et son déroulé en une colonne. Il reste la référence visuelle de l'app native.
+- **Design web desktop (`≥ 900 px`)** : une interface paysage dédiée exploite la largeur de l'écran sans agrandir artificiellement un cadre de téléphone. Elle ajoute un header web horizontal, un accueil éditorial en paysage, une préparation de pratique en deux zones, un Guide à largeur de lecture confortable, une FAQ avec rail de contact, un formulaire desktop et une grille de notes.
+- **Pratique en cours** : même sur ordinateur, elle reste volontairement étroite et centrée pour éviter toute distraction pendant l'expérience vocale.
+- **Écrans illustrés** : Grounding, Breathing et Thank you utilisent un stage web large, mais leurs compositions verticales restent centrées et ne sont ni étirées ni déformées.
+
+Le breakpoint desktop se trouve exclusivement dans le bloc `@media (min-width: 900px)` de `css/styles.css`. Toute évolution desktop doit rester dans cette couche afin de ne pas modifier involontairement le design téléphone.
 
 ---
 
@@ -287,4 +298,4 @@ Voir [la comparaison visuelle des deux homepages](docs/homepage-comparison.md).
 
 - Chrome est requis pour la Web Speech API (pas de support Firefox/Safari)
 - Le token GitHub ne doit jamais transiter par Discord (révocation automatique)
-- Deploy : `git push` sur `main` → GitHub Pages se met à jour automatiquement
+- Deploy : `git push` sur `main` → le projet Vercel connecté se met à jour automatiquement
