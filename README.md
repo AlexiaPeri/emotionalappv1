@@ -31,7 +31,7 @@ Opening préenregistré avec la voix d'Alexia
        ↓
 Utilisateur parle
        ↓
-Speech Recognition (Web Speech API, Chrome)
+Deepgram Flux (streaming + détection contextuelle de fin de phrase)
        ↓
 Swap de pronoms (FR: je→tu / EN: I→you)
        ↓
@@ -65,13 +65,15 @@ Le breakpoint desktop se trouve exclusivement dans le bloc `@media (min-width: 9
 - **Frontend** : HTML / CSS / JS vanilla (zéro dépendance)
 - **Core portable** : copy, presets de voix, transformation de texte
 - **Pages** : accueil, pratique, FAQ, contact
-- **Reconnaissance vocale** : Web Speech API (Chrome uniquement)
+- **Reconnaissance vocale** : Deepgram Flux en streaming ; Web Speech API uniquement comme secours technique
 - **TTS de répétition** : Gemini 3.8 Flash-Lite TTS en streaming PCM 24 kHz ; voix navigateur uniquement en secours technique
 - **Voix finales** : Callirrhoe (féminine) et Umbriel (masculine), choisies avant la pratique et mémorisées sur l'appareil
 - **Hébergement actuel** : Vercel pour le frontend et la fonction Gemini sécurisée
-- **Clé Gemini** : exclusivement côté serveur via `GEMINI_API_KEY`, jamais dans le navigateur ni dans Git
+- **Clés Gemini et Deepgram** : exclusivement côté serveur via `GEMINI_API_KEY` et `DEEPGRAM_API_KEY`, jamais dans le navigateur ni dans Git
 
-La boucle de répétition utilise désormais l'endpoint sécurisé `api/tts.js`, qui limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. L'audio est renvoyé progressivement sous forme de PCM mono 24 kHz et joué avec Web Audio dès l'arrivée des premiers morceaux. La reconnaissance donne la priorité au résultat final du navigateur et demande sa finalisation dès que la fin de parole est détectée, au lieu de valider prématurément un résultat intermédiaire. Un watchdog redémarre automatiquement une écoute qui resterait bloquée et, lorsque le navigateur le permet, un biais contextuel modéré améliore la reconnaissance du vocabulaire émotionnel anglais. L'écoute reprend presque immédiatement après la voix ; une phrase identique prononcée à nouveau n'est jamais écartée et son audio déjà généré est rejoué depuis un petit cache mémoire. La consigne vocale demande un débit conversationnel vif, sans pause dramatique, avec une cadence déclarative descendante et jamais une intonation interrogative. Le comparateur privé `voice-lab.html` reste disponible pour les essais ; ses extraits réussis sont conservés dans le cache du navigateur.
+La boucle de répétition utilise désormais Deepgram Flux pour la reconnaissance en direct. Le navigateur obtient un JWT temporaire via `api/deepgram-token.js` ; la clé Deepgram permanente ne quitte jamais Vercel. Le micro est envoyé en PCM mono 16 kHz par blocs proches de 80 ms, et Flux déclenche la répétition uniquement sur un événement `EndOfTurn`. Ce découpage contextuel doit reconnaître rapidement une phrase terminée tout en laissant à l'utilisateur le temps de compléter une amorce comme « I'm feeling… ». Le seuil est réglé à `0.7`, avec une sécurité de fin de tour après quatre secondes de silence. La Web Speech API reste un fallback si Deepgram ne peut pas se connecter.
+
+L'endpoint sécurisé `api/tts.js` limite les modèles, voix, longueurs et origines autorisés avant de transmettre le texte à Gemini. L'audio est renvoyé progressivement sous forme de PCM mono 24 kHz et joué avec Web Audio dès l'arrivée des premiers morceaux. Pendant la répétition, l'envoi du micro à Deepgram est suspendu pour empêcher que l'app retranscrive sa propre voix, puis il reprend immédiatement. Une phrase identique prononcée à nouveau n'est jamais écartée et son audio déjà généré est rejoué depuis un petit cache mémoire. La consigne vocale demande un débit conversationnel vif, sans pause dramatique, avec une cadence déclarative descendante et jamais une intonation interrogative. Le comparateur privé `voice-lab.html` reste disponible pour les essais ; ses extraits réussis sont conservés dans le cache du navigateur.
 
 Le bouton `Write to us` de la FAQ ouvre un formulaire nom, email et message. La fonction sécurisée `api/contact.js` valide et limite les envois, puis les transmet au même système de collecte que le formulaire public d'Emerge. Aucune donnée de contact n'est conservée dans le navigateur ni ajoutée au dépôt.
 
@@ -137,7 +139,8 @@ La préparation de la pratique propose deux durées de même importance visuelle
 ├── js/
 │   ├── app-config.js   ← Copy, presets de voix, clés
 │   ├── pronouns.js     ← Conversion FR / EN portable
-│   └── app.js          ← Shell web + voix navigateur
+│   ├── app.js          ← Shell web + orchestration de la boucle vocale
+│   └── deepgram-recognition.js ← Streaming micro + fins de tour Flux
 ├── docs/
 │   ├── content-inventory.md ← Inventaire éditorial
 │   └── site-archive/        ← Sauvegarde complète du premier site Emerge
@@ -207,6 +210,16 @@ Le serveur autorise actuellement `gemini-3.8-flash-tts` et `gemini-3.8-flash-lit
 
 Le Free Tier Google est insuffisant pour un test complet (actuellement 3 requêtes par minute et 10 par jour pour chaque modèle). La facturation Google doit être activée avant les tests utilisateurs et la mise en production ; le comparateur affiche une erreur explicite lorsque ce quota est atteint.
 
+## Configuration Deepgram Flux
+
+1. Créer une clé Deepgram avec une permission **Member** ou supérieure.
+2. Définir `DEEPGRAM_API_KEY` comme secret Vercel en Production. Ne jamais la mettre dans le frontend.
+3. `api/deepgram-token.js` échange cette clé contre un JWT navigateur valable 60 secondes. Le JWT n'a besoin d'être valide qu'à l'ouverture du WebSocket ; une pratique de 15 minutes peut ensuite rester connectée.
+4. Le frontend se connecte directement à `wss://api.deepgram.com/v2/listen` avec `flux-general-en`, ce qui évite d'ajouter un relais audio serveur et sa latence.
+5. En local, utiliser `vercel dev` avec la variable d'environnement configurée. Un serveur Vite seul ne peut pas émettre le jeton temporaire.
+
+Le micro est préparé pendant l'opening afin que son autorisation soit déjà accordée au début de la pratique. La connexion Deepgram s'ouvre seulement au démarrage de l'écoute, afin de ne pas traiter ni facturer l'opening. En cas de coupure réseau, le client redemande automatiquement un jeton temporaire et reconnecte le flux.
+
 ## Swap de pronoms
 
 ### Français
@@ -235,7 +248,7 @@ Le Free Tier Google est insuffisant pour un test complet (actuellement 3 requêt
 ## Roadmap
 
 ### v1 — Actuel ✅
-- [x] Reconnaissance vocale continue (sans bouton par phrase)
+- [x] Reconnaissance vocale continue avec Deepgram Flux (sans bouton par phrase)
 - [x] Swap de pronoms FR ↔ EN
 - [x] Gemini Flash-Lite streaming + fallback navigateur
 - [x] Sélection Callirrhoe / Umbriel mémorisée localement
@@ -244,7 +257,7 @@ Le Free Tier Google est insuffisant pour un test complet (actuellement 3 requêt
 
 ### v2 — Base portable en cours
 - [x] Copy, voix et conversion de texte séparées du shell web
-- [ ] Stabiliser la reco / voix pour les tests de 15 min
+- [ ] Valider et ajuster Deepgram Flux sur plusieurs tests complets de 15 min
 - [x] Redesign visuel terracotta (Emerge: Let it out)
 - [x] Flow d'accueil : premier écran → bouton unique → session
 - [x] Scripts anglais V1 finalisés : première session, retour, closing et grounding

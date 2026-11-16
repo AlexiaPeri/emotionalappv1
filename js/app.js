@@ -1,6 +1,7 @@
 "use strict";
 
 import { I18N, STORAGE_KEYS } from "./app-config.js";
+import { DeepgramRecognition } from "./deepgram-recognition.js";
 import { convertPronouns, normalizeSpokenText } from "./pronouns.js";
 
 const dom = {
@@ -164,6 +165,10 @@ const state = {
   isActive: false,
   isSpeaking: false,
   recognition: null,
+  recognitionProvider: null,
+  deepgramRecognition: null,
+  deepgramSupported: false,
+  deepgramStartPromise: null,
   speechAvailable: true,
   lastSpokenText: "",
   recognitionRestartTimer: null,
@@ -1173,7 +1178,8 @@ function scheduleInterimFinalization(delay) {
 }
 
 function scheduleRecognitionRestart(delay = 120) {
-  if (!state.isActive || !state.recognition) return;
+  if (!state.isActive) return;
+  if ((state.recognitionProvider === "browser" || !state.deepgramSupported) && !state.recognition) return;
   if (state.recognitionRestartTimer) clearTimeout(state.recognitionRestartTimer);
   state.recognitionRestartTimer = setTimeout(() => {
     state.recognitionRestartTimer = null;
@@ -1182,7 +1188,7 @@ function scheduleRecognitionRestart(delay = 120) {
   }, delay);
 }
 
-function startRecognition() {
+function startBrowserRecognition() {
   if (!state.isActive || state.isSpeaking || !state.recognition) return;
   if (state.recognitionRestartTimer) {
     clearTimeout(state.recognitionRestartTimer);
@@ -1199,12 +1205,87 @@ function startRecognition() {
   }
 }
 
+function createDeepgramRecognition() {
+  return new DeepgramRecognition({
+    language: state.lang,
+    onTranscript: (transcript) => handleRecognizedText(transcript),
+    onStatus: (status) => {
+      if (status === "connecting" && state.isActive && !state.isSpeaking) setStatus(t("voiceConnecting"));
+      if (status === "listening" && state.isActive && !state.isSpeaking) setStatus(t("listening"));
+    },
+    onError: (error) => {
+      console.warn("Deepgram recognition warning:", error.message);
+      if (error.name === "NotAllowedError" || error.name === "SecurityError") setStatus(t("noMic"));
+    },
+  });
+}
+
+function fallBackToBrowserRecognition(error) {
+  console.warn("Deepgram unavailable; using browser recognition fallback:", error.message);
+  state.deepgramRecognition?.stop().catch(() => {});
+  state.deepgramRecognition = null;
+  state.deepgramStartPromise = null;
+  state.recognitionProvider = "browser";
+  if (state.isActive && state.recognition) {
+    state.recognitionPauseRequested = false;
+    startBrowserRecognition();
+  } else if (state.isActive) {
+    state.isActive = false;
+    document.body.classList.remove("session-active");
+    setStatus(error.name === "NotAllowedError" ? t("noMic") : t("noChrome"));
+    updateButton();
+  }
+}
+
+function prepareVoiceRecognition() {
+  if (!state.deepgramSupported || state.recognitionProvider === "browser") return;
+  if (!state.deepgramRecognition) state.deepgramRecognition = createDeepgramRecognition();
+  state.recognitionProvider = "deepgram";
+  state.deepgramStartPromise = state.deepgramRecognition.prepare()
+    .catch((error) => fallBackToBrowserRecognition(error))
+    .finally(() => {
+      state.deepgramStartPromise = null;
+    });
+}
+
+function startRecognition() {
+  if (!state.isActive || state.isSpeaking) return;
+  if (state.recognitionProvider === "browser" || !state.deepgramSupported) {
+    state.recognitionProvider = "browser";
+    startBrowserRecognition();
+    return;
+  }
+
+  if (state.recognitionRestartTimer) {
+    clearTimeout(state.recognitionRestartTimer);
+    state.recognitionRestartTimer = null;
+  }
+  if (!state.deepgramRecognition) state.deepgramRecognition = createDeepgramRecognition();
+  state.recognitionProvider = "deepgram";
+  state.deepgramStartPromise = state.deepgramRecognition.resume()
+    .then(() => {
+      if (state.isActive && !state.isSpeaking) {
+        state.recognitionPauseRequested = false;
+        setStatus(t("listening"));
+      }
+    })
+    .catch((error) => fallBackToBrowserRecognition(error))
+    .finally(() => {
+      state.deepgramStartPromise = null;
+    });
+}
+
 function pauseRecognitionForTts() {
-  if (!state.isActive || !state.recognition) return;
+  if (!state.isActive) return;
   clearRecognitionInterim();
   clearRecognitionWatchdog();
   state.recognitionRecoveryRequested = false;
   state.recognitionPauseRequested = true;
+  if (state.recognitionProvider === "deepgram" && state.deepgramRecognition) {
+    state.deepgramRecognition.pause();
+    return;
+  }
+  if (!state.recognition) return;
   try {
     state.recognition.abort();
   } catch {
@@ -1442,6 +1523,12 @@ function stopVoiceCapture() {
       // no-op
     }
   }
+  if (state.deepgramRecognition) {
+    state.deepgramRecognition.stop().catch(() => {});
+    state.deepgramRecognition = null;
+  }
+  state.deepgramStartPromise = null;
+  state.recognitionProvider = null;
   stopSpeechPlayback();
   state.isSpeaking = false;
   document.body.classList.remove("session-active");
@@ -1474,10 +1561,8 @@ function startVoiceCapture() {
   state.recognitionCycleId = 0;
   state.recognitionHandledCycleId = -1;
   updateButton();
-  setStatus(t("listening"));
-  if (state.recognition) {
-    startRecognition();
-  }
+  setStatus(state.recognitionProvider === "browser" || !state.deepgramSupported ? t("listening") : t("voiceConnecting"));
+  startRecognition();
 }
 
 async function startTimedSession() {
@@ -1507,6 +1592,7 @@ async function startTimedSession() {
   }
   const hasOpeningRecording = Boolean(GUIDANCE_AUDIO[state.openingMode]);
   showPracticeOpening(!hasOpeningRecording);
+  prepareVoiceRecognition();
 
   if (!hasOpeningRecording) return;
 
@@ -1865,10 +1951,11 @@ function updateTtsStatus() {
 
 function handleRecognizedText(userText) {
   if (!userText || state.isSpeaking || state.recognitionPauseRequested || !state.isActive) return;
-  if (state.recognitionHandledCycleId === state.recognitionCycleId) return;
+  const usesBrowserRecognition = state.recognitionProvider === "browser";
+  if (usesBrowserRecognition && state.recognitionHandledCycleId === state.recognitionCycleId) return;
   clearRecognitionInterim();
 
-  state.recognitionHandledCycleId = state.recognitionCycleId;
+  if (usesBrowserRecognition) state.recognitionHandledCycleId = state.recognitionCycleId;
 
   addBubble("user", userText);
   const converted = convertPronouns(userText, state.lang);
@@ -1891,17 +1978,18 @@ function applyRecognitionBias() {
 }
 
 function initSpeechRecognition() {
+  state.deepgramSupported = DeepgramRecognition.isSupported();
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    state.speechAvailable = false;
-    setStatus(t("noChrome"));
+    state.speechAvailable = state.deepgramSupported;
+    if (!state.speechAvailable) setStatus(t("noChrome"));
     return;
   }
 
   state.speechAvailable = true;
 
   state.recognition = new SpeechRecognition();
-  state.recognition.lang = "fr-FR";
+  state.recognition.lang = state.lang === "fr" ? "fr-FR" : "en-US";
   state.recognition.continuous = false;
   state.recognition.interimResults = true;
   state.recognition.maxAlternatives = 5;
