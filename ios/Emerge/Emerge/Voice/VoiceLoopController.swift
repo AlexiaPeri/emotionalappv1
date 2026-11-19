@@ -72,7 +72,19 @@ final class VoiceLoopController {
     private var volatileText = ""
     private var didPrepareSpeechModel = false
     private var sessionGeneration = 0
-    private let endpointDelay: Duration = .milliseconds(700)
+    private let captureRouter = CaptureRouter()
+    private var lastTranscriptChange: TimeInterval = 0
+    private var lastObservedTranscript = ""
+
+    // End-of-sentence detection. A turn ends after this much time with no new
+    // word AND no voice energy. Emotional speech has long pauses, so we wait
+    // longer when the sentence does not end with punctuation.
+    private let endpointSilence: TimeInterval = 1.0
+    private let endpointSilenceAfterPunctuation: TimeInterval = 0.65
+    /// Upper bound so steady background noise can never block the repetition.
+    private let endpointMaxWait: TimeInterval = 2.5
+    /// Ignore the microphone briefly after the voice stops (room echo of its last word).
+    private let echoTailGuard: Duration = .milliseconds(120)
 
     init() {
         let speaker = SpeechSpeaker()
@@ -156,7 +168,9 @@ final class VoiceLoopController {
         guard !reflected.isEmpty else { return }
 
         Task {
-            try? configureSpeechPlaybackAudioSession()
+            if !isSessionActive {
+                try? configureSpeechPlaybackAudioSession()
+            }
             lastRepeatedPhrase = reflected
             phase = .speaking
             await speaker.speak(reflected)
@@ -199,7 +213,6 @@ final class VoiceLoopController {
 
     private func prepareListeningPipeline(generation: Int) async throws -> PreparedCapture {
         guard isCurrentSession(generation), !Task.isCancelled else { throw CancellationError() }
-        try configureRecordingAudioSession()
         let transcriber = try await makeEnglishTranscriber()
         let modules: [any SpeechModule] = [transcriber]
 
@@ -267,22 +280,30 @@ final class VoiceLoopController {
         )
     }
 
+    /// The engine stays running for the whole session: restarting it after every
+    /// repetition clipped the first syllable of the next sentence. Between turns
+    /// the router simply drops microphone buffers.
     private func beginAudioCapture(_ preparedCapture: PreparedCapture, generation: Int) throws {
         guard isCurrentSession(generation) else { throw CancellationError() }
 
-        let inputNode = audioEngine.inputNode
-        inputNode.removeTap(onBus: 0)
-        inputNode.installTap(
-            onBus: 0,
-            bufferSize: 1_024,
-            format: preparedCapture.naturalFormat
-        ) { [continuation = preparedCapture.continuation] buffer, _ in
-            guard let converted = preparedCapture.converter.convert(buffer) else { return }
-            continuation.yield(AnalyzerInput(buffer: converted))
+        if !audioEngine.isRunning {
+            let inputNode = audioEngine.inputNode
+            inputNode.removeTap(onBus: 0)
+            inputNode.installTap(
+                onBus: 0,
+                bufferSize: 1_024,
+                format: preparedCapture.naturalFormat
+            ) { [router = captureRouter] buffer, _ in
+                router.process(buffer)
+            }
+            audioEngine.prepare()
+            try audioEngine.start()
         }
 
-        audioEngine.prepare()
-        try audioEngine.start()
+        finalizedText = ""
+        volatileText = ""
+        lastObservedTranscript = ""
+        captureRouter.route(to: preparedCapture.continuation, converter: preparedCapture.converter)
         phase = .listening
     }
 
@@ -301,16 +322,43 @@ final class VoiceLoopController {
         }
 
         guard phase == .listening else { return }
-        endpointTask?.cancel()
+        let transcript = currentTranscript
+        if transcript != lastObservedTranscript {
+            lastObservedTranscript = transcript
+            lastTranscriptChange = ProcessInfo.processInfo.systemUptime
+        }
+        guard endpointTask == nil else { return }
         endpointTask = Task { [weak self] in
-            do {
-                try await Task.sleep(for: self?.endpointDelay ?? .milliseconds(700))
-                guard !Task.isCancelled else { return }
-                await self?.completeTurn(generation: generation)
-            } catch {
-                return
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: .milliseconds(80))
+                } catch {
+                    return
+                }
+                guard let self else { return }
+                guard self.isCurrentSession(generation), self.phase == .listening else {
+                    self.endpointTask = nil
+                    return
+                }
+                if self.isEndOfTurn() {
+                    self.endpointTask = nil
+                    await self.completeTurn(generation: generation)
+                    return
+                }
             }
         }
+    }
+
+    private func isEndOfTurn() -> Bool {
+        let transcript = currentTranscript
+        guard Self.isMeaningfulTranscript(transcript) else { return false }
+        let now = ProcessInfo.processInfo.systemUptime
+        let sinceWords = now - lastTranscriptChange
+        let sinceVoice = now - captureRouter.lastVoiceUptime
+        let endsSentence = transcript.last.map { ".!?…".contains($0) } ?? false
+        let silenceNeeded = endsSentence ? endpointSilenceAfterPunctuation : endpointSilence
+        guard sinceWords >= silenceNeeded else { return false }
+        return sinceVoice >= silenceNeeded || sinceWords >= endpointMaxWait
     }
 
     private func completeTurn(generation: Int) async {
@@ -320,8 +368,9 @@ final class VoiceLoopController {
         guard Self.isMeaningfulTranscript(firstDraft) else { return }
 
         phase = .processing
+        endpointTask?.cancel()
         endpointTask = nil
-        stopAudioCapture()
+        endCurrentCapture()
 
         if let analyzer {
             try? await analyzer.finalizeAndFinishThroughEndOfInput()
@@ -367,6 +416,7 @@ final class VoiceLoopController {
         }
         pipelinePreparationTask = preparationTask
         await speaker.speak(reflected)
+        try? await Task.sleep(for: echoTailGuard)
 
         guard isCurrentSession(generation) else {
             preparationTask.cancel()
@@ -391,13 +441,19 @@ final class VoiceLoopController {
         )
     }
 
+    /// Ends the current turn's analysis input; the microphone keeps running.
+    private func endCurrentCapture() {
+        captureRouter.mute()
+        inputContinuation?.finish()
+        inputContinuation = nil
+    }
+
     private func stopAudioCapture() {
+        endCurrentCapture()
         if audioEngine.isRunning {
             audioEngine.stop()
         }
         audioEngine.inputNode.removeTap(onBus: 0)
-        inputContinuation?.finish()
-        inputContinuation = nil
     }
 
     private func makeEnglishTranscriber() async throws -> SpeechTranscriber {
@@ -469,26 +525,7 @@ final class VoiceLoopController {
     }
 
     nonisolated static func isMeaningfulTranscript(_ text: String) -> Bool {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.unicodeScalars.contains(where: CharacterSet.alphanumerics.contains) else {
-            return false
-        }
-
-        let spokenPunctuationCommands: Set<String> = [
-            "full stop",
-            "period",
-            "comma",
-            "question mark",
-            "exclamation mark",
-            "exclamation point",
-            "ellipsis"
-        ]
-        let normalizedWords = trimmed
-            .lowercased()
-            .components(separatedBy: CharacterSet.alphanumerics.inverted)
-            .filter { !$0.isEmpty }
-            .joined(separator: " ")
-        return !spokenPunctuationCommands.contains(normalizedWords)
+        PronounTransformer.isMeaningful(text)
     }
 
     private func isCurrentSession(_ generation: Int) -> Bool {
@@ -500,6 +537,7 @@ final class VoiceLoopController {
         sessionGeneration &+= 1
         isSessionActive = false
         endpointTask?.cancel()
+        endpointTask = nil
         pipelinePreparationTask?.cancel()
         pipelinePreparationTask = nil
         stopAudioCapture()
@@ -533,5 +571,64 @@ private enum VoiceLoopError: LocalizedError {
         case .modelAlreadyDownloading:
             "The English speech model is still downloading. Wait a moment, then try again."
         }
+    }
+}
+
+/// Forwards microphone buffers from the audio thread to the active speech
+/// analyzer (or drops them between turns), and tracks when voice was last heard.
+private final class CaptureRouter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: AsyncStream<AnalyzerInput>.Continuation?
+    private var converter: AudioBufferConverter?
+    private var lastVoice: TimeInterval = 0
+    private var noiseFloor: Float = 0
+
+    var lastVoiceUptime: TimeInterval {
+        lock.withLock { lastVoice }
+    }
+
+    func route(to continuation: AsyncStream<AnalyzerInput>.Continuation, converter: AudioBufferConverter) {
+        lock.withLock {
+            self.continuation = continuation
+            self.converter = converter
+        }
+    }
+
+    func mute() {
+        lock.withLock {
+            continuation = nil
+            converter = nil
+        }
+    }
+
+    func process(_ buffer: AVAudioPCMBuffer) {
+        let level = Self.rms(buffer)
+        let target: (AsyncStream<AnalyzerInput>.Continuation, AudioBufferConverter)? = lock.withLock {
+            // Adaptive noise floor: drops quickly, rises slowly.
+            if noiseFloor == 0 {
+                noiseFloor = level
+            } else if level < noiseFloor {
+                noiseFloor = noiseFloor * 0.8 + level * 0.2
+            } else {
+                noiseFloor = noiseFloor * 0.998 + level * 0.002
+            }
+            guard let continuation, let converter else { return nil }
+            if level > max(0.004, noiseFloor * 3) {
+                lastVoice = ProcessInfo.processInfo.systemUptime
+            }
+            return (continuation, converter)
+        }
+        guard let (continuation, converter) = target,
+              let converted = converter.convert(buffer) else { return }
+        continuation.yield(AnalyzerInput(buffer: converted))
+    }
+
+    private static func rms(_ buffer: AVAudioPCMBuffer) -> Float {
+        guard let samples = buffer.floatChannelData?[0], buffer.frameLength > 0 else { return 0 }
+        var sum: Float = 0
+        for index in 0..<Int(buffer.frameLength) {
+            sum += samples[index] * samples[index]
+        }
+        return (sum / Float(buffer.frameLength)).squareRoot()
     }
 }

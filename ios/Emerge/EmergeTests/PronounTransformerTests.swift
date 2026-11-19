@@ -37,6 +37,37 @@ final class PronounTransformerTests: XCTestCase {
         )
     }
 
+    // Same phrases as tests/pronouns.test.mjs (web).
+    func testYouBecomesMeWhenItIsAnObject() {
+        XCTAssertEqual(PronounTransformer.transform("I love you"), "You love me")
+        XCTAssertEqual(PronounTransformer.transform("I am angry at you"), "You are angry at me")
+        XCTAssertEqual(PronounTransformer.transform("I want you to stay"), "You want me to stay")
+        XCTAssertEqual(PronounTransformer.transform("I made you cry"), "You made me cry")
+        XCTAssertEqual(PronounTransformer.transform("I miss you Paul"), "You miss me Paul")
+    }
+
+    func testYouStaysSubjectWhenItIsTheSubject() {
+        XCTAssertEqual(PronounTransformer.transform("I love you and you know it."), "You love me and I know it.")
+        XCTAssertEqual(PronounTransformer.transform("I know you love me"), "You know I love you")
+        XCTAssertEqual(PronounTransformer.transform("Why did you leave me?"), "Why did I leave you?")
+        XCTAssertEqual(PronounTransformer.transform("The way you look at me"), "The way I look at you")
+        XCTAssertEqual(PronounTransformer.transform("After you left, I broke."), "After I left, you broke.")
+    }
+
+    func testQuestionsAndFixedExpressions() {
+        XCTAssertEqual(PronounTransformer.transform("Are you there?"), "Am I there?")
+        XCTAssertEqual(PronounTransformer.transform("Am I crazy?"), "Are you crazy?")
+        XCTAssertEqual(PronounTransformer.transform("If I were you"), "If you were me")
+        XCTAssertEqual(PronounTransformer.transform("Thank you"), "Thank you")
+    }
+
+    func testHesitationsAreRemovedOrIgnored() {
+        XCTAssertEqual(PronounTransformer.transform("Um, I feel lost, uh"), "You feel lost")
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("um"))
+        XCTAssertFalse(VoiceLoopController.isMeaningfulTranscript("hmm hmm"))
+        XCTAssertTrue(VoiceLoopController.isMeaningfulTranscript("Humble me"))
+    }
+
     func testTextWithoutTargetPronounsIsNotRewritten() {
         XCTAssertEqual(PronounTransformer.transform("This feels heavy"), "This feels heavy")
     }
