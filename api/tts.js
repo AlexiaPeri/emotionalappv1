@@ -22,7 +22,9 @@ const STYLE_PRESETS = {
 };
 
 const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS_PER_WINDOW = 180;
+// A 60-minute session can repeat every few seconds, and the voice may be prepared
+// early (then discarded) when the speaker resumes, so allow headroom.
+const MAX_REQUESTS_PER_WINDOW = 600;
 const requestBuckets = new Map();
 
 function sendJson(response, status, payload) {

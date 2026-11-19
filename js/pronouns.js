@@ -1,7 +1,21 @@
+// Pronoun reflection for the Meisner-style repetition loop.
+// The iOS port lives in ios/Emerge/Emerge/Voice/PronounTransformer.swift and
+// must stay behaviourally identical (same rules, same test phrases).
+
+const FILLER_WORDS = ["um+", "uh+", "uhm+", "hm+", "hmm+", "mm+", "mhm", "er", "erm", "euh+", "heu+", "hum+"];
+const FILLER_PATTERN = FILLER_WORDS.join("|");
+const LEADING_FILLERS = new RegExp(`^(?:(?:${FILLER_PATTERN})(?![\\p{L}'])[\\s,.…!?-]*)+`, "iu");
+const TRAILING_FILLERS = new RegExp(`(?:[\\s,.…-]*(?<![\\p{L}'])(?:${FILLER_PATTERN}))+[\\s,.…!?-]*$`, "iu");
+const SPOKEN_PUNCTUATION = new Set([
+  "full stop", "period", "comma", "question mark", "exclamation mark", "exclamation point", "ellipsis",
+  "point", "virgule", "point d'interrogation", "point d'exclamation", "points de suspension",
+]);
+
 export function normalizeSpokenText(text) {
-  return text
-    .replace(/\s+/g, " ")
+  return String(text ?? "")
+    .replace(/[‘’ʼ`´]/g, "'")
     .replace(/[“”]/g, '"')
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -12,8 +26,27 @@ export function normalizeForMatch(text) {
     .replace(/\s+/g, " ");
 }
 
+// Removes hesitation sounds ("um", "uh", "euh") at the edges of a transcript.
+export function cleanTranscript(text) {
+  let cleaned = normalizeSpokenText(text);
+  let previous;
+  do {
+    previous = cleaned;
+    cleaned = cleaned.replace(LEADING_FILLERS, "").replace(TRAILING_FILLERS, "").trim();
+  } while (cleaned !== previous);
+  return cleaned;
+}
+
+// True when a transcript contains real words worth repeating
+// (not silence, punctuation, a lone "um", or a dictated punctuation command).
+export function isMeaningfulTranscript(text) {
+  const cleaned = cleanTranscript(text);
+  if (!/[\p{L}\p{N}]/u.test(cleaned)) return false;
+  return !SPOKEN_PUNCTUATION.has(normalizeForMatch(cleaned).trim());
+}
+
 export function convertPronounsFR(text) {
-  let result = text.toLowerCase();
+  let result = cleanTranscript(text).toLowerCase();
 
   const phaseOne = [
     [/\bmoi-même\b/g, "⟦MOIMEME⟧"], [/\btoi-même\b/g, "⟦TOIMEME⟧"],
@@ -95,65 +128,149 @@ export function convertPronounsFR(text) {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+// ---------------------------------------------------------------------------
+// English: word-by-word reflection. "I/me/my" become "you/your" and back.
+// The hard part is "you", which becomes "I" when it is a subject
+// ("you never listen" -> "I never listen") and "me" when it is an object
+// ("I love you" -> "you love me"). The rules below decide from the
+// neighbouring words, in a fixed priority order.
+// ---------------------------------------------------------------------------
+
+const toSet = (words) => new Set(words.split(" "));
+
+const EN_SIMPLE = new Map([
+  ["me", "you"], ["my", "your"], ["mine", "yours"], ["myself", "yourself"],
+  ["you're", "I'm"], ["you've", "I've"], ["you'll", "I'll"], ["you'd", "I'd"],
+  ["your", "my"], ["yours", "mine"], ["yourself", "myself"],
+]);
+// First-person forms become second person ("i" -> "you", "i'm" -> "you're").
+const EN_FIRST_PERSON = new Map([
+  ["i", "you"], ["i'm", "you're"], ["i've", "you've"], ["i'll", "you'll"], ["i'd", "you'd"],
+]);
+
+// Verb agreement that changes with the pronoun. Keys are lowercase word sequences.
+const EN_PHRASES = new Map([
+  ["i were you", ["you", "were", "me"]],
+  ["i am", ["you", "are"]], ["you are", ["I", "am"]],
+  ["i was", ["you", "were"]], ["you were", ["I", "was"]],
+  ["i wasn't", ["you", "weren't"]], ["you weren't", ["I", "wasn't"]],
+  ["i were", ["you", "were"]],
+  ["am i", ["are", "you"]], ["are you", ["am", "I"]],
+  ["aren't you", ["aren't", "I"]], ["am i not", ["are", "you", "not"]],
+  ["was i", ["were", "you"]], ["were you", ["was", "I"]],
+  ["wasn't i", ["weren't", "you"]], ["weren't you", ["wasn't", "I"]],
+]);
+const EN_PHRASE_LENGTHS = [3, 2];
+
+const EN_AUXILIARIES = toSet("do does did don't doesn't didn't can can't cannot could couldn't will won't would wouldn't shall should shouldn't may might must have has had haven't hasn't hadn't is isn't");
+const EN_PREPOSITIONS = toSet("to at for with about from of without on in into onto by around behind near against toward towards over under through beside besides between among upon within beyond except unlike despite via inside outside across along beneath");
+// Words that are a preposition or a conjunction: "after you" vs "after you left".
+const EN_AMBIGUOUS_LINKS = toSet("before after until till since than like as");
+const EN_CLAUSE_STARTERS = toSet("and but or so because cause if when whenever that why how what whatever where wherever who whom while though although unless whether then once nor yet even");
+const EN_THINKING_WORDS = toSet("think thought know knew feel felt guess believe believed hope hoped wish wished bet swear swore say said says mean meant realize realized realise realised remember remembered forget forgot suppose pretend pretended promise promised sure glad sorry afraid scared worried happy sad proud upset angry mad jealous grateful thankful surprised hurt relieved ashamed embarrassed disappointed");
+const EN_RELATIVE_NOUNS = toSet("time times way day days moment thing things everything nothing something anything all one reason person place minute second night year years people words life");
+const EN_OBJECT_FOLLOWERS = toSet("to too so very more most less again anymore now today tonight tomorrow yesterday here there back away up down out off in on at for with about from of into and or but because cause when if all both alone either enough much well badly forever anyway already like as than either");
+const EN_FOLLOWING_DETERMINERS = toSet("i i'm i'd i'll i've me my he she it it's we they him her them us a an the this that these those something everything nothing anything someone everyone nobody anyone somebody everybody some any no your his their our what how why where who");
+const EN_SUBJECT_FOLLOWERS = toSet("can could will would should must might may do did don't didn't can't won't wouldn't couldn't shouldn't have had never always just really still also only ever even actually probably clearly obviously simply left said went made took gave got came knew thought felt told broke lied cried");
+const EN_TRANSITIVE_VERBS = toSet("love loved hate hated miss missed need needed want wanted trust trusted blame blamed forgive forgave hit tell told ask asked call called leave help helped see saw hear heard like liked kiss kissed hug hugged hold held choose chose keep kept lose lost let make made give gave show showed owe owed understand understood follow followed protect protected fear feared envy adore adored respect respected remind reminded warn warned watch watched betray betrayed abandon abandoned use used deserve deserved get got push pushed hurt");
+// "Thank you" / "fuck you" keep their "you": "thank me" would change the meaning.
+const EN_FROZEN_BEFORE_YOU = toSet("thank thanks fuck screw bless damn");
+
+const EN_WORD = /[A-Za-z]+(?:'[A-Za-z]+)*/g;
+const CLAUSE_BREAK = /[.,!?;:…—–]|\s-\s|"/;
+const SENTENCE_BREAK = /[.!?…]/;
+
+function tokenizeEnglish(text) {
+  const words = [];
+  let lastEnd = 0;
+  for (const match of text.matchAll(EN_WORD)) {
+    const before = text.slice(lastEnd, match.index);
+    words.push({
+      text: match[0],
+      lower: match[0].toLowerCase(),
+      before,
+      breakBefore: words.length === 0 || CLAUSE_BREAK.test(before),
+      sentenceStart: words.length === 0 || SENTENCE_BREAK.test(before),
+    });
+    lastEnd = match.index + match[0].length;
+  }
+  return { words, tail: text.slice(lastEnd) };
+}
+
+function isYouSubject(words, index) {
+  const word = words[index];
+  const previous = word.breakBefore ? null : words[index - 1];
+  const beforePrevious = previous && !previous.breakBefore ? words[index - 2] : null;
+  const next = words[index + 1] && !words[index + 1].breakBefore ? words[index + 1] : null;
+  const prev = previous?.lower;
+  const nxt = next?.lower;
+  const auxOpensClause = prev && EN_AUXILIARIES.has(prev)
+    && (!beforePrevious || EN_CLAUSE_STARTERS.has(beforePrevious.lower));
+
+  if (prev && EN_PREPOSITIONS.has(prev)) return false;
+  if (prev && EN_AMBIGUOUS_LINKS.has(prev)) return Boolean(next) && !EN_OBJECT_FOLLOWERS.has(nxt);
+  if (!next) return !prev || auxOpensClause;
+  if (EN_OBJECT_FOLLOWERS.has(nxt) || EN_FOLLOWING_DETERMINERS.has(nxt)) return false;
+  if (nxt.endsWith("ing") || nxt.endsWith("ly")) return false;
+  if (/^[A-Z]/.test(next.text)) return false; // a name: "I love you Paul"
+  if (!prev || auxOpensClause) return true;
+  if (EN_CLAUSE_STARTERS.has(prev) || EN_THINKING_WORDS.has(prev) || EN_RELATIVE_NOUNS.has(prev)) return true;
+  if (EN_SUBJECT_FOLLOWERS.has(nxt) || (nxt.endsWith("ed") && nxt.length > 4)) return true;
+  if (EN_TRANSITIVE_VERBS.has(prev)) return false;
+  return true;
+}
+
+// Keeps a capital where the speaker had one (except the always-capital "I").
+function matchCase(original, replacement) {
+  if (/^I(?:$|')/.test(replacement)) return replacement;
+  if (/^[A-Z]/.test(original) && !/^i(?:$|')/i.test(original)) {
+    return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+  }
+  return replacement;
+}
+
 export function convertPronounsEN(text) {
-  let result = text.toLowerCase();
+  const cleaned = cleanTranscript(text);
+  const { words, tail } = tokenizeEnglish(cleaned);
+  const output = words.map((word) => word.text);
 
-  const phaseOne = [
-    [/\bi am\b/g, "⟦IAM⟧"], [/\byou are\b/g, "⟦YOUARE⟧"],
-    [/\bi was\b/g, "⟦IWAS⟧"], [/\byou were\b/g, "⟦YOUWERE⟧"],
-    [/\bi have\b/g, "⟦IHAVE⟧"], [/\byou have\b/g, "⟦YOUHAVE⟧"],
-    [/\bi had\b/g, "⟦IHAD⟧"], [/\byou had\b/g, "⟦YOUHAD⟧"],
-    [/\bi will\b/g, "⟦IWILL⟧"], [/\byou will\b/g, "⟦YOUWILL⟧"],
-    [/\bi would\b/g, "⟦IWOULD⟧"], [/\byou would\b/g, "⟦YOUWOULD⟧"],
-    [/\bi can\b/g, "⟦ICAN⟧"], [/\byou can\b/g, "⟦YOUCAN⟧"],
-    [/\bi could\b/g, "⟦ICOULD⟧"], [/\byou could\b/g, "⟦YOUCOULD⟧"],
-    [/\bi don't\b/g, "⟦IDONT⟧"], [/\byou don't\b/g, "⟦YOUDONT⟧"],
-    [/\bi didn't\b/g, "⟦IDIDNT⟧"], [/\byou didn't\b/g, "⟦YOUDIDNT⟧"],
-    [/\bi can't\b/g, "⟦ICANT⟧"], [/\byou can't\b/g, "⟦YOUCANT⟧"],
-    [/\bi won't\b/g, "⟦IWONT⟧"], [/\byou won't\b/g, "⟦YOUWONT⟧"],
-    [/\bi'm\b/g, "⟦IM⟧"], [/\byou're\b/g, "⟦YOURE⟧"],
-    [/\bi've\b/g, "⟦IVE⟧"], [/\byou've\b/g, "⟦YOUVE⟧"],
-    [/\bi'll\b/g, "⟦ILL⟧"], [/\byou'll\b/g, "⟦YOULL⟧"],
-    [/\bi'd\b/g, "⟦ID⟧"], [/\byou'd\b/g, "⟦YOUD⟧"],
-    [/\bi\b/g, "⟦I⟧"], [/\byou\b/g, "⟦YOU⟧"],
-    [/\bme\b/g, "⟦ME⟧"],
-    [/\bmy\b/g, "⟦MY⟧"], [/\byour\b/g, "⟦YOUR⟧"],
-    [/\bmine\b/g, "⟦MINE⟧"], [/\byours\b/g, "⟦YOURS⟧"],
-    [/\bmyself\b/g, "⟦MYSELF⟧"], [/\byourself\b/g, "⟦YOURSELF⟧"],
-  ];
+  for (let index = 0; index < words.length; index += 1) {
+    let phrase = null;
+    for (const length of EN_PHRASE_LENGTHS) {
+      const slice = words.slice(index, index + length);
+      if (slice.length < length || slice.slice(1).some((word) => word.breakBefore)) continue;
+      const key = slice.map((word) => word.lower).join(" ");
+      if (EN_PHRASES.has(key)) {
+        phrase = EN_PHRASES.get(key);
+        break;
+      }
+    }
+    if (phrase) {
+      phrase.forEach((replacement, offset) => {
+        output[index + offset] = matchCase(words[index + offset].text, replacement);
+      });
+      index += phrase.length - 1;
+      continue;
+    }
 
-  for (const [pattern, placeholder] of phaseOne) {
-    result = result.replace(pattern, placeholder);
+    const word = words[index];
+    if (word.lower === "you") {
+      const previous = word.breakBefore ? null : words[index - 1];
+      if (previous && EN_FROZEN_BEFORE_YOU.has(previous.lower)) continue;
+      output[index] = isYouSubject(words, index) ? "I" : matchCase(word.text, "me");
+      continue;
+    }
+    const replacement = EN_FIRST_PERSON.get(word.lower) || EN_SIMPLE.get(word.lower);
+    if (replacement) output[index] = matchCase(word.text, replacement);
   }
 
-  const resolve = {
-    "⟦IAM⟧": "you are", "⟦YOUARE⟧": "I am",
-    "⟦IWAS⟧": "you were", "⟦YOUWERE⟧": "I was",
-    "⟦IHAVE⟧": "you have", "⟦YOUHAVE⟧": "I have",
-    "⟦IHAD⟧": "you had", "⟦YOUHAD⟧": "I had",
-    "⟦IWILL⟧": "you will", "⟦YOUWILL⟧": "I will",
-    "⟦IWOULD⟧": "you would", "⟦YOUWOULD⟧": "I would",
-    "⟦ICAN⟧": "you can", "⟦YOUCAN⟧": "I can",
-    "⟦ICOULD⟧": "you could", "⟦YOUCOULD⟧": "I could",
-    "⟦IDONT⟧": "you don't", "⟦YOUDONT⟧": "I don't",
-    "⟦IDIDNT⟧": "you didn't", "⟦YOUDIDNT⟧": "I didn't",
-    "⟦ICANT⟧": "you can't", "⟦YOUCANT⟧": "I can't",
-    "⟦IWONT⟧": "you won't", "⟦YOUWONT⟧": "I won't",
-    "⟦IM⟧": "you're", "⟦YOURE⟧": "I'm",
-    "⟦IVE⟧": "you've", "⟦YOUVE⟧": "I've",
-    "⟦ILL⟧": "you'll", "⟦YOULL⟧": "I'll",
-    "⟦ID⟧": "you'd", "⟦YOUD⟧": "I'd",
-    "⟦I⟧": "you", "⟦YOU⟧": "I",
-    "⟦ME⟧": "you",
-    "⟦MY⟧": "your", "⟦YOUR⟧": "my",
-    "⟦MINE⟧": "yours", "⟦YOURS⟧": "mine",
-    "⟦MYSELF⟧": "yourself", "⟦YOURSELF⟧": "myself",
-  };
-
-  for (const [placeholder, value] of Object.entries(resolve)) {
-    result = result.split(placeholder).join(value);
-  }
-  return result.charAt(0).toUpperCase() + result.slice(1);
+  let result = "";
+  words.forEach((word, index) => {
+    let piece = output[index];
+    if (word.sentenceStart && piece) piece = piece.charAt(0).toUpperCase() + piece.slice(1);
+    result += word.before + piece;
+  });
+  return result + tail;
 }
 
 export function convertPronouns(text, lang) {

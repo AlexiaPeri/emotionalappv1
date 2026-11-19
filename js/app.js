@@ -2,7 +2,7 @@
 
 import { I18N, STORAGE_KEYS } from "./app-config.js";
 import { DeepgramRecognition } from "./deepgram-recognition.js";
-import { convertPronouns, normalizeSpokenText } from "./pronouns.js";
+import { cleanTranscript, convertPronouns, isMeaningfulTranscript, normalizeSpokenText } from "./pronouns.js";
 
 const dom = {
   langButtons: document.querySelectorAll(".lang-btn"),
@@ -143,6 +143,11 @@ const INTERIM_FINALIZE_MS = 1400;
 const SPEECH_END_FINALIZE_MS = 80;
 const RECOGNITION_WATCHDOG_MS = 12000;
 const MAX_TTS_CACHE_ENTRIES = 20;
+// If the repetition voice has not started within this delay, use the fallback voice.
+const TTS_FIRST_AUDIO_TIMEOUT_MS = 3000;
+const TTS_STALL_TIMEOUT_MS = 2500;
+// Add ?debug=voice to the URL to show repetition latency on screen.
+const VOICE_DEBUG = new URLSearchParams(window.location.search).get("debug") === "voice";
 const EMOTION_BIAS_TERMS = [
   "overwhelmed",
   "anxious",
@@ -186,6 +191,9 @@ const state = {
   streamingSources: new Set(),
   streamingPlaybackResolve: null,
   ttsAudioCache: new Map(),
+  ttsPrefetch: null,
+  voiceLatency: [],
+  voiceFallbackCount: 0,
   durationMode: "recommended",
   selectedDurationMinutes: 15,
   openingMode: localStorage.getItem(STORAGE_KEYS.firstSessionComplete) === "true" ? "quiet" : "full",
@@ -1208,7 +1216,9 @@ function startBrowserRecognition() {
 function createDeepgramRecognition() {
   return new DeepgramRecognition({
     language: state.lang,
-    onTranscript: (transcript) => handleRecognizedText(transcript),
+    onTranscript: (transcript, _message, receivedAt) => handleRecognizedText(transcript, receivedAt),
+    onEagerTranscript: (transcript) => prefetchRepetition(transcript),
+    onTurnResumed: () => cancelTtsPrefetch(),
     onStatus: (status) => {
       if (status === "connecting" && state.isActive && !state.isSpeaking) setStatus(t("voiceConnecting"));
       if (status === "listening" && state.isActive && !state.isSpeaking) setStatus(t("listening"));
@@ -1319,7 +1329,16 @@ function cacheGeminiPcm(key, chunks, totalBytes) {
   state.ttsAudioCache.set(key, combined);
 }
 
-function playCachedGeminiPcm(context, pcmBytes, spokenText) {
+function ttsCacheKey(spokenText) {
+  return `${state.repetitionVoice}|${state.lang}|${spokenText.toLocaleLowerCase()}`;
+}
+
+function markFirstAudio(context, startAt, onFirstAudio) {
+  if (!onFirstAudio) return;
+  onFirstAudio(performance.now() + Math.max(0, startAt - context.currentTime) * 1000);
+}
+
+function playCachedGeminiPcm(context, pcmBytes, spokenText, onFirstAudio = null) {
   return new Promise((resolve) => {
     let settled = false;
     const source = context.createBufferSource();
@@ -1337,67 +1356,112 @@ function playCachedGeminiPcm(context, pcmBytes, spokenText) {
     source.connect(context.destination);
     state.streamingSources.add(source);
     source.onended = () => finish(true);
-    source.start(context.currentTime + 0.008);
+    const startAt = context.currentTime + 0.008;
+    source.start(startAt);
+    markFirstAudio(context, startAt, onFirstAudio);
   });
 }
 
-async function speakGemini(text) {
-  const spokenText = normalizeSpokenText(text);
-  const context = getSpeechAudioContext();
-  if (!context) throw new Error("Web Audio is unavailable.");
-  const cacheKey = `${state.repetitionVoice}|${state.lang}|${spokenText.toLocaleLowerCase()}`;
-  const cachedPcm = state.ttsAudioCache.get(cacheKey);
-  if (cachedPcm) return playCachedGeminiPcm(context, cachedPcm, spokenText);
+// Starts generating the repetition voice. Audio accumulates in the returned
+// object even before anything plays, so it can be started early (on Deepgram's
+// "probable end of turn") and played the moment the turn is confirmed.
+function startGeminiStream(spokenText) {
+  const stream = {
+    text: spokenText,
+    key: ttsCacheKey(spokenText),
+    controller: new AbortController(),
+    chunks: [],
+    totalBytes: 0,
+    done: false,
+    error: null,
+    timedOut: "",
+    listener: null,
+  };
+  let watchdog = null;
+  const armWatchdog = (delay, reason) => {
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => {
+      stream.timedOut = reason;
+      stream.controller.abort();
+    }, delay);
+  };
+  armWatchdog(TTS_FIRST_AUDIO_TIMEOUT_MS, "did not start in time");
 
-  const controller = new AbortController();
-  state.speechAbortController = controller;
-  const response = await fetch("./api/tts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      text: spokenText,
-      model: GEMINI_TTS_MODEL,
-      voice: state.repetitionVoice,
-      style: "grounded",
-      stream: true,
-    }),
-    signal: controller.signal,
-  });
+  (async () => {
+    const response = await fetch("./api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: spokenText,
+        model: GEMINI_TTS_MODEL,
+        voice: state.repetitionVoice,
+        style: "grounded",
+        stream: true,
+      }),
+      signal: stream.controller.signal,
+    });
+    if (!response.ok) {
+      const details = await response.json().catch(() => ({}));
+      throw new Error(details.error || `Gemini voice service returned ${response.status}.`);
+    }
+    if (!response.body) throw new Error("Gemini returned no audio stream.");
 
-  if (!response.ok) {
-    const details = await response.json().catch(() => ({}));
-    throw new Error(details.error || `Gemini voice service returned ${response.status}.`);
-  }
-  if (!response.body) throw new Error("Gemini returned no audio stream.");
+    const reader = response.body.getReader();
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!value?.byteLength) continue;
+      stream.chunks.push(Uint8Array.from(value));
+      stream.totalBytes += value.byteLength;
+      armWatchdog(TTS_STALL_TIMEOUT_MS, "stalled");
+      stream.listener?.();
+    }
+    if (!stream.totalBytes) throw new Error("Gemini returned no audio.");
+    cacheGeminiPcm(stream.key, stream.chunks, stream.totalBytes);
+  })()
+    .catch((error) => {
+      if (stream.timedOut) {
+        stream.error = new Error(`Gemini voice ${stream.timedOut}.`);
+        stream.error.name = "TimeoutError";
+      } else {
+        stream.error = error;
+      }
+    })
+    .finally(() => {
+      clearTimeout(watchdog);
+      stream.done = true;
+      stream.listener?.();
+    });
 
-  const reader = response.body.getReader();
-  let pendingByte = null;
-  let nextStartTime = context.currentTime + 0.025;
-  let streamFinished = false;
-  let activeSourceCount = 0;
-  let settled = false;
-  const pcmChunks = [];
-  let pcmTotalBytes = 0;
+  return stream;
+}
 
+function playGeminiStream(context, stream, onFirstAudio = null) {
   return new Promise((resolve, reject) => {
+    let settled = false;
+    let consumed = 0;
+    let pendingByte = null;
+    let activeSourceCount = 0;
+    let nextStartTime = 0;
+
+    const release = () => {
+      stream.listener = null;
+      if (state.streamingPlaybackResolve === finish) state.streamingPlaybackResolve = null;
+      if (state.speechAbortController === stream.controller) state.speechAbortController = null;
+    };
     const finish = (completed) => {
       if (settled) return;
       settled = true;
-      if (state.speechAbortController === controller) state.speechAbortController = null;
-      if (state.streamingPlaybackResolve === finish) state.streamingPlaybackResolve = null;
-      if (completed) state.lastSpokenText = spokenText;
+      release();
+      if (completed) state.lastSpokenText = stream.text;
       resolve(completed);
     };
-
     const fail = (error) => {
       if (settled) return;
       settled = true;
-      if (state.speechAbortController === controller) state.speechAbortController = null;
-      if (state.streamingPlaybackResolve === finish) state.streamingPlaybackResolve = null;
+      release();
       reject(error);
     };
-
-    state.streamingPlaybackResolve = finish;
 
     const schedulePcm = (chunk) => {
       let bytes = chunk;
@@ -1415,45 +1479,123 @@ async function speakGemini(text) {
       if (!bytes.byteLength) return;
 
       const audioBuffer = createAudioBufferFromPcm(context, bytes);
-
       const source = context.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(context.destination);
-      const startAt = Math.max(nextStartTime, context.currentTime + 0.012);
+      const isFirstChunk = nextStartTime === 0;
+      const startAt = Math.max(nextStartTime, context.currentTime + (isFirstChunk ? 0.02 : 0.012));
       nextStartTime = startAt + audioBuffer.duration;
       activeSourceCount += 1;
       state.streamingSources.add(source);
       source.onended = () => {
         state.streamingSources.delete(source);
         activeSourceCount -= 1;
-        if (streamFinished && activeSourceCount === 0) finish(true);
+        pump();
       };
       source.start(startAt);
+      if (isFirstChunk) markFirstAudio(context, startAt, onFirstAudio);
     };
 
-    const pump = async () => {
-      try {
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          if (value?.byteLength) {
-            const cachedChunk = Uint8Array.from(value);
-            pcmChunks.push(cachedChunk);
-            pcmTotalBytes += cachedChunk.byteLength;
-            schedulePcm(value);
-          }
-        }
-        streamFinished = true;
-        cacheGeminiPcm(cacheKey, pcmChunks, pcmTotalBytes);
-        if (activeSourceCount === 0) finish(true);
-      } catch (error) {
-        if (error.name === "AbortError") finish(false);
-        else fail(error);
+    function pump() {
+      if (settled) return;
+      while (consumed < stream.chunks.length) schedulePcm(stream.chunks[consumed++]);
+      if (!stream.done) return;
+      if (stream.error && nextStartTime === 0) {
+        if (stream.error.name === "AbortError") finish(false);
+        else fail(stream.error);
+        return;
       }
-    };
+      if (activeSourceCount === 0) finish(true);
+    }
 
+    state.streamingPlaybackResolve = finish;
+    state.speechAbortController = stream.controller;
+    stream.listener = pump;
     pump();
   });
+}
+
+async function speakGemini(text, { prefetched = null, onFirstAudio = null } = {}) {
+  const spokenText = normalizeSpokenText(text);
+  const context = getSpeechAudioContext();
+  if (!context) throw new Error("Web Audio is unavailable.");
+  const key = ttsCacheKey(spokenText);
+  const usablePrefetch = prefetched && prefetched.key === key && !(prefetched.done && prefetched.error);
+  if (prefetched && !usablePrefetch) prefetched.controller.abort();
+
+  const cachedPcm = state.ttsAudioCache.get(key);
+  if (cachedPcm) {
+    if (usablePrefetch && !prefetched.done) prefetched.controller.abort();
+    return playCachedGeminiPcm(context, cachedPcm, spokenText, onFirstAudio);
+  }
+  const stream = usablePrefetch ? prefetched : startGeminiStream(spokenText);
+  return playGeminiStream(context, stream, onFirstAudio);
+}
+
+// Called on Deepgram's "probable end of turn": prepare the voice in advance.
+function prefetchRepetition(userText) {
+  if (!state.isActive || state.isSpeaking || state.recognitionPauseRequested) return;
+  if (!isMeaningfulTranscript(userText)) return;
+  const spokenText = normalizeSpokenText(convertPronouns(userText, state.lang));
+  const key = ttsCacheKey(spokenText);
+  if (state.ttsPrefetch?.key === key) return;
+  cancelTtsPrefetch();
+  if (state.ttsAudioCache.has(key)) return;
+  state.ttsPrefetch = startGeminiStream(spokenText);
+}
+
+function cancelTtsPrefetch() {
+  state.ttsPrefetch?.controller.abort();
+  state.ttsPrefetch = null;
+}
+
+function takeTtsPrefetch() {
+  const prefetched = state.ttsPrefetch;
+  state.ttsPrefetch = null;
+  return prefetched;
+}
+
+// In the browser console: emergeVoiceStats() prints the repetition latency summary.
+window.emergeVoiceStats = () => summarizeVoiceLatency();
+
+function recordRepetitionLatency(milliseconds, usedPrefetch) {
+  const sample = { ms: Math.round(milliseconds), prefetch: usedPrefetch };
+  state.voiceLatency.push(sample);
+  if (state.voiceLatency.length > 300) state.voiceLatency.shift();
+  console.info(`[Emerge voice] repetition started ${sample.ms} ms after end of turn${usedPrefetch ? " (prepared early)" : ""}`);
+  updateVoiceDebugPanel();
+}
+
+function summarizeVoiceLatency() {
+  const values = state.voiceLatency.map((sample) => sample.ms).sort((a, b) => a - b);
+  if (!values.length) return { turns: 0 };
+  const pick = (ratio) => values[Math.min(values.length - 1, Math.floor(values.length * ratio))];
+  return {
+    turns: values.length,
+    medianMs: pick(0.5),
+    p90Ms: pick(0.9),
+    maxMs: values[values.length - 1],
+    preparedEarly: state.voiceLatency.filter((sample) => sample.prefetch).length,
+    fallbacks: state.voiceFallbackCount,
+  };
+}
+
+function updateVoiceDebugPanel() {
+  if (!VOICE_DEBUG) return;
+  let panel = document.getElementById("voice-debug-panel");
+  if (!panel) {
+    panel = document.createElement("pre");
+    panel.id = "voice-debug-panel";
+    panel.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:9999;margin:0;padding:8px 10px;"
+      + "font:11px/1.4 ui-monospace,monospace;color:#fff;background:rgba(0,0,0,.72);border-radius:8px;pointer-events:none;";
+    document.body.appendChild(panel);
+  }
+  const summary = summarizeVoiceLatency();
+  const last = state.voiceLatency[state.voiceLatency.length - 1];
+  panel.textContent = summary.turns
+    ? `last ${last.ms} ms${last.prefetch ? " (early)" : ""}\nmedian ${summary.medianMs} · p90 ${summary.p90Ms} · max ${summary.maxMs}\n`
+      + `turns ${summary.turns} · early ${summary.preparedEarly} · fallback ${summary.fallbacks}`
+    : "voice debug: waiting for first turn";
 }
 
 function speakBrowser(text) {
@@ -1484,7 +1626,7 @@ function speakBrowser(text) {
   });
 }
 
-async function speakText(text, statusMessage = null) {
+async function speakText(text, statusMessage = null, { prefetched = null, onFirstAudio = null } = {}) {
   stopSpeechPlayback();
   state.isSpeaking = true;
   updateButton();
@@ -1492,9 +1634,13 @@ async function speakText(text, statusMessage = null) {
   setStatus(statusMessage || t("speaking"));
 
   try {
-    await speakGemini(text);
+    await speakGemini(text, { prefetched, onFirstAudio });
   } catch (error) {
     console.error("TTS error:", error);
+    if (error.name !== "AbortError") {
+      state.voiceFallbackCount += 1;
+      updateVoiceDebugPanel();
+    }
     if (state.isActive && error.name !== "AbortError") {
       try {
         await speakBrowser(text);
@@ -1514,6 +1660,7 @@ async function speakText(text, statusMessage = null) {
 
 function stopVoiceCapture() {
   state.isActive = false;
+  cancelTtsPrefetch();
   clearRecognitionInterim();
   clearRecognitionWatchdog();
   if (state.recognition) {
@@ -1912,6 +2059,7 @@ function openGuideFromPractice() {
   state.guideReturnToPractice = true;
   if (state.isActive) {
     pauseRecognitionForTts();
+    cancelTtsPrefetch();
     state.isActive = false;
   }
   stopSpeechPlayback();
@@ -1949,19 +2097,30 @@ function updateTtsStatus() {
   dom.settingsToggle.classList.add("has-key");
 }
 
-function handleRecognizedText(userText) {
+function handleRecognizedText(userText, turnEndedAt = performance.now()) {
   if (!userText || state.isSpeaking || state.recognitionPauseRequested || !state.isActive) return;
   const usesBrowserRecognition = state.recognitionProvider === "browser";
   if (usesBrowserRecognition && state.recognitionHandledCycleId === state.recognitionCycleId) return;
   clearRecognitionInterim();
 
+  // A lone "um", a cough or silence: keep listening instead of repeating it.
+  if (!isMeaningfulTranscript(userText)) {
+    cancelTtsPrefetch();
+    return;
+  }
+
   if (usesBrowserRecognition) state.recognitionHandledCycleId = state.recognitionCycleId;
 
-  addBubble("user", userText);
-  const converted = convertPronouns(userText, state.lang);
+  const spokenByUser = cleanTranscript(userText);
+  const converted = convertPronouns(spokenByUser, state.lang);
+  addBubble("user", spokenByUser);
   addBubble("voice", converted);
   pauseRecognitionForTts();
-  speakText(converted);
+  const prefetched = takeTtsPrefetch();
+  speakText(converted, null, {
+    prefetched,
+    onFirstAudio: (startedAt) => recordRepetitionLatency(startedAt - turnEndedAt, Boolean(prefetched && !prefetched.error)),
+  });
 }
 
 function applyRecognitionBias() {
